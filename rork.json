@@ -1,0 +1,9 @@
+{
+  "apps": [
+    {
+      "name": "Manify",
+      "path": "ios",
+      "framework": "swift"
+    }
+  ]
+}
