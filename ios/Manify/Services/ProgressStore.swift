@@ -29,6 +29,11 @@ final class ProgressStore {
         return userData.flashcardSchedules.values.filter { $0.nextReviewDate <= now }.count
     }
 
+    var hasTrainedToday: Bool {
+        guard let lastActive = userData.streak.lastActiveDate else { return false }
+        return Calendar.current.isDateInToday(lastActive)
+    }
+
     init() {
         if let data = UserDefaults.standard.data(forKey: storageKey),
            let decoded = try? JSONDecoder().decode(UserData.self, from: data) {
@@ -50,6 +55,35 @@ final class ProgressStore {
         userData.lessonProgress[lessonId]?.hasReadLesson ?? false
     }
 
+    private func todayKey(for categoryId: CategoryID) -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd"
+        return "\(categoryId.rawValue)_\(formatter.string(from: Date()))"
+    }
+
+    func dailyCompletionCount(for categoryId: CategoryID) -> Int {
+        let key = todayKey(for: categoryId)
+        return userData.dailyCourseCompletions[key]?.completedLessonCount ?? 0
+    }
+
+    func canCompleteLesson(in categoryId: CategoryID, isPremium: Bool) -> Bool {
+        if isPremium { return true }
+        return dailyCompletionCount(for: categoryId) < 1
+    }
+
+    func isTierAccessible(tier: Int, isPremium: Bool) -> Bool {
+        if isPremium { return true }
+        return tier <= 2
+    }
+
+    func recordDailyCompletion(for categoryId: CategoryID) {
+        let key = todayKey(for: categoryId)
+        var completion = userData.dailyCourseCompletions[key] ?? DailyCourseCompletion(date: key)
+        completion.completedLessonCount += 1
+        userData.dailyCourseCompletions[key] = completion
+        save()
+    }
+
     func markLessonRead(_ lessonId: String) {
         var prog = userData.lessonProgress[lessonId] ?? LessonProgress()
         guard !prog.hasReadLesson else { return }
@@ -62,10 +96,11 @@ final class ProgressStore {
         save()
     }
 
-    func submitQuizScore(lessonId: String, score: Int, totalQuestions: Int) {
+    func submitQuizScore(lessonId: String, score: Int, totalQuestions: Int, categoryId: CategoryID) {
         var prog = userData.lessonProgress[lessonId] ?? LessonProgress()
         let percentage = totalQuestions > 0 ? (score * 100) / totalQuestions : 0
         let isFirstAttempt = prog.attempts == 0
+        let wasCompleted = prog.isCompleted
         prog.attempts += 1
         prog.lastAttemptDate = Date()
 
@@ -79,6 +114,10 @@ final class ProgressStore {
             xpGained = 30
             if isFirstAttempt { xpGained += 10 }
             if percentage == 100 { xpGained += 10 }
+
+            if !wasCompleted {
+                recordDailyCompletion(for: categoryId)
+            }
         }
 
         prog.xpEarned += xpGained

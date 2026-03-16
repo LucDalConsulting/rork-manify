@@ -4,7 +4,9 @@ struct CategoryScreen: View {
     let category: CategoryID
     @Environment(LessonStore.self) private var lessonStore
     @Environment(ProgressStore.self) private var progressStore
+    @Environment(MembershipService.self) private var membership
     @State private var showSummaryFlashcards: Bool = false
+    @State private var showPaywall: Bool = false
 
     private var lessons: [Lesson] {
         lessonStore.lessons(for: category)
@@ -18,6 +20,7 @@ struct CategoryScreen: View {
         ScrollView {
             VStack(spacing: 24) {
                 categoryHeader
+                dailyLimitBanner
                 summaryFlashcardsButton
                 tierSections
             }
@@ -33,6 +36,51 @@ struct CategoryScreen: View {
                 category: category,
                 flashcards: progressStore.completedFlashcards(for: category, lessons: lessons)
             )
+        }
+        .sheet(isPresented: $showPaywall) {
+            PaywallScreen()
+        }
+    }
+
+    @ViewBuilder
+    private var dailyLimitBanner: some View {
+        let dailyCount = progressStore.dailyCompletionCount(for: category)
+        if !membership.isPremium && dailyCount >= 1 {
+            HStack(spacing: 10) {
+                Image(systemName: "lock.fill")
+                    .font(.caption)
+                    .foregroundStyle(ManifyTheme.warning)
+
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Daily course limit reached.")
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(ManifyTheme.textPrimary)
+                    Text("Continue tomorrow or unlock unlimited access.")
+                        .font(.caption2)
+                        .foregroundStyle(ManifyTheme.textSecondary)
+                }
+
+                Spacer()
+
+                Button {
+                    showPaywall = true
+                } label: {
+                    Text("Unlock")
+                        .font(.caption2.weight(.bold))
+                        .foregroundStyle(ManifyTheme.bg)
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 5)
+                        .background(ManifyTheme.goldGradient)
+                        .clipShape(Capsule())
+                }
+            }
+            .padding(12)
+            .background(ManifyTheme.warning.opacity(0.08))
+            .overlay(
+                RoundedRectangle(cornerRadius: 12)
+                    .stroke(ManifyTheme.warning.opacity(0.2), lineWidth: 1)
+            )
+            .clipShape(.rect(cornerRadius: 12))
         }
     }
 
@@ -160,11 +208,14 @@ struct CategoryScreen: View {
     private var tierSections: some View {
         ForEach(tiers, id: \.self) { tier in
             let unlocked = progressStore.isTierUnlocked(tier: tier, category: category, allLessons: lessons)
+            let tierAccessible = progressStore.isTierAccessible(tier: tier, isPremium: membership.isPremium)
 
             VStack(alignment: .leading, spacing: 12) {
-                tierHeader(tier: tier, unlocked: unlocked)
+                tierHeader(tier: tier, unlocked: unlocked, accessible: tierAccessible)
 
-                if unlocked {
+                if !tierAccessible {
+                    premiumLockedCard(tier: tier)
+                } else if unlocked {
                     ForEach(lessons.filter { $0.tier == tier }) { lesson in
                         let isAvailable = isLessonAvailable(lesson)
                         if isAvailable {
@@ -191,16 +242,16 @@ struct CategoryScreen: View {
         }
     }
 
-    private func tierHeader(tier: Int, unlocked: Bool) -> some View {
+    private func tierHeader(tier: Int, unlocked: Bool, accessible: Bool) -> some View {
         HStack {
             HStack(spacing: 6) {
-                Image(systemName: unlocked ? "lock.open.fill" : "lock.fill")
+                Image(systemName: !accessible ? "crown.fill" : (unlocked ? "lock.open.fill" : "lock.fill"))
                     .font(.caption2)
-                    .foregroundStyle(unlocked ? ManifyTheme.gold : ManifyTheme.textSecondary)
+                    .foregroundStyle(!accessible ? ManifyTheme.gold : (unlocked ? ManifyTheme.gold : ManifyTheme.textSecondary))
 
                 Text("TIER \(tier)")
                     .font(.caption.weight(.bold))
-                    .foregroundStyle(unlocked ? ManifyTheme.gold : ManifyTheme.textSecondary)
+                    .foregroundStyle(!accessible ? ManifyTheme.gold : (unlocked ? ManifyTheme.gold : ManifyTheme.textSecondary))
                     .tracking(1.2)
             }
 
@@ -210,7 +261,7 @@ struct CategoryScreen: View {
 
             Spacer()
 
-            if unlocked {
+            if unlocked && accessible {
                 let tierLessons = lessons.filter { $0.tier == tier }
                 let completed = tierLessons.filter { progressStore.isLessonCompleted($0.id) }.count
                 Text("\(completed)/\(tierLessons.count)")
@@ -218,6 +269,44 @@ struct CategoryScreen: View {
                     .foregroundStyle(ManifyTheme.textSecondary)
             }
         }
+    }
+
+    private func premiumLockedCard(tier: Int) -> some View {
+        Button {
+            showPaywall = true
+        } label: {
+            VStack(spacing: 12) {
+                Image(systemName: "crown.fill")
+                    .font(.title2)
+                    .foregroundStyle(ManifyTheme.gold.opacity(0.7))
+
+                Text("Manly Membership Required")
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(ManifyTheme.textPrimary)
+
+                Text("Unlock Tier \(tier) and above with full access.")
+                    .font(.caption)
+                    .foregroundStyle(ManifyTheme.textSecondary)
+                    .multilineTextAlignment(.center)
+
+                Text("Unlock for $10")
+                    .font(.caption.weight(.bold))
+                    .foregroundStyle(ManifyTheme.bg)
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 8)
+                    .background(ManifyTheme.goldGradient)
+                    .clipShape(Capsule())
+            }
+            .padding(20)
+            .frame(maxWidth: .infinity)
+            .background(ManifyTheme.gold.opacity(0.04))
+            .overlay(
+                RoundedRectangle(cornerRadius: 14)
+                    .stroke(ManifyTheme.gold.opacity(0.15), lineWidth: 1)
+            )
+            .clipShape(.rect(cornerRadius: 14))
+        }
+        .buttonStyle(.plain)
     }
 
     private func tierLockedCard(tier: Int) -> some View {

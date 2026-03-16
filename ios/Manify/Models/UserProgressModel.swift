@@ -34,6 +34,11 @@ nonisolated struct StreakData: Codable, Sendable {
     var consecutiveDaysWithoutRest: Int = 0
 }
 
+nonisolated struct DailyCourseCompletion: Codable, Sendable {
+    var date: String
+    var completedLessonCount: Int = 0
+}
+
 nonisolated struct UserData: Codable, Sendable {
     var lessonProgress: [String: LessonProgress] = [:]
     var flashcardSchedules: [String: FlashcardSchedule] = [:]
@@ -41,4 +46,5 @@ nonisolated struct UserData: Codable, Sendable {
     var totalXP: Int = 0
     var bookmarkedLessons: [String] = []
     var currentLessonId: String?
+    var dailyCourseCompletions: [String: DailyCourseCompletion] = [:]
 }

@@ -3,6 +3,20 @@ import SwiftUI
 struct HomeScreen: View {
     @Environment(LessonStore.self) private var lessonStore
     @Environment(ProgressStore.self) private var progressStore
+    @Environment(MembershipService.self) private var membership
+    @State private var showPaywall: Bool = false
+    @State private var showSettings: Bool = false
+
+    private let streakMessages = [
+        "Hold the line.",
+        "Do not break your streak.",
+        "One lesson. Stay sharp.",
+        "Discipline compounds.",
+        "A real man trains daily.",
+        "You came too far to miss today.",
+        "Five minutes. Keep the streak alive.",
+        "Stay dangerous. Train today.",
+    ]
 
     var body: some View {
         NavigationStack {
@@ -10,7 +24,9 @@ struct HomeScreen: View {
                 VStack(spacing: 24) {
                     header
                     streakBar
+                    todayStatus
                     continueCard
+                    membershipUpsell
                     categorySection
                 }
                 .padding(.horizontal, 16)
@@ -22,6 +38,14 @@ struct HomeScreen: View {
             }
             .navigationDestination(for: Lesson.self) { lesson in
                 LessonScreen(lesson: lesson)
+            }
+            .sheet(isPresented: $showPaywall) {
+                PaywallScreen()
+            }
+            .sheet(isPresented: $showSettings) {
+                NavigationStack {
+                    SettingsScreen()
+                }
             }
         }
     }
@@ -41,7 +65,17 @@ struct HomeScreen: View {
 
             Spacer()
 
-            RankBadge(rank: progressStore.currentRank, totalXP: progressStore.totalXP, compact: true)
+            HStack(spacing: 10) {
+                RankBadge(rank: progressStore.currentRank, totalXP: progressStore.totalXP, compact: true)
+
+                Button {
+                    showSettings = true
+                } label: {
+                    Image(systemName: "gearshape.fill")
+                        .font(.subheadline)
+                        .foregroundStyle(ManifyTheme.textSecondary)
+                }
+            }
         }
         .padding(.top, 8)
     }
@@ -76,6 +110,55 @@ struct HomeScreen: View {
     }
 
     @ViewBuilder
+    private var todayStatus: some View {
+        if progressStore.hasTrainedToday {
+            HStack(spacing: 10) {
+                Image(systemName: "checkmark.shield.fill")
+                    .font(.subheadline)
+                    .foregroundStyle(ManifyTheme.success)
+
+                Text("Streak secured for today.")
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(ManifyTheme.success)
+
+                Spacer()
+            }
+            .padding(14)
+            .background(ManifyTheme.success.opacity(0.08))
+            .overlay(
+                RoundedRectangle(cornerRadius: 12)
+                    .stroke(ManifyTheme.success.opacity(0.2), lineWidth: 1)
+            )
+            .clipShape(.rect(cornerRadius: 12))
+        } else {
+            HStack(spacing: 10) {
+                Image(systemName: "exclamationmark.triangle.fill")
+                    .font(.subheadline)
+                    .foregroundStyle(ManifyTheme.warning)
+
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Complete Today's Lesson")
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(ManifyTheme.textPrimary)
+
+                    Text(streakMessages.randomElement() ?? "Stay sharp.")
+                        .font(.caption)
+                        .foregroundStyle(ManifyTheme.textSecondary)
+                }
+
+                Spacer()
+            }
+            .padding(14)
+            .background(ManifyTheme.warning.opacity(0.08))
+            .overlay(
+                RoundedRectangle(cornerRadius: 12)
+                    .stroke(ManifyTheme.warning.opacity(0.2), lineWidth: 1)
+            )
+            .clipShape(.rect(cornerRadius: 12))
+        }
+    }
+
+    @ViewBuilder
     private var continueCard: some View {
         let currentLesson = findCurrentLesson()
         if let lesson = currentLesson {
@@ -84,6 +167,45 @@ struct HomeScreen: View {
                     lesson: lesson,
                     progress: progressStore.progress(for: lesson.id)
                 )
+            }
+            .buttonStyle(.plain)
+        }
+    }
+
+    @ViewBuilder
+    private var membershipUpsell: some View {
+        if !membership.isPremium {
+            Button {
+                showPaywall = true
+            } label: {
+                HStack(spacing: 12) {
+                    Image(systemName: "shield.checkered")
+                        .font(.title3)
+                        .foregroundStyle(ManifyTheme.gold)
+
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Train Without Limits")
+                            .font(.subheadline.weight(.semibold))
+                            .foregroundStyle(ManifyTheme.textPrimary)
+
+                        Text("Unlock full access — $10 one-time")
+                            .font(.caption)
+                            .foregroundStyle(ManifyTheme.textSecondary)
+                    }
+
+                    Spacer()
+
+                    Image(systemName: "chevron.right")
+                        .font(.caption)
+                        .foregroundStyle(ManifyTheme.gold)
+                }
+                .padding(14)
+                .background(ManifyTheme.gold.opacity(0.06))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 14)
+                        .stroke(ManifyTheme.gold.opacity(0.2), lineWidth: 1)
+                )
+                .clipShape(.rect(cornerRadius: 14))
             }
             .buttonStyle(.plain)
         }

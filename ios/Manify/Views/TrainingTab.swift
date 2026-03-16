@@ -3,7 +3,8 @@ import SwiftUI
 struct TrainingTab: View {
     @Environment(LessonStore.self) private var lessonStore
     @Environment(ProgressStore.self) private var progressStore
-    @State private var hasNavigatedToLesson: Bool = false
+    @Environment(MembershipService.self) private var membership
+    @State private var showPaywall: Bool = false
 
     var body: some View {
         NavigationStack {
@@ -27,6 +28,9 @@ struct TrainingTab: View {
             }
             .navigationDestination(for: Lesson.self) { lesson in
                 LessonScreen(lesson: lesson)
+            }
+            .sheet(isPresented: $showPaywall) {
+                PaywallScreen()
             }
         }
     }
@@ -101,6 +105,8 @@ struct TrainingTab: View {
                 let lessons = lessonStore.lessons(for: category)
                 let completed = lessons.filter { progressStore.isLessonCompleted($0.id) }.count
                 let mastery = progressStore.categoryMastery(for: category, lessons: lessons)
+                let dailyCount = progressStore.dailyCompletionCount(for: category)
+                let atLimit = !membership.isPremium && dailyCount >= 1
 
                 NavigationLink(value: category) {
                     HStack(spacing: 14) {
@@ -134,6 +140,15 @@ struct TrainingTab: View {
                                         .font(.caption2.weight(.bold))
                                         .foregroundStyle(category.accentColor)
                                 }
+
+                                if atLimit {
+                                    Text("•")
+                                        .font(.caption2)
+                                        .foregroundStyle(ManifyTheme.textSecondary)
+                                    Text("Daily limit reached")
+                                        .font(.caption2.weight(.medium))
+                                        .foregroundStyle(ManifyTheme.warning)
+                                }
                             }
                         }
 
@@ -152,6 +167,30 @@ struct TrainingTab: View {
                     .clipShape(.rect(cornerRadius: 14))
                 }
                 .buttonStyle(.plain)
+            }
+
+            if !membership.isPremium {
+                Button {
+                    showPaywall = true
+                } label: {
+                    HStack(spacing: 10) {
+                        Image(systemName: "lock.open.fill")
+                            .font(.caption)
+                            .foregroundStyle(ManifyTheme.gold)
+
+                        Text("Unlock unlimited access")
+                            .font(.caption.weight(.medium))
+                            .foregroundStyle(ManifyTheme.gold)
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding(12)
+                    .background(ManifyTheme.gold.opacity(0.06))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 10)
+                            .stroke(ManifyTheme.gold.opacity(0.15), lineWidth: 1)
+                    )
+                    .clipShape(.rect(cornerRadius: 10))
+                }
             }
         }
     }

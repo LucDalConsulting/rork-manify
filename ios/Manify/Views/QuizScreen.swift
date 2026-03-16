@@ -485,7 +485,8 @@ struct QuizScreen: View {
             progressStore.submitQuizScore(
                 lessonId: lesson.id,
                 score: correctCount,
-                totalQuestions: questions.count
+                totalQuestions: questions.count,
+                categoryId: lesson.categoryId
             )
             isComplete = true
             showExercisePrompt = true
