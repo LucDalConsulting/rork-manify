@@ -7,10 +7,15 @@ struct QuizScreen: View {
 
     @State private var currentIndex: Int = 0
     @State private var selectedAnswer: Int? = nil
+    @State private var selectedAnswers: Set<Int> = []
+    @State private var fillBlankText: String = ""
+    @State private var matchedPairs: [Int: Int] = [:]
+    @State private var selectedLeftIndex: Int? = nil
     @State private var hasAnswered: Bool = false
     @State private var correctCount: Int = 0
     @State private var isComplete: Bool = false
     @State private var answers: [Int?] = []
+    @State private var showExercisePrompt: Bool = false
 
     private var questions: [Question] { lesson.quiz.questions }
     private var currentQuestion: Question? {
@@ -41,6 +46,9 @@ struct QuizScreen: View {
             .onAppear {
                 answers = Array(repeating: nil, count: questions.count)
             }
+            .sheet(isPresented: $showExercisePrompt) {
+                ExercisePromptView()
+            }
         }
     }
 
@@ -67,37 +75,15 @@ struct QuizScreen: View {
                         .fixedSize(horizontal: false, vertical: true)
                 }
 
-                VStack(spacing: 10) {
-                    ForEach(Array(question.choices.enumerated()), id: \.offset) { index, choice in
-                        Button {
-                            guard !hasAnswered else { return }
-                            selectedAnswer = index
-                            hasAnswered = true
-                            answers[currentIndex] = index
-                            if index == question.correctIndex {
-                                correctCount += 1
-                            }
-                        } label: {
-                            HStack(spacing: 12) {
-                                choiceIndicator(index: index, correctIndex: question.correctIndex)
-
-                                Text(choice)
-                                    .font(.subheadline)
-                                    .foregroundStyle(ManifyTheme.textPrimary)
-                                    .multilineTextAlignment(.leading)
-
-                                Spacer()
-                            }
-                            .padding(14)
-                            .background(choiceBackground(index: index, correctIndex: question.correctIndex))
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 12)
-                                    .stroke(choiceBorder(index: index, correctIndex: question.correctIndex), lineWidth: 1.5)
-                            )
-                            .clipShape(.rect(cornerRadius: 12))
-                        }
-                        .disabled(hasAnswered)
-                    }
+                switch question.type {
+                case .multipleChoice, .scenario:
+                    multipleChoiceView(question)
+                case .multiSelect:
+                    multiSelectView(question)
+                case .fillBlank:
+                    fillBlankView(question)
+                case .matching:
+                    matchingView(question)
                 }
 
                 if hasAnswered {
@@ -122,6 +108,242 @@ struct QuizScreen: View {
         }
     }
 
+    private func multipleChoiceView(_ question: Question) -> some View {
+        VStack(spacing: 10) {
+            ForEach(Array(question.choices.enumerated()), id: \.offset) { index, choice in
+                Button {
+                    guard !hasAnswered else { return }
+                    selectedAnswer = index
+                    hasAnswered = true
+                    answers[currentIndex] = index
+                    if index == question.correctIndex {
+                        correctCount += 1
+                    }
+                } label: {
+                    HStack(spacing: 12) {
+                        choiceIndicator(index: index, correctIndex: question.correctIndex)
+
+                        Text(choice)
+                            .font(.subheadline)
+                            .foregroundStyle(ManifyTheme.textPrimary)
+                            .multilineTextAlignment(.leading)
+
+                        Spacer()
+                    }
+                    .padding(14)
+                    .background(choiceBackground(index: index, correctIndex: question.correctIndex))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 12)
+                            .stroke(choiceBorder(index: index, correctIndex: question.correctIndex), lineWidth: 1.5)
+                    )
+                    .clipShape(.rect(cornerRadius: 12))
+                }
+                .disabled(hasAnswered)
+            }
+        }
+    }
+
+    private func multiSelectView(_ question: Question) -> some View {
+        VStack(spacing: 10) {
+            ForEach(Array(question.choices.enumerated()), id: \.offset) { index, choice in
+                Button {
+                    guard !hasAnswered else { return }
+                    if selectedAnswers.contains(index) {
+                        selectedAnswers.remove(index)
+                    } else {
+                        selectedAnswers.insert(index)
+                    }
+                } label: {
+                    HStack(spacing: 12) {
+                        ZStack {
+                            RoundedRectangle(cornerRadius: 4)
+                                .stroke(multiSelectBorderColor(index: index, question: question), lineWidth: 2)
+                                .frame(width: 22, height: 22)
+
+                            if selectedAnswers.contains(index) {
+                                if hasAnswered {
+                                    Image(systemName: question.correctIndices.contains(index) ? "checkmark" : "xmark")
+                                        .font(.caption.weight(.bold))
+                                        .foregroundStyle(question.correctIndices.contains(index) ? ManifyTheme.success : ManifyTheme.danger)
+                                } else {
+                                    Image(systemName: "checkmark")
+                                        .font(.caption.weight(.bold))
+                                        .foregroundStyle(ManifyTheme.gold)
+                                }
+                            }
+                        }
+
+                        Text(choice)
+                            .font(.subheadline)
+                            .foregroundStyle(ManifyTheme.textPrimary)
+                            .multilineTextAlignment(.leading)
+
+                        Spacer()
+                    }
+                    .padding(14)
+                    .background(multiSelectBackground(index: index, question: question))
+                    .clipShape(.rect(cornerRadius: 12))
+                }
+                .disabled(hasAnswered)
+            }
+
+            if !hasAnswered && !selectedAnswers.isEmpty {
+                Button {
+                    hasAnswered = true
+                    let isCorrect = selectedAnswers == Set(question.correctIndices)
+                    if isCorrect { correctCount += 1 }
+                } label: {
+                    Text("Confirm Selection")
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(ManifyTheme.bg)
+                        .padding(.horizontal, 24)
+                        .padding(.vertical, 12)
+                        .background(ManifyTheme.goldGradient)
+                        .clipShape(.rect(cornerRadius: 10))
+                }
+            }
+        }
+    }
+
+    private func fillBlankView(_ question: Question) -> some View {
+        VStack(spacing: 16) {
+            TextField("Type your answer...", text: $fillBlankText)
+                .textFieldStyle(.plain)
+                .font(.title3)
+                .foregroundStyle(ManifyTheme.textPrimary)
+                .padding(16)
+                .background(ManifyTheme.panel)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 12)
+                        .stroke(hasAnswered ? (isFillBlankCorrect(question) ? ManifyTheme.success : ManifyTheme.danger) : ManifyTheme.gold.opacity(0.3), lineWidth: 1.5)
+                )
+                .clipShape(.rect(cornerRadius: 12))
+                .disabled(hasAnswered)
+                .autocorrectionDisabled()
+                .textInputAutocapitalization(.never)
+
+            if hasAnswered {
+                if !isFillBlankCorrect(question) {
+                    HStack(spacing: 8) {
+                        Image(systemName: "lightbulb.fill")
+                            .foregroundStyle(ManifyTheme.warning)
+                        Text("Accepted: \(question.acceptedAnswers.joined(separator: ", "))")
+                            .font(.caption)
+                            .foregroundStyle(ManifyTheme.textSecondary)
+                    }
+                }
+            } else if !fillBlankText.isEmpty {
+                Button {
+                    hasAnswered = true
+                    if isFillBlankCorrect(question) { correctCount += 1 }
+                } label: {
+                    Text("Submit Answer")
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(ManifyTheme.bg)
+                        .padding(.horizontal, 24)
+                        .padding(.vertical, 12)
+                        .background(ManifyTheme.goldGradient)
+                        .clipShape(.rect(cornerRadius: 10))
+                }
+            }
+        }
+    }
+
+    private func matchingView(_ question: Question) -> some View {
+        let pairs = question.matchingPairs
+        let shuffledRightIndices = Array(0..<pairs.count)
+
+        return VStack(spacing: 16) {
+            Text("Tap a term, then tap its match")
+                .font(.caption)
+                .foregroundStyle(ManifyTheme.textSecondary)
+
+            HStack(alignment: .top, spacing: 12) {
+                VStack(spacing: 8) {
+                    Text("TERMS")
+                        .font(.caption2.weight(.bold))
+                        .foregroundStyle(ManifyTheme.gold)
+                        .tracking(1)
+
+                    ForEach(Array(pairs.enumerated()), id: \.offset) { index, pair in
+                        Button {
+                            guard !hasAnswered else { return }
+                            selectedLeftIndex = index
+                        } label: {
+                            Text(pair.left)
+                                .font(.caption)
+                                .foregroundStyle(ManifyTheme.textPrimary)
+                                .padding(10)
+                                .frame(maxWidth: .infinity)
+                                .background(
+                                    selectedLeftIndex == index
+                                        ? ManifyTheme.gold.opacity(0.2)
+                                        : (matchedPairs[index] != nil ? ManifyTheme.success.opacity(0.1) : ManifyTheme.panel)
+                                )
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 8)
+                                        .stroke(
+                                            selectedLeftIndex == index
+                                                ? ManifyTheme.gold
+                                                : (matchedPairs[index] != nil ? ManifyTheme.success.opacity(0.3) : Color.white.opacity(0.06)),
+                                            lineWidth: 1
+                                        )
+                                )
+                                .clipShape(.rect(cornerRadius: 8))
+                        }
+                        .disabled(hasAnswered || matchedPairs[index] != nil)
+                    }
+                }
+
+                VStack(spacing: 8) {
+                    Text("MATCHES")
+                        .font(.caption2.weight(.bold))
+                        .foregroundStyle(ManifyTheme.gold)
+                        .tracking(1)
+
+                    ForEach(shuffledRightIndices, id: \.self) { rightIndex in
+                        let isMatched = matchedPairs.values.contains(rightIndex)
+                        Button {
+                            guard !hasAnswered, let leftIdx = selectedLeftIndex else { return }
+                            matchedPairs[leftIdx] = rightIndex
+                            selectedLeftIndex = nil
+
+                            if matchedPairs.count == pairs.count {
+                                hasAnswered = true
+                                let allCorrect = matchedPairs.allSatisfy { $0.key == $0.value }
+                                if allCorrect { correctCount += 1 }
+                            }
+                        } label: {
+                            Text(pairs[rightIndex].right)
+                                .font(.caption)
+                                .foregroundStyle(ManifyTheme.textPrimary)
+                                .padding(10)
+                                .frame(maxWidth: .infinity)
+                                .background(isMatched ? ManifyTheme.success.opacity(0.1) : ManifyTheme.panel)
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 8)
+                                        .stroke(isMatched ? ManifyTheme.success.opacity(0.3) : Color.white.opacity(0.06), lineWidth: 1)
+                                )
+                                .clipShape(.rect(cornerRadius: 8))
+                        }
+                        .disabled(hasAnswered || isMatched)
+                    }
+                }
+            }
+
+            if hasAnswered {
+                let allCorrect = matchedPairs.allSatisfy { $0.key == $0.value }
+                HStack(spacing: 6) {
+                    Image(systemName: allCorrect ? "checkmark.circle.fill" : "xmark.circle.fill")
+                        .foregroundStyle(allCorrect ? ManifyTheme.success : ManifyTheme.danger)
+                    Text(allCorrect ? "All matched correctly" : "Some matches were incorrect")
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(allCorrect ? ManifyTheme.success : ManifyTheme.danger)
+                }
+            }
+        }
+    }
+
     private var progressBar: some View {
         GeometryReader { geo in
             ZStack(alignment: .leading) {
@@ -143,6 +365,8 @@ struct QuizScreen: View {
         case .multipleChoice: "MCQ"
         case .scenario: "Scenario"
         case .fillBlank: "Fill Blank"
+        case .multiSelect: "Multi-Select"
+        case .matching: "Matching"
         }
         return Text(label)
             .font(.caption2.weight(.semibold))
@@ -192,14 +416,50 @@ struct QuizScreen: View {
         return Color.white.opacity(0.04)
     }
 
+    private func multiSelectBorderColor(index: Int, question: Question) -> Color {
+        guard hasAnswered else {
+            return selectedAnswers.contains(index) ? ManifyTheme.gold : Color.white.opacity(0.2)
+        }
+        if question.correctIndices.contains(index) { return ManifyTheme.success }
+        if selectedAnswers.contains(index) { return ManifyTheme.danger }
+        return Color.white.opacity(0.08)
+    }
+
+    private func multiSelectBackground(index: Int, question: Question) -> Color {
+        guard hasAnswered else { return ManifyTheme.panel }
+        if question.correctIndices.contains(index) && selectedAnswers.contains(index) { return ManifyTheme.success.opacity(0.1) }
+        if selectedAnswers.contains(index) && !question.correctIndices.contains(index) { return ManifyTheme.danger.opacity(0.1) }
+        if question.correctIndices.contains(index) { return ManifyTheme.success.opacity(0.05) }
+        return ManifyTheme.panel
+    }
+
+    private func isFillBlankCorrect(_ question: Question) -> Bool {
+        let input = fillBlankText.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+        return question.acceptedAnswers.contains { accepted in
+            let clean = accepted.lowercased().trimmingCharacters(in: .whitespacesAndNewlines)
+            return input == clean || input.contains(clean) || clean.contains(input)
+        }
+    }
+
     private func explanationCard(_ question: Question) -> some View {
-        VStack(alignment: .leading, spacing: 8) {
+        let isCorrect: Bool = switch question.type {
+        case .multipleChoice, .scenario:
+            selectedAnswer == question.correctIndex
+        case .multiSelect:
+            selectedAnswers == Set(question.correctIndices)
+        case .fillBlank:
+            isFillBlankCorrect(question)
+        case .matching:
+            matchedPairs.allSatisfy { $0.key == $0.value }
+        }
+
+        return VStack(alignment: .leading, spacing: 8) {
             HStack(spacing: 6) {
-                Image(systemName: selectedAnswer == question.correctIndex ? "checkmark.circle.fill" : "info.circle.fill")
-                    .foregroundStyle(selectedAnswer == question.correctIndex ? ManifyTheme.success : ManifyTheme.warning)
-                Text(selectedAnswer == question.correctIndex ? "Correct" : "Incorrect")
+                Image(systemName: isCorrect ? "checkmark.circle.fill" : "info.circle.fill")
+                    .foregroundStyle(isCorrect ? ManifyTheme.success : ManifyTheme.warning)
+                Text(isCorrect ? "Correct" : "Incorrect")
                     .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(selectedAnswer == question.correctIndex ? ManifyTheme.success : ManifyTheme.warning)
+                    .foregroundStyle(isCorrect ? ManifyTheme.success : ManifyTheme.warning)
             }
 
             Text(question.explanation)
@@ -216,6 +476,10 @@ struct QuizScreen: View {
         if currentIndex < questions.count - 1 {
             currentIndex += 1
             selectedAnswer = nil
+            selectedAnswers = []
+            fillBlankText = ""
+            matchedPairs = [:]
+            selectedLeftIndex = nil
             hasAnswered = false
         } else {
             progressStore.submitQuizScore(
@@ -224,6 +488,7 @@ struct QuizScreen: View {
                 totalQuestions: questions.count
             )
             isComplete = true
+            showExercisePrompt = true
         }
     }
 
@@ -318,6 +583,10 @@ struct QuizScreen: View {
     private func resetQuiz() {
         currentIndex = 0
         selectedAnswer = nil
+        selectedAnswers = []
+        fillBlankText = ""
+        matchedPairs = [:]
+        selectedLeftIndex = nil
         hasAnswered = false
         correctCount = 0
         isComplete = false

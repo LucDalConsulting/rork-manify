@@ -11,7 +11,6 @@ struct HomeScreen: View {
                     header
                     streakBar
                     continueCard
-                    quickActions
                     categorySection
                 }
                 .padding(.horizontal, 16)
@@ -35,7 +34,7 @@ struct HomeScreen: View {
                     .foregroundStyle(ManifyTheme.goldGradient)
                     .tracking(3)
 
-                Text("Daily competence training")
+                Text("Become a Real Man")
                     .font(.caption)
                     .foregroundStyle(ManifyTheme.textSecondary)
             }
@@ -51,8 +50,7 @@ struct HomeScreen: View {
         HStack(spacing: 20) {
             statItem(value: "\(progressStore.currentStreak)", label: "Streak", icon: "flame.fill", color: ManifyTheme.warning)
             statItem(value: "\(progressStore.totalXP)", label: "XP", icon: "star.fill", color: ManifyTheme.gold)
-            statItem(value: "\(progressStore.disciplineIndex())", label: "Index", icon: "chart.bar.fill", color: ManifyTheme.success)
-            statItem(value: "\(progressStore.flashcardsDueCount)", label: "Due", icon: "rectangle.stack.fill", color: .blue)
+            statItem(value: "\(progressStore.restDaysAvailable)", label: "Rest Days", icon: "bed.double.fill", color: .blue)
         }
         .padding(14)
         .frame(maxWidth: .infinity)
@@ -89,37 +87,6 @@ struct HomeScreen: View {
             }
             .buttonStyle(.plain)
         }
-    }
-
-    private var quickActions: some View {
-        HStack(spacing: 12) {
-            quickActionButton(title: "Review", subtitle: "Weak spots", icon: "arrow.counterclockwise", color: ManifyTheme.warning)
-            quickActionButton(title: "Flashcards", subtitle: "\(progressStore.flashcardsDueCount) due", icon: "rectangle.stack.fill", color: .blue)
-        }
-    }
-
-    private func quickActionButton(title: String, subtitle: String, icon: String, color: Color) -> some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Image(systemName: icon)
-                .font(.title3)
-                .foregroundStyle(color)
-
-            Text(title)
-                .font(.subheadline.weight(.semibold))
-                .foregroundStyle(ManifyTheme.textPrimary)
-
-            Text(subtitle)
-                .font(.caption)
-                .foregroundStyle(ManifyTheme.textSecondary)
-        }
-        .padding(14)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .background(ManifyTheme.panel)
-        .overlay(
-            RoundedRectangle(cornerRadius: 12)
-                .stroke(Color.white.opacity(0.04), lineWidth: 1)
-        )
-        .clipShape(.rect(cornerRadius: 12))
     }
 
     private var categorySection: some View {

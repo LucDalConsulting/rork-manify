@@ -1,35 +1,47 @@
 import Foundation
 
 nonisolated enum Rank: String, Codable, CaseIterable, Sendable {
-    case initiate = "Initiate"
-    case builder = "Builder"
-    case protector = "Protector"
-    case provider = "Provider"
-    case operatorRank = "Operator"
-    case strategist = "Strategist"
+    case beta = "Beta"
+    case alpha = "Alpha"
+    case sigma = "Sigma"
+    case chad = "Chad"
+    case omega = "Omega"
+    case titan = "Titan"
     case sovereign = "Sovereign"
 
     var xpThreshold: Int {
         switch self {
-        case .initiate: 0
-        case .builder: 200
-        case .protector: 500
-        case .provider: 1000
-        case .operatorRank: 2000
-        case .strategist: 4000
+        case .beta: 0
+        case .alpha: 200
+        case .sigma: 500
+        case .chad: 1000
+        case .omega: 2000
+        case .titan: 4000
         case .sovereign: 8000
         }
     }
 
     var icon: String {
         switch self {
-        case .initiate: "shield"
-        case .builder: "hammer.fill"
-        case .protector: "shield.checkered"
-        case .provider: "house.lodge.fill"
-        case .operatorRank: "wrench.and.screwdriver.fill"
-        case .strategist: "brain.head.profile.fill"
+        case .beta: "shield"
+        case .alpha: "bolt.shield.fill"
+        case .sigma: "person.fill"
+        case .chad: "figure.strengthtraining.traditional"
+        case .omega: "brain.head.profile.fill"
+        case .titan: "mountain.2.fill"
         case .sovereign: "crown.fill"
+        }
+    }
+
+    var description: String {
+        switch self {
+        case .beta: "Learning the fundamentals."
+        case .alpha: "Understanding systems."
+        case .sigma: "Independent competence."
+        case .chad: "Advanced mastery."
+        case .omega: "Strategic understanding."
+        case .titan: "Elite domain knowledge."
+        case .sovereign: "Complete mastery across domains."
         }
     }
 
@@ -42,7 +54,7 @@ nonisolated enum Rank: String, Codable, CaseIterable, Sendable {
                 return rank
             }
         }
-        return .initiate
+        return .beta
     }
 
     var nextRank: Rank? {

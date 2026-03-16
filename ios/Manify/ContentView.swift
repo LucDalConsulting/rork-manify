@@ -9,16 +9,8 @@ struct ContentView: View {
                 HomeScreen()
             }
 
-            Tab("Constitution", systemImage: "building.columns.fill", value: .constitution) {
-                CategoryNavigationView(category: .constitution)
-            }
-
-            Tab("Firearms", systemImage: "scope", value: .firearms) {
-                CategoryNavigationView(category: .firearms)
-            }
-
-            Tab("Home Sys", systemImage: "wrench.and.screwdriver.fill", value: .homeSystems) {
-                CategoryNavigationView(category: .home)
+            Tab("Training", systemImage: "book.fill", value: .training) {
+                TrainingTab()
             }
 
             Tab("Progress", systemImage: "chart.bar.fill", value: .progress) {
@@ -30,18 +22,5 @@ struct ContentView: View {
 }
 
 enum AppTab: Hashable {
-    case home, constitution, firearms, homeSystems, progress
-}
-
-struct CategoryNavigationView: View {
-    let category: CategoryID
-
-    var body: some View {
-        NavigationStack {
-            CategoryScreen(category: category)
-                .navigationDestination(for: Lesson.self) { lesson in
-                    LessonScreen(lesson: lesson)
-                }
-        }
-    }
+    case home, training, progress
 }

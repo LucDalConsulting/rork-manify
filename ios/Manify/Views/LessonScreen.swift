@@ -1,4 +1,5 @@
 import SwiftUI
+import AVFoundation
 
 struct LessonScreen: View {
     let lesson: Lesson
@@ -8,6 +9,7 @@ struct LessonScreen: View {
     @State private var hasMarkedRead: Bool = false
     @State private var expandedSections: Set<String> = []
     @State private var readSections: Set<String> = []
+    @State private var speechService = SpeechService()
 
     private var sectionProgress: Double {
         guard !lesson.contentBlocks.isEmpty else { return 0 }
@@ -18,12 +20,12 @@ struct LessonScreen: View {
         ScrollView {
             VStack(spacing: 16) {
                 lessonHeader
+                audioButton
                 progressBar
                 sectionControls
 
                 ForEach(Array(lesson.contentBlocks.enumerated()), id: \.element.id) { index, block in
                     let blockId = block.id
-                    let isExpanded = expandedSections.contains(blockId)
                     ContentBlockCard(
                         block: block,
                         index: index,
@@ -76,6 +78,9 @@ struct LessonScreen: View {
                 expandedSections.insert(first.id)
                 readSections.insert(first.id)
             }
+        }
+        .onDisappear {
+            speechService.stop()
         }
     }
 
@@ -139,6 +144,64 @@ struct LessonScreen: View {
                 .stroke(lesson.categoryId.accentColor.opacity(0.2), lineWidth: 1)
         )
         .clipShape(.rect(cornerRadius: 14))
+    }
+
+    private var audioButton: some View {
+        Button {
+            if speechService.isSpeaking {
+                if speechService.isPaused {
+                    speechService.resume()
+                } else {
+                    speechService.pause()
+                }
+            } else {
+                let text = buildLessonText()
+                speechService.speak(text)
+            }
+        } label: {
+            HStack(spacing: 10) {
+                Image(systemName: speechService.isSpeaking ? (speechService.isPaused ? "play.fill" : "pause.fill") : "speaker.wave.2.fill")
+                    .font(.subheadline)
+                    .foregroundStyle(ManifyTheme.gold)
+
+                Text(speechService.isSpeaking ? (speechService.isPaused ? "Resume Lesson" : "Pause Lesson") : "Listen to Lesson")
+                    .font(.subheadline.weight(.medium))
+                    .foregroundStyle(ManifyTheme.textPrimary)
+
+                Spacer()
+
+                if speechService.isSpeaking && !speechService.isPaused {
+                    HStack(spacing: 3) {
+                        ForEach(0..<3, id: \.self) { i in
+                            Capsule()
+                                .fill(ManifyTheme.gold)
+                                .frame(width: 3, height: CGFloat.random(in: 6...14))
+                        }
+                    }
+                }
+
+                if speechService.isSpeaking {
+                    Button {
+                        speechService.stop()
+                    } label: {
+                        Image(systemName: "stop.fill")
+                            .font(.caption)
+                            .foregroundStyle(ManifyTheme.textSecondary)
+                            .padding(6)
+                            .background(Color.white.opacity(0.08))
+                            .clipShape(Circle())
+                    }
+                }
+            }
+            .padding(12)
+            .background(ManifyTheme.panel)
+            .overlay(
+                RoundedRectangle(cornerRadius: 12)
+                    .stroke(ManifyTheme.gold.opacity(0.2), lineWidth: 1)
+            )
+            .clipShape(.rect(cornerRadius: 12))
+        }
+        .buttonStyle(.plain)
     }
 
     private var progressBar: some View {
@@ -283,5 +346,57 @@ struct LessonScreen: View {
                 }
             }
         }
+    }
+
+    private func buildLessonText() -> String {
+        var text = lesson.title + ". "
+        if let subtitle = lesson.subtitle {
+            text += subtitle + ". "
+        }
+        for block in lesson.contentBlocks {
+            text += block.type.displayTitle + ". "
+            for bullet in block.bullets {
+                text += bullet + ". "
+            }
+            if let body = block.body {
+                text += body + ". "
+            }
+        }
+        return text
+    }
+}
+
+@Observable
+@MainActor
+final class SpeechService {
+    private let synthesizer = AVSpeechSynthesizer()
+    private(set) var isSpeaking: Bool = false
+    private(set) var isPaused: Bool = false
+
+    func speak(_ text: String) {
+        stop()
+        let utterance = AVSpeechUtterance(string: text)
+        utterance.voice = AVSpeechSynthesisVoice(language: "en-US")
+        utterance.rate = AVSpeechUtteranceDefaultSpeechRate
+        utterance.pitchMultiplier = 0.95
+        synthesizer.speak(utterance)
+        isSpeaking = true
+        isPaused = false
+    }
+
+    func pause() {
+        synthesizer.pauseSpeaking(at: .word)
+        isPaused = true
+    }
+
+    func resume() {
+        synthesizer.continueSpeaking()
+        isPaused = false
+    }
+
+    func stop() {
+        synthesizer.stopSpeaking(at: .immediate)
+        isSpeaking = false
+        isPaused = false
     }
 }

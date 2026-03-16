@@ -4,6 +4,7 @@ struct CategoryScreen: View {
     let category: CategoryID
     @Environment(LessonStore.self) private var lessonStore
     @Environment(ProgressStore.self) private var progressStore
+    @State private var showSummaryFlashcards: Bool = false
 
     private var lessons: [Lesson] {
         lessonStore.lessons(for: category)
@@ -17,6 +18,7 @@ struct CategoryScreen: View {
         ScrollView {
             VStack(spacing: 24) {
                 categoryHeader
+                summaryFlashcardsButton
                 tierSections
             }
             .padding(.horizontal, 16)
@@ -26,6 +28,52 @@ struct CategoryScreen: View {
         .navigationTitle(category.displayName)
         .navigationBarTitleDisplayMode(.inline)
         .toolbarColorScheme(.dark, for: .navigationBar)
+        .sheet(isPresented: $showSummaryFlashcards) {
+            SummaryFlashcardsScreen(
+                category: category,
+                flashcards: progressStore.completedFlashcards(for: category, lessons: lessons)
+            )
+        }
+    }
+
+    @ViewBuilder
+    private var summaryFlashcardsButton: some View {
+        let cards = progressStore.completedFlashcards(for: category, lessons: lessons)
+        if !cards.isEmpty {
+            Button {
+                showSummaryFlashcards = true
+            } label: {
+                HStack(spacing: 12) {
+                    Image(systemName: "rectangle.stack.fill")
+                        .font(.title3)
+                        .foregroundStyle(ManifyTheme.gold)
+
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Summary Flashcards")
+                            .font(.subheadline.weight(.semibold))
+                            .foregroundStyle(ManifyTheme.textPrimary)
+
+                        Text("\(cards.count) cards from completed lessons")
+                            .font(.caption)
+                            .foregroundStyle(ManifyTheme.textSecondary)
+                    }
+
+                    Spacer()
+
+                    Image(systemName: "chevron.right")
+                        .font(.caption)
+                        .foregroundStyle(ManifyTheme.textSecondary)
+                }
+                .padding(14)
+                .background(ManifyTheme.panel)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 14)
+                        .stroke(ManifyTheme.gold.opacity(0.25), lineWidth: 1)
+                )
+                .clipShape(.rect(cornerRadius: 14))
+            }
+            .buttonStyle(.plain)
+        }
     }
 
     private var categoryHeader: some View {

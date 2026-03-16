@@ -12,6 +12,7 @@ final class ProgressStore {
     var currentRank: Rank { Rank.rank(for: userData.totalXP) }
     var currentStreak: Int { userData.streak.currentStreak }
     var longestStreak: Int { userData.streak.longestStreak }
+    var restDaysAvailable: Int { userData.streak.restDaysAvailable }
 
     var completedLessonCount: Int {
         userData.lessonProgress.values.filter(\.isCompleted).count
@@ -164,6 +165,32 @@ final class ProgressStore {
         return Int(streakScore + quizScore + weeklyScore + flashScore)
     }
 
+    func useRestDay() {
+        guard userData.streak.restDaysAvailable > 0 else { return }
+        userData.streak.restDaysAvailable -= 1
+        userData.streak.lastActiveDate = Calendar.current.startOfDay(for: Date())
+        save()
+    }
+
+    func recordExerciseCompleted() {
+        userData.streak.exercisesCompletedSinceLastRestDay += 1
+        if userData.streak.exercisesCompletedSinceLastRestDay >= 3 {
+            userData.streak.restDaysAvailable += 1
+            userData.streak.exercisesCompletedSinceLastRestDay = 0
+        }
+        save()
+    }
+
+    func completedFlashcards(for category: CategoryID, lessons: [Lesson]) -> [Flashcard] {
+        var cards: [Flashcard] = []
+        for lesson in lessons {
+            if isLessonCompleted(lesson.id) || hasReadLesson(lesson.id) {
+                cards.append(contentsOf: lesson.flashcards)
+            }
+        }
+        return cards
+    }
+
     private func updateStreak() {
         let calendar = Calendar.current
         let today = calendar.startOfDay(for: Date())
@@ -175,11 +202,19 @@ final class ProgressStore {
 
             if daysDiff == 1 {
                 userData.streak.currentStreak += 1
+                userData.streak.consecutiveDaysWithoutRest += 1
             } else if daysDiff > 1 {
                 userData.streak.currentStreak = 1
+                userData.streak.consecutiveDaysWithoutRest = 1
             }
         } else {
             userData.streak.currentStreak = 1
+            userData.streak.consecutiveDaysWithoutRest = 1
+        }
+
+        if userData.streak.consecutiveDaysWithoutRest >= 6 {
+            userData.streak.restDaysAvailable += 1
+            userData.streak.consecutiveDaysWithoutRest = 0
         }
 
         userData.streak.longestStreak = max(userData.streak.longestStreak, userData.streak.currentStreak)

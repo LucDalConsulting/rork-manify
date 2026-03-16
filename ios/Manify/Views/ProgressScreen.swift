@@ -9,8 +9,8 @@ struct ProgressScreen: View {
             ScrollView {
                 VStack(spacing: 24) {
                     rankCard
-                    disciplineCard
                     streakCard
+                    restDayCard
                     masteryGrid
                     statsCard
                 }
@@ -25,53 +25,13 @@ struct ProgressScreen: View {
     }
 
     private var rankCard: some View {
-        RankBadge(rank: progressStore.currentRank, totalXP: progressStore.totalXP)
-    }
-
-    private var disciplineCard: some View {
         VStack(spacing: 16) {
-            HStack {
-                Text("DISCIPLINE INDEX")
-                    .font(.caption.weight(.bold))
-                    .foregroundStyle(ManifyTheme.gold)
-                    .tracking(1.2)
-                Spacer()
-            }
+            RankBadge(rank: progressStore.currentRank, totalXP: progressStore.totalXP)
 
-            HStack(spacing: 20) {
-                MasteryRing(
-                    progress: Double(progressStore.disciplineIndex()) / 100.0,
-                    color: ManifyTheme.gold,
-                    size: 80,
-                    lineWidth: 6
-                )
-
-                VStack(alignment: .leading, spacing: 8) {
-                    indexRow(label: "Streak Strength", value: 40, weight: "40%")
-                    indexRow(label: "Quiz Average", value: 30, weight: "30%")
-                    indexRow(label: "Weekly Consistency", value: 20, weight: "20%")
-                    indexRow(label: "Flashcard Review", value: 10, weight: "10%")
-                }
-            }
-        }
-        .padding(16)
-        .background(ManifyTheme.panel)
-        .overlay(
-            RoundedRectangle(cornerRadius: 16)
-                .stroke(Color.white.opacity(0.06), lineWidth: 1)
-        )
-        .clipShape(.rect(cornerRadius: 16))
-    }
-
-    private func indexRow(label: String, value: Int, weight: String) -> some View {
-        HStack {
-            Text(label)
-                .font(.caption)
+            Text(progressStore.currentRank.description)
+                .font(.subheadline)
                 .foregroundStyle(ManifyTheme.textSecondary)
-            Spacer()
-            Text(weight)
-                .font(.caption.weight(.semibold))
-                .foregroundStyle(ManifyTheme.textPrimary)
+                .multilineTextAlignment(.center)
         }
     }
 
@@ -95,6 +55,75 @@ struct ProgressScreen: View {
         }
         .padding(.vertical, 16)
         .background(ManifyTheme.panel)
+        .clipShape(.rect(cornerRadius: 16))
+    }
+
+    private var restDayCard: some View {
+        VStack(spacing: 14) {
+            HStack {
+                Text("REST DAYS")
+                    .font(.caption.weight(.bold))
+                    .foregroundStyle(ManifyTheme.gold)
+                    .tracking(1.2)
+                Spacer()
+            }
+
+            HStack(spacing: 20) {
+                VStack(spacing: 6) {
+                    Text("\(progressStore.restDaysAvailable)")
+                        .font(.system(size: 36, weight: .bold))
+                        .foregroundStyle(ManifyTheme.textPrimary)
+                    Text("Available")
+                        .font(.caption)
+                        .foregroundStyle(ManifyTheme.textSecondary)
+                }
+
+                Spacer()
+
+                VStack(alignment: .leading, spacing: 8) {
+                    HStack(spacing: 6) {
+                        Image(systemName: "flame.fill")
+                            .font(.caption)
+                            .foregroundStyle(ManifyTheme.warning)
+                        Text("Earn 1 rest day every 6 streak days")
+                            .font(.caption)
+                            .foregroundStyle(ManifyTheme.textSecondary)
+                    }
+
+                    HStack(spacing: 6) {
+                        Image(systemName: "figure.strengthtraining.traditional")
+                            .font(.caption)
+                            .foregroundStyle(ManifyTheme.success)
+                        Text("Complete 3 exercises for +1 rest day")
+                            .font(.caption)
+                            .foregroundStyle(ManifyTheme.textSecondary)
+                    }
+                }
+            }
+
+            if progressStore.restDaysAvailable > 0 {
+                Button {
+                    progressStore.useRestDay()
+                } label: {
+                    HStack {
+                        Image(systemName: "bed.double.fill")
+                        Text("Take Rest Day")
+                    }
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(ManifyTheme.textPrimary)
+                    .frame(maxWidth: .infinity)
+                    .padding(12)
+                    .background(Color.white.opacity(0.06))
+                    .clipShape(.rect(cornerRadius: 10))
+                }
+            }
+        }
+        .padding(16)
+        .background(ManifyTheme.panel)
+        .overlay(
+            RoundedRectangle(cornerRadius: 16)
+                .stroke(Color.white.opacity(0.06), lineWidth: 1)
+        )
         .clipShape(.rect(cornerRadius: 16))
     }
 
@@ -161,9 +190,9 @@ struct ProgressScreen: View {
                 Divider().background(Color.white.opacity(0.06))
                 statRow(label: "Total XP", value: "\(progressStore.totalXP)")
                 Divider().background(Color.white.opacity(0.06))
-                statRow(label: "Flashcards Due", value: "\(progressStore.flashcardsDueCount)")
-                Divider().background(Color.white.opacity(0.06))
                 statRow(label: "Current Rank", value: progressStore.currentRank.displayName)
+                Divider().background(Color.white.opacity(0.06))
+                statRow(label: "Discipline Index", value: "\(progressStore.disciplineIndex())")
             }
             .background(ManifyTheme.panel)
             .clipShape(.rect(cornerRadius: 14))

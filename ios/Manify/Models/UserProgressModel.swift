@@ -29,6 +29,9 @@ nonisolated struct StreakData: Codable, Sendable {
     var lastActiveDate: Date?
     var weeklyActiveDays: [Int] = []
     var weekStartDate: Date?
+    var restDaysAvailable: Int = 0
+    var exercisesCompletedSinceLastRestDay: Int = 0
+    var consecutiveDaysWithoutRest: Int = 0
 }
 
 nonisolated struct UserData: Codable, Sendable {
