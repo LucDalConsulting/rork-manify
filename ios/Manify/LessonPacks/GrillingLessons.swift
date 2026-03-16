@@ -51,10 +51,15 @@ enum GrillingLessons {
             ])
         ],
         quiz: Quiz(id: "grill101_q", passPercent: 80, questions: [
-            Question(id: "grill101_q1", prompt: "The Maillard reaction creates:", choices: ["Moisture", "Smoke", "A browned, flavorful crust", "Internal temperature rise"], correctIndex: 2, explanation: "The Maillard reaction is the chemical process that browns food surfaces and creates complex flavors."),
-            Question(id: "grill101_q2", prompt: "Carryover cooking means:", choices: ["Cooking at a lower temperature", "Using leftover coals", "Cooking multiple items simultaneously", "Food continues to cook after removal from heat"], correctIndex: 3, explanation: "Carryover cooking is the continued temperature rise (5-15°F) after food is removed from the heat source."),
-            Question(id: "grill101_q3", type: .scenario, prompt: "You're grilling a thick steak and it's browning too fast on the outside but raw inside. You should:", choices: ["Turn up the heat more", "Cut it open to check", "Microwave it to finish", "Move it to indirect heat to finish cooking"], correctIndex: 3, explanation: "Moving to indirect heat allows the interior to cook through without burning the exterior — this is the core principle of two-zone cooking."),
-            Question(id: "grill101_q4", type: .fillBlank, prompt: "The most important tool for determining doneness is a _____.", choices: ["Timer", "Fork", "Knife", "Thermometer"], correctIndex: 3, explanation: "A thermometer is the only reliable way to confirm internal temperature. Time is a rough guide; temperature is the truth.")
+            Question(id: "grill101_q1", prompt: "Match each grilling concept to its definition.", matchingPairs: [
+                MatchingPair(left: "Direct Heat", right: "Food directly over the heat source"),
+                MatchingPair(left: "Indirect Heat", right: "Food away from the heat source"),
+                MatchingPair(left: "Maillard Reaction", right: "Chemical browning that creates flavorful crust"),
+                MatchingPair(left: "Carryover Cooking", right: "Temp rises 5-15°F after removal from heat")
+            ], explanation: "These four concepts are the foundation of competent grilling."),
+            Question(id: "grill101_q2", type: .scenario, prompt: "You're grilling a thick steak and the outside is browning perfectly but the center is still raw. Your best move is:", choices: ["Turn up the heat to cook faster", "Cut it open to check progress", "Move it to indirect heat to finish cooking the interior", "Remove it and microwave to finish"], correctIndex: 2, explanation: "Moving to indirect heat lets the interior cook through without burning the exterior — the core principle of two-zone cooking."),
+            Question(id: "grill101_q3", prompt: "The most important tool for determining doneness is a _____.", acceptedAnswers: ["thermometer", "meat thermometer", "probe thermometer", "instant read thermometer"], explanation: "A thermometer is the only reliable way to confirm internal temperature. Time is a rough guide; temperature is the truth."),
+            Question(id: "grill101_q4", type: .multiSelect, prompt: "Which are common grilling mistakes?", choices: ["Using a thermometer", "Constantly opening the lid", "Not preheating the grill", "Resting meat before cutting", "Not resting meat before cutting", "Cooking everything over high direct heat"], correctIndices: [1, 2, 4, 5], explanation: "Constantly opening the lid, not preheating, not resting meat, and using only high heat are all common mistakes. Using a thermometer and resting are correct practices.")
         ]),
         flashcards: [
             Flashcard(id: "grill101_f1", front: "Direct Heat", back: "Food placed directly over the heat source — for fast cooking and searing"),
@@ -100,9 +105,14 @@ enum GrillingLessons {
             ])
         ],
         quiz: Quiz(id: "grill102_q", passPercent: 80, questions: [
-            Question(id: "grill102_q1", prompt: "Grate marks on a steak are created by:", choices: ["Radiation", "Convection", "Smoke", "Conduction"], correctIndex: 3, explanation: "Conduction is heat transfer through direct contact — the hot grate touches the meat surface."),
-            Question(id: "grill102_q2", prompt: "Clean smoke looks:", choices: ["Thick and white", "Dark gray", "Thin and blue-white", "Invisible"], correctIndex: 2, explanation: "Clean, flavor-adding smoke is thin and blue-white. Thick white smoke adds bitterness."),
-            Question(id: "grill102_q3", prompt: "Smoke flavor is absorbed most during:", choices: ["The last hour", "Evenly throughout", "The first 30-60 minutes", "Only during resting"], correctIndex: 2, explanation: "Most smoke absorption happens in the first 30-60 minutes when the meat surface is still cool and moist.")
+            Question(id: "grill102_q1", prompt: "Match each heat transfer method to how it works on the grill.", matchingPairs: [
+                MatchingPair(left: "Conduction", right: "Direct contact — creates grate marks"),
+                MatchingPair(left: "Convection", right: "Hot air circulating with lid closed"),
+                MatchingPair(left: "Radiation", right: "Infrared energy from hot coals")
+            ], explanation: "Three heat transfer methods work together during grilling, each contributing differently to the cooking process."),
+            Question(id: "grill102_q2", type: .scenario, prompt: "You see thick white smoke billowing from your grill. This indicates:", choices: ["Perfect smoking conditions", "The food is almost done", "Dirty smoke that will add bitterness to the food", "The grill is at optimal temperature"], correctIndex: 2, explanation: "Thick white smoke adds bitterness. Clean smoke is thin and blue-white — that's what adds desirable flavor."),
+            Question(id: "grill102_q3", prompt: "Smoke flavor is absorbed most during the first _____ minutes of cooking.", acceptedAnswers: ["30-60", "30 to 60", "30", "60", "thirty to sixty"], explanation: "Most smoke absorption happens in the first 30-60 minutes when the meat surface is still cool and moist. Front-load your smoke."),
+            Question(id: "grill102_q4", prompt: "Which wood type is the most intense for smoking?", choices: ["Applewood", "Cherry", "Mesquite", "Pecan"], correctIndex: 2, explanation: "Mesquite is the most intense smoking wood. Applewood and cherry are mild. Match wood intensity to the meat.")
         ]),
         flashcards: [
             Flashcard(id: "grill102_f1", front: "Conduction", back: "Heat transfer through direct contact — responsible for grate marks and pan searing"),
@@ -143,9 +153,14 @@ enum GrillingLessons {
             ])
         ],
         quiz: Quiz(id: "grill103_q", passPercent: 80, questions: [
-            Question(id: "grill103_q1", prompt: "Which grill type offers the easiest temperature control?", choices: ["Charcoal", "Offset smoker", "Gas", "Kamado"], correctIndex: 2, explanation: "Gas grills offer the easiest temperature control — turn the knob and adjust."),
-            Question(id: "grill103_q2", prompt: "Pellet grills excel at:", choices: ["High-heat searing", "Fast cooking", "Automated smoking", "Portability"], correctIndex: 2, explanation: "Pellet grills automate temperature control and produce consistent smoke, making them ideal for smoking."),
-            Question(id: "grill103_q3", prompt: "Charcoal grills compared to gas offer:", choices: ["Easier cleanup", "Higher heat potential and more smoke flavor", "Faster ignition", "Lower cost per cook"], correctIndex: 1, explanation: "Charcoal can reach higher temperatures and produces more smoke flavor, but requires more skill and patience.")
+            Question(id: "grill103_q1", prompt: "Match each grill type to its primary strength.", matchingPairs: [
+                MatchingPair(left: "Gas", right: "Easiest temperature control, fast startup"),
+                MatchingPair(left: "Charcoal", right: "Higher heat potential, more smoke flavor"),
+                MatchingPair(left: "Pellet", right: "Automated smoking, set-and-forget"),
+                MatchingPair(left: "Kamado", right: "Excellent heat retention, versatile")
+            ], explanation: "There is no universally best grill — only the best grill for what you're trying to do."),
+            Question(id: "grill103_q2", type: .scenario, prompt: "You want to smoke a pork shoulder for 8 hours with minimal babysitting. The best grill choice is:", choices: ["Gas grill", "Charcoal kettle", "Pellet grill", "Flat top griddle"], correctIndex: 2, explanation: "Pellet grills automate temperature control via an auger and thermostat, making them ideal for long, unattended smokes."),
+            Question(id: "grill103_q3", type: .multiSelect, prompt: "Which grill types can produce significant smoke flavor?", choices: ["Charcoal", "Gas (without modifications)", "Pellet", "Offset smoker", "Electric (without modifications)", "Kamado"], correctIndices: [0, 2, 3, 5], explanation: "Charcoal, pellet, offset, and kamado grills all produce smoke from burning wood or charcoal. Gas and electric need added wood chips for smoke flavor.")
         ]),
         flashcards: [
             Flashcard(id: "grill103_f1", front: "Kamado Grill", back: "A ceramic, egg-shaped grill with excellent heat retention — versatile for grilling, smoking, and baking"),
@@ -200,10 +215,14 @@ enum GrillingLessons {
             ])
         ],
         quiz: Quiz(id: "grill201_q", passPercent: 80, questions: [
-            Question(id: "grill201_q1", prompt: "Before grilling, a steak should be:", choices: ["Frozen solid for firmness", "Cold from the fridge for food safety", "At room temperature and patted dry", "Marinated for 24 hours"], correctIndex: 2, explanation: "A room-temperature, dry steak sears better — moisture steams instead of browning, and cold centers cook unevenly."),
-            Question(id: "grill201_q2", prompt: "Medium-rare internal temperature is:", choices: ["120°F", "130°F", "145°F", "160°F"], correctIndex: 1, explanation: "Medium-rare target is 130°F internal temperature. Pull 5°F early to account for carryover cooking."),
-            Question(id: "grill201_q3", prompt: "The most forgiving steak cut for beginners is:", choices: ["Filet Mignon", "Flank", "Ribeye", "Skirt"], correctIndex: 2, explanation: "Ribeye's generous marbling keeps it juicy and forgiving even if slightly overcooked."),
-            Question(id: "grill201_q4", type: .fillBlank, prompt: "After grilling, steak should rest for _____ minutes before cutting.", choices: ["1-2", "5-10", "20-30", "45-60"], correctIndex: 1, explanation: "Resting 5-10 minutes allows juices to redistribute throughout the meat instead of running out when cut.")
+            Question(id: "grill201_q1", prompt: "Match each doneness level to its target internal temperature.", matchingPairs: [
+                MatchingPair(left: "Rare", right: "120°F"),
+                MatchingPair(left: "Medium-Rare", right: "130°F"),
+                MatchingPair(left: "Medium", right: "140°F")
+            ], explanation: "Knowing target temperatures eliminates guesswork. Pull 5°F early to account for carryover."),
+            Question(id: "grill201_q2", type: .scenario, prompt: "You cut into your steak immediately after removing it from the grill and juice runs everywhere. What went wrong?", choices: ["The steak was overcooked", "You didn't rest it — juices hadn't redistributed yet", "The cut was too lean", "The grill wasn't hot enough"], correctIndex: 1, explanation: "Resting 5-10 minutes allows juices to redistribute throughout the meat instead of running out when cut."),
+            Question(id: "grill201_q3", type: .multiSelect, prompt: "Which are correct steak preparation steps before grilling?", choices: ["Bring to room temperature (30 min out)", "Pat the surface completely dry", "Marinate in sugary sauce for flavor", "Season generously with salt and pepper", "Keep it cold until the last second"], correctIndices: [0, 1, 3], explanation: "Room temp, dry surface, and salt/pepper are correct. Sugary marinades burn on high heat, and cold steaks cook unevenly."),
+            Question(id: "grill201_q4", prompt: "After grilling, steak should rest for _____ minutes before cutting.", acceptedAnswers: ["5-10", "5 to 10", "five to ten", "5", "10"], explanation: "Resting 5-10 minutes allows juices to redistribute throughout the meat instead of pooling on the cutting board.")
         ]),
         flashcards: [
             Flashcard(id: "grill201_f1", front: "Reverse Sear", back: "Cooking method: low heat first to bring internal temp up evenly, then a hard sear at the end for crust"),
@@ -251,10 +270,10 @@ enum GrillingLessons {
             ])
         ],
         quiz: Quiz(id: "grill202_q", passPercent: 80, questions: [
-            Question(id: "grill202_q1", prompt: "The ideal ground beef ratio for burgers is:", choices: ["90/10", "70/30", "80/20", "95/5"], correctIndex: 2, explanation: "80/20 (80% lean, 20% fat) provides the best balance of flavor and moisture."),
-            Question(id: "grill202_q2", prompt: "Why do you press a dimple into the center of a burger patty?", choices: ["For decoration", "To cook faster", "To prevent the center from puffing up", "To hold seasoning"], correctIndex: 2, explanation: "The dimple prevents the center from swelling into a ball shape during cooking, keeping the patty flat."),
-            Question(id: "grill202_q3", type: .scenario, prompt: "You see someone pressing their burger flat with a spatula on the grill. What's happening?", choices: ["They're making it cook faster", "They're squeezing out juice and fat — making a drier burger", "They're creating better grill marks", "Nothing wrong — this is correct technique"], correctIndex: 1, explanation: "Pressing squeezes out the fat and juice that keep the burger moist and flavorful. Don't do it."),
-            Question(id: "grill202_q4", prompt: "Seasoning should be applied:", choices: ["Mixed into the meat before forming patties", "Only on the outside, right before grilling", "After cooking", "Never — let the meat speak"], correctIndex: 1, explanation: "Season the outside only. Mixing salt into the meat changes the protein structure, creating a dense, sausage-like texture.")
+            Question(id: "grill202_q1", type: .scenario, prompt: "You see someone pressing their burger flat with a spatula on the grill, creating a sizzling sound. What's actually happening?", choices: ["They're creating better grill marks", "They're speeding up the cooking", "They're squeezing out the fat and juice that keep the burger moist", "Nothing wrong — this is correct technique"], correctIndex: 2, explanation: "Pressing squeezes out the fat and juice that keep the burger moist and flavorful. Never do this."),
+            Question(id: "grill202_q2", type: .multiSelect, prompt: "Which are common burger mistakes?", choices: ["Using 80/20 ground beef", "Pressing the patty with a spatula", "Mixing seasoning INTO the meat", "Making patties slightly larger than the bun", "Making patties too small for the bun", "No dimple in the center"], correctIndices: [1, 2, 4, 5], explanation: "Pressing, mixing seasoning in, too-small patties, and no dimple are all mistakes. 80/20 beef and oversized patties (they shrink) are correct."),
+            Question(id: "grill202_q3", prompt: "The ideal ground beef fat ratio for burgers is _____.", acceptedAnswers: ["80/20", "80 20", "eighty twenty", "80/20 lean to fat"], explanation: "80/20 (80% lean, 20% fat) provides the best balance of flavor and moisture for burgers."),
+            Question(id: "grill202_q4", prompt: "Burger seasoning should be applied:", choices: ["Mixed into the meat before forming", "Only on the outside, right before grilling", "After cooking only", "Halfway through cooking"], correctIndex: 1, explanation: "Season the outside only. Mixing salt into the meat activates proteins, creating a dense, sausage-like texture instead of a juicy burger.")
         ]),
         flashcards: [
             Flashcard(id: "grill202_f1", front: "80/20 Ground Beef", back: "The ideal fat ratio for burgers — 80% lean, 20% fat for optimal moisture and flavor"),
@@ -300,10 +319,14 @@ enum GrillingLessons {
             ])
         ],
         quiz: Quiz(id: "grill203_q", passPercent: 80, questions: [
-            Question(id: "grill203_q1", prompt: "The minimum safe internal temperature for chicken is:", choices: ["145°F", "155°F", "165°F", "180°F"], correctIndex: 2, explanation: "165°F is the USDA safe minimum for all poultry. This is non-negotiable."),
-            Question(id: "grill203_q2", prompt: "Which chicken cut is most forgiving on the grill?", choices: ["Breast", "Wing", "Thigh", "Tenderloin"], correctIndex: 2, explanation: "Thighs have more fat and connective tissue, staying moist even if slightly overcooked."),
-            Question(id: "grill203_q3", type: .scenario, prompt: "You're grilling bone-in chicken thighs and the skin is burning but the meat isn't done. You should:", choices: ["Turn up the heat to finish faster", "Move to indirect heat and close the lid", "Cut them open to speed cooking", "Remove them — the skin burning means they're done"], correctIndex: 1, explanation: "Indirect heat cooks bone-in chicken through without burning the exterior. Close the lid for convection cooking."),
-            Question(id: "grill203_q4", prompt: "BBQ sauce should be applied:", choices: ["Before grilling starts", "During the first flip", "In the last 10 minutes", "After removing from the grill only"], correctIndex: 2, explanation: "Sugar in BBQ sauce burns easily. Apply in the last 10 minutes to glaze without charring.")
+            Question(id: "grill203_q1", prompt: "The minimum safe internal temperature for all poultry is _____ °F.", acceptedAnswers: ["165", "165°F", "one sixty five"], explanation: "165°F is the USDA safe minimum for all poultry. This is non-negotiable food safety."),
+            Question(id: "grill203_q2", type: .scenario, prompt: "You're grilling bone-in chicken thighs and the skin is charring but the meat near the bone is still pink. You should:", choices: ["Crank up the heat to finish faster", "Move to indirect heat and close the lid to cook through", "Remove them — charred skin means they're done", "Cut them open and put them back on"], correctIndex: 1, explanation: "Indirect heat with the lid closed creates convection that cooks bone-in chicken through without burning the exterior."),
+            Question(id: "grill203_q3", type: .multiSelect, prompt: "Which are critical chicken grilling safety rules?", choices: ["Internal temp must reach 165°F", "Use a thermometer, never guess", "Use the same tongs for raw and cooked", "Apply BBQ sauce in the last 10 minutes only", "Bone-in pieces need indirect heat"], correctIndices: [0, 1, 3, 4], explanation: "Using the same tongs for raw and cooked chicken is cross-contamination. All other options are correct safety and technique rules."),
+            Question(id: "grill203_q4", prompt: "Match each chicken cut to its grilling characteristic.", matchingPairs: [
+                MatchingPair(left: "Thighs", right: "Most forgiving — stays moist even at 180°F"),
+                MatchingPair(left: "Breasts", right: "Dries out fast — pound to even thickness"),
+                MatchingPair(left: "Bone-in pieces", right: "Need indirect heat to cook through")
+            ], explanation: "Each chicken cut has different characteristics that affect how you should grill it.")
         ]),
         flashcards: [
             Flashcard(id: "grill203_f1", front: "165°F", back: "The minimum safe internal temperature for all poultry — non-negotiable food safety standard"),
@@ -354,10 +377,15 @@ enum GrillingLessons {
             ])
         ],
         quiz: Quiz(id: "grill301_q", passPercent: 80, questions: [
-            Question(id: "grill301_q1", prompt: "In reverse searing, you cook:", choices: ["Hot first, then rest", "All direct heat", "Low heat first, then sear at the end", "Only indirect the entire time"], correctIndex: 2, explanation: "Reverse sear = low indirect heat to bring internal temp up evenly, then a hard direct sear for the crust."),
-            Question(id: "grill301_q2", prompt: "For medium-rare reverse sear, pull from indirect heat at approximately:", choices: ["100°F", "115°F", "130°F", "145°F"], correctIndex: 1, explanation: "Pull at 115°F — the hard sear and carryover will bring it to the 130°F medium-rare target."),
-            Question(id: "grill301_q3", type: .scenario, prompt: "After the low-cook phase, the steak surface is moist. Before searing, you should:", choices: ["Sear immediately — moisture creates steam for flavor", "Pat the surface dry for a better crust", "Apply oil to the surface", "Wrap it in foil for 10 minutes"], correctIndex: 1, explanation: "Moisture steams instead of browning. Pat the surface dry to maximize the Maillard reaction during the sear."),
-            Question(id: "grill301_q4", type: .fillBlank, prompt: "The indirect zone temperature for reverse searing should be approximately _____°F.", choices: ["150-175", "225-250", "350-400", "500+"], correctIndex: 1, explanation: "225-250°F on the indirect side provides a gentle, controlled temperature ramp.")
+            Question(id: "grill301_q1", prompt: "Match each reverse sear step to the correct detail.", matchingPairs: [
+                MatchingPair(left: "Indirect zone temp", right: "225-250°F"),
+                MatchingPair(left: "Pull temp for medium-rare", right: "~115°F (10-15° below target)"),
+                MatchingPair(left: "Sear duration", right: "60-90 seconds per side"),
+                MatchingPair(left: "Final target", right: "130°F medium-rare")
+            ], explanation: "Reverse searing is about precision and control — knowing these numbers separates competence from guesswork."),
+            Question(id: "grill301_q2", type: .scenario, prompt: "After the low-cook phase, your steak surface has some moisture. Before the sear, you should:", choices: ["Sear immediately — moisture adds flavor", "Pat the surface completely dry", "Brush with oil", "Wrap in foil for 10 minutes"], correctIndex: 1, explanation: "Moisture steams instead of browning. Pat dry to maximize the Maillard reaction during the hard sear."),
+            Question(id: "grill301_q3", type: .multiSelect, prompt: "Which are common reverse sear mistakes?", choices: ["Indirect zone too hot — creates gray band", "Using a thermometer for precision", "Skipping the thermometer entirely", "Weak sear from an underheated direct zone", "Patting the steak dry before searing"], correctIndices: [0, 2, 3], explanation: "Too-hot indirect zone, no thermometer, and weak sear are mistakes. Using a thermometer and drying the surface are correct technique."),
+            Question(id: "grill301_q4", prompt: "The indirect zone temperature for reverse searing should be approximately _____°F.", acceptedAnswers: ["225-250", "225", "250", "225 to 250"], explanation: "225-250°F on the indirect side provides a gentle, controlled temperature ramp for even cooking.")
         ]),
         flashcards: [
             Flashcard(id: "grill301_f1", front: "Reverse Sear", back: "Cooking method: slow indirect heat first to bring internal temp up evenly, then hard direct heat sear for crust"),
@@ -410,10 +438,15 @@ enum GrillingLessons {
             ])
         ],
         quiz: Quiz(id: "grill302_q", passPercent: 80, questions: [
-            Question(id: "grill302_q1", prompt: "When planning a cookout timeline, you should:", choices: ["Start everything at once", "Cook in alphabetical order", "Work backwards from serving time", "Let guests decide the order"], correctIndex: 2, explanation: "Work backwards from when you want to serve. Longest-cooking items go on first."),
-            Question(id: "grill302_q2", prompt: "Which protein should go on the grill LAST?", choices: ["Chicken", "Ribs", "Steaks", "Hot dogs"], correctIndex: 2, explanation: "Steaks cook fast and are best served immediately. They should be the last thing on the grill."),
-            Question(id: "grill302_q3", type: .scenario, prompt: "Guests are arriving in 30 minutes and you haven't started prep. Your best move is:", choices: ["Cancel the cookout", "Throw everything on the grill at once", "Simplify the menu to what you can prep and cook in time", "Ask guests to help prep raw meat"], correctIndex: 2, explanation: "Simplify. Focus on what you can execute well in the time available. Better to serve great burgers than mediocre everything."),
-            Question(id: "grill302_q4", prompt: "The biggest hosting pitfall is:", choices: ["Not having enough chairs", "Starting all proteins at the same time", "Using too much seasoning", "Playing the wrong music"], correctIndex: 1, explanation: "Different proteins need different cook times. Starting everything together means some things are cold while others are still raw.")
+            Question(id: "grill302_q1", prompt: "Match each protein to when it should go on the grill relative to serving time.", matchingPairs: [
+                MatchingPair(left: "Ribs", right: "3-4 hours before serving"),
+                MatchingPair(left: "Chicken", right: "30-40 minutes before"),
+                MatchingPair(left: "Burgers/hot dogs", right: "15 minutes before"),
+                MatchingPair(left: "Steaks", right: "Last — they cook fast")
+            ], explanation: "Working backwards from serving time and staggering proteins is the key to a successful cookout."),
+            Question(id: "grill302_q2", type: .scenario, prompt: "Guests arrive in 30 minutes and you haven't started any prep. Your best move is:", choices: ["Cancel and order pizza", "Throw everything on the grill at once", "Simplify the menu to what you can execute well in the time available", "Ask guests to prep the raw meat"], correctIndex: 2, explanation: "Simplify. Better to serve great burgers than mediocre everything. Calm execution beats frantic improvisation."),
+            Question(id: "grill302_q3", type: .multiSelect, prompt: "Which are essential cookout hosting practices?", choices: ["Prep everything before guests arrive", "Start all proteins at the same time", "Keep a clean platter for finished food", "Assign someone to manage drinks", "Work backwards from serving time"], correctIndices: [0, 2, 3, 4], explanation: "Advance prep, separate platters (food safety), delegating drinks, and backwards planning are all essential. Starting everything together is the biggest hosting mistake."),
+            Question(id: "grill302_q4", prompt: "The biggest cookout hosting pitfall is:", choices: ["Not enough chairs", "Starting all proteins at the same time", "Too much seasoning", "Running out of napkins"], correctIndex: 1, explanation: "Different proteins need different cook times. Starting everything together means some items are cold while others are still raw.")
         ]),
         flashcards: [
             Flashcard(id: "grill302_f1", front: "Backwards Planning", back: "Starting with the desired serving time and working backwards to determine when each item needs to start cooking"),

@@ -49,12 +49,17 @@ enum FirearmsLessons {
             ])
         ],
         quiz: Quiz(id: "fire101_q", passPercent: 80, questions: [
-            Question(id: "fire101_q1", prompt: "Rule 1 states:", choices: ["Keep your finger off the trigger", "Always use eye protection", "Treat every firearm as loaded", "Know your target"], correctIndex: 2, explanation: "Rule 1: Treat every firearm as if it is loaded, always."),
-            Question(id: "fire101_q2", prompt: "Your finger should be on the trigger when:", choices: ["Holding the firearm", "Sights are on target and you've decided to fire", "Pointing at the target", "Always"], correctIndex: 1, explanation: "Rule 3: Keep your finger off the trigger until sights are on target and you have decided to fire."),
-            Question(id: "fire101_q3", type: .scenario, prompt: "Someone hands you a firearm and says 'It's unloaded.' You should:", choices: ["Trust them and handle it freely", "Point it at the ground and pull the trigger", "Hand it back", "Verify it yourself before handling"], correctIndex: 3, explanation: "Rule 1 applies always. Verify the condition of any firearm handed to you, regardless of what you're told."),
-            Question(id: "fire101_q4", prompt: "The four rules work because:", choices: ["Each rule backs up the others", "They are legally required", "They prevent all accidents", "They only apply at ranges"], correctIndex: 0, explanation: "The rules are layered. Breaking one doesn't cause harm if the others are followed."),
-            Question(id: "fire101_q5", type: .fillBlank, prompt: "Be sure of your target and what is _____ it.", choices: ["In front of", "Next to", "Above", "Beyond"], correctIndex: 3, explanation: "Rule 4: Be sure of your target and what is beyond it — bullets can penetrate or miss."),
-            Question(id: "fire101_q6", prompt: "Negligent discharges typically require:", choices: ["Equipment malfunction", "Breaking two or more rules simultaneously", "Lack of training certification", "Breaking one rule"], correctIndex: 1, explanation: "The safety rules are redundant by design. Negligent injuries almost always involve multiple rule violations.")
+            Question(id: "fire101_q1", prompt: "Match each safety rule to its description.", matchingPairs: [
+                MatchingPair(left: "Rule 1", right: "Treat every firearm as loaded"),
+                MatchingPair(left: "Rule 2", right: "Never point at anything you won't destroy"),
+                MatchingPair(left: "Rule 3", right: "Finger off trigger until ready to fire"),
+                MatchingPair(left: "Rule 4", right: "Know your target and what's beyond it")
+            ], explanation: "The four universal safety rules are layered — each backs up the others."),
+            Question(id: "fire101_q2", type: .scenario, prompt: "Someone hands you a firearm and says 'Don't worry, it's unloaded.' You should:", choices: ["Trust them — they just checked", "Point it in a safe direction and verify yourself", "Hand it back immediately", "Set it down without touching the action"], correctIndex: 1, explanation: "Rule 1 applies always. Verify the condition of any firearm handed to you, regardless of what anyone tells you."),
+            Question(id: "fire101_q3", prompt: "Be sure of your target and what is _____ it.", acceptedAnswers: ["beyond", "behind", "past"], explanation: "Rule 4: Be sure of your target and what is beyond it — bullets can penetrate or miss."),
+            Question(id: "fire101_q4", type: .multiSelect, prompt: "Which scenarios violate one or more of the four rules?", choices: ["Resting finger on trigger while talking", "Assuming a gun is unloaded without checking", "Keeping muzzle pointed downrange", "Shooting at a target with unknown backstop", "Verifying chamber is clear before handling"], correctIndices: [0, 1, 3], explanation: "Trigger finger while talking violates Rule 3, assuming unloaded violates Rule 1, and unknown backstop violates Rule 4."),
+            Question(id: "fire101_q5", prompt: "Negligent discharges almost always involve:", choices: ["Equipment malfunction", "One rule broken", "Lack of certification", "Breaking two or more rules simultaneously"], correctIndex: 3, explanation: "The safety rules are redundant by design. Injuries almost always require violating multiple rules at once."),
+            Question(id: "fire101_q6", type: .scenario, prompt: "You're at the range and notice someone flagging people with their muzzle while chatting. Which rules are they violating?", choices: ["Only Rule 1", "Rules 2 and 3 — muzzle discipline and likely trigger discipline", "Only Rule 4", "No rules — they're at a range"], correctIndex: 1, explanation: "Flagging people violates Rule 2 (muzzle discipline), and chatting while pointing a firearm often accompanies poor trigger discipline (Rule 3).")
         ]),
         flashcards: [
             Flashcard(id: "fire101_f1", front: "Muzzle Discipline", back: "Always keeping the muzzle pointed in a safe direction, away from anything you're not willing to destroy"),
@@ -99,9 +104,14 @@ enum FirearmsLessons {
             ])
         ],
         quiz: Quiz(id: "fire102_q", passPercent: 80, questions: [
-            Question(id: "fire102_q1", prompt: "What gives a rifle its name?", choices: ["Its size", "The type of ammunition", "Rifling in the barrel", "Its stock"], correctIndex: 2, explanation: "Rifling — spiral grooves in the barrel — spins the bullet for accuracy. That's where the name comes from."),
-            Question(id: "fire102_q2", prompt: "Shotguns are measured in:", choices: ["Caliber", "Gauge", "Millimeters", "Grains"], correctIndex: 1, explanation: "Shotguns use gauge (12 gauge, 20 gauge), while rifles and handguns use caliber."),
-            Question(id: "fire102_q3", prompt: "Which firearm type is designed to be fired from the shoulder with a long barrel?", choices: ["Handgun", "Both rifle and shotgun", "Shotgun only", "Rifle only"], correctIndex: 1, explanation: "Both rifles and shotguns are shouldered long guns with long barrels.")
+            Question(id: "fire102_q1", prompt: "Match each firearm type to its primary characteristic.", matchingPairs: [
+                MatchingPair(left: "Handgun", right: "Compact, fired with one or two hands"),
+                MatchingPair(left: "Rifle", right: "Long barrel with spiral grooves for accuracy"),
+                MatchingPair(left: "Shotgun", right: "Fires multiple projectiles or single slugs")
+            ], explanation: "Each firearm type is optimized for different range, portability, and application."),
+            Question(id: "fire102_q2", prompt: "The spiral grooves inside a barrel that spin the bullet are called _____.", acceptedAnswers: ["rifling", "rifle grooves", "grooves"], explanation: "Rifling — spiral grooves in the barrel — spins the bullet for stability and accuracy. It's where the name 'rifle' comes from."),
+            Question(id: "fire102_q3", type: .scenario, prompt: "You're choosing between caliber and gauge when buying ammunition. Gauge is the measurement system for:", choices: ["Handguns", "Rifles", "Shotguns", "All firearms"], correctIndex: 2, explanation: "Shotguns use gauge (12 gauge, 20 gauge), while rifles and handguns use caliber measurements."),
+            Question(id: "fire102_q4", type: .multiSelect, prompt: "Which statements about rifling are correct?", choices: ["Present in all handguns and rifles", "Creates spiral grooves that spin the bullet", "Present in most shotguns", "Improves accuracy at distance", "Only found in military weapons"], correctIndices: [0, 1, 3], explanation: "Rifling is present in handguns and rifles (not most shotguns), spins the bullet via grooves, and improves accuracy.")
         ]),
         flashcards: [
             Flashcard(id: "fire102_f1", front: "Rifling", back: "Spiral grooves inside a barrel that spin the projectile for stability and accuracy"),
@@ -148,9 +158,15 @@ enum FirearmsLessons {
             ])
         ],
         quiz: Quiz(id: "fire103_q", passPercent: 80, questions: [
-            Question(id: "fire103_q1", prompt: "Which component is the legally serialized part of a handgun?", choices: ["Barrel", "Slide", "Magazine", "Frame"], correctIndex: 3, explanation: "The frame (or receiver) is the serialized, legally-regulated component of a firearm."),
-            Question(id: "fire103_q2", prompt: "The slide on a semi-automatic handgun:", choices: ["Reciprocates to chamber and eject", "Holds ammunition", "Contains the trigger", "Is the safety mechanism"], correctIndex: 0, explanation: "The slide moves back and forth to chamber new rounds and eject spent casings."),
-            Question(id: "fire103_q3", type: .fillBlank, prompt: "A _____ feeds ammunition into the firearm, not a clip.", choices: ["Barrel", "Cylinder", "Chamber", "Magazine"], correctIndex: 3, explanation: "A magazine is the spring-loaded container that feeds ammunition. A clip feeds a magazine.")
+            Question(id: "fire103_q1", prompt: "Match each handgun component to its function.", matchingPairs: [
+                MatchingPair(left: "Frame", right: "Serialized main body housing the trigger"),
+                MatchingPair(left: "Slide", right: "Reciprocates to chamber rounds and eject casings"),
+                MatchingPair(left: "Barrel", right: "Tube the bullet travels through with rifling"),
+                MatchingPair(left: "Magazine", right: "Spring-fed container holding ammunition")
+            ], explanation: "Each component serves a specific function in the firing cycle."),
+            Question(id: "fire103_q2", prompt: "A _____ feeds ammunition into the firearm, not a clip.", acceptedAnswers: ["magazine", "mag", "the magazine"], explanation: "A magazine is the spring-loaded container that feeds the firearm. A clip is a device that holds rounds together to load into a magazine."),
+            Question(id: "fire103_q3", type: .scenario, prompt: "The slide locks open after firing the last round. This indicates:", choices: ["A malfunction has occurred", "The safety is engaged", "The magazine is empty", "The barrel is overheated"], correctIndex: 2, explanation: "The slide lock is designed to hold the slide open after the last round, providing a visual and tactile indication that the magazine is empty."),
+            Question(id: "fire103_q4", prompt: "Which component is the legally serialized and regulated part of a handgun?", choices: ["Barrel", "Magazine", "Slide", "Frame (receiver)"], correctIndex: 3, explanation: "The frame or receiver is the serialized, legally-regulated component. All other parts are considered accessories.")
         ]),
         flashcards: [
             Flashcard(id: "fire103_f1", front: "Frame/Receiver", back: "The main body of the firearm, housing the trigger mechanism — the legally serialized component"),
@@ -203,10 +219,15 @@ enum FirearmsLessons {
             ])
         ],
         quiz: Quiz(id: "fire201_q", passPercent: 80, questions: [
-            Question(id: "fire201_q1", prompt: "FMJ stands for:", choices: ["Full Metal Jacket", "Fast Moving Jacketed", "Federal Match Grade", "Full Magnum Jacketed"], correctIndex: 0, explanation: "FMJ = Full Metal Jacket — a copper-jacketed lead projectile, standard for target practice."),
-            Question(id: "fire201_q2", prompt: "The standard self-defense ammunition type is:", choices: ["FMJ", "Frangible", "Tracer", "JHP (Jacketed Hollow Point)"], correctIndex: 3, explanation: "JHP expands on impact, creating a larger wound channel while reducing over-penetration risk."),
-            Question(id: "fire201_q3", prompt: "What ignites the powder charge in a cartridge?", choices: ["The bullet", "The case", "The primer", "Friction from the barrel"], correctIndex: 2, explanation: "The primer is struck by the firing pin, igniting the propellant charge."),
-            Question(id: "fire201_q4", type: .scenario, prompt: "You find ammunition labeled a different caliber than your firearm. You should:", choices: ["Try it — it might fit", "Never load it — wrong caliber can cause catastrophic failure", "File it down to fit", "Use it only at the range"], correctIndex: 1, explanation: "Wrong-caliber ammunition can cause the firearm to explode. Only use ammunition specifically matched to your firearm's chamber.")
+            Question(id: "fire201_q1", prompt: "Match each ammunition type to its primary use.", matchingPairs: [
+                MatchingPair(left: "FMJ (Full Metal Jacket)", right: "Target practice — penetrates without expanding"),
+                MatchingPair(left: "JHP (Jacketed Hollow Point)", right: "Self-defense — expands on impact"),
+                MatchingPair(left: "Soft Point", right: "Hunting — exposed lead tip expands"),
+                MatchingPair(left: "Frangible", right: "Training on steel — breaks apart on impact")
+            ], explanation: "Different projectile types are designed for different applications. Using the right type matters."),
+            Question(id: "fire201_q2", type: .scenario, prompt: "You find ammunition labeled .40 S&W but your pistol is chambered in 9mm. You should:", choices: ["Try it — close enough in size", "Use it for practice only", "Never load it — wrong caliber causes catastrophic failure", "File the cartridge down to fit"], correctIndex: 2, explanation: "Wrong-caliber ammunition can cause the firearm to explode. Only use ammunition specifically matched to your firearm's chamber."),
+            Question(id: "fire201_q3", prompt: "The component of a cartridge that ignites the propellant when struck by the firing pin is called the _____.", acceptedAnswers: ["primer", "the primer", "primers"], explanation: "The primer is the impact-sensitive compound at the base of a cartridge that ignites when struck by the firing pin."),
+            Question(id: "fire201_q4", type: .multiSelect, prompt: "Which are components of a complete cartridge?", choices: ["Case", "Barrel", "Primer", "Powder (propellant)", "Projectile (bullet)", "Magazine spring"], correctIndices: [0, 2, 3, 4], explanation: "A cartridge has four components: case, primer, powder, and projectile. The barrel and magazine spring are parts of the firearm, not the ammunition.")
         ]),
         flashcards: [
             Flashcard(id: "fire201_f1", front: "Full Metal Jacket (FMJ)", back: "A bullet fully encased in a copper jacket — standard for target practice, penetrates without expanding"),
@@ -255,10 +276,15 @@ enum FirearmsLessons {
             ])
         ],
         quiz: Quiz(id: "fire202_q", passPercent: 80, questions: [
-            Question(id: "fire202_q1", prompt: "Before cleaning any firearm, the first step is always:", choices: ["Apply solvent", "Remove the barrel", "Verify unloaded and chamber clear", "Gather your cleaning supplies"], correctIndex: 2, explanation: "Safety first — always verify the firearm is unloaded with an empty chamber before any disassembly or cleaning."),
-            Question(id: "fire202_q2", prompt: "Cleaning solvent and lubricant are:", choices: ["The same thing", "Interchangeable", "Different products with different purposes", "Both optional"], correctIndex: 2, explanation: "Solvent dissolves fouling; lubricant reduces friction. They are different products with different functions."),
-            Question(id: "fire202_q3", type: .fillBlank, prompt: "Most malfunctions are caused by _____ and lack of lubrication.", choices: ["Ammunition type", "Barrel length", "Fouling", "Temperature"], correctIndex: 2, explanation: "Carbon fouling buildup is the primary cause of reliability issues in firearms."),
-            Question(id: "fire202_q4", prompt: "How often should you clean a firearm?", choices: ["Once a year", "Only when it malfunctions", "After every range session", "Never — modern firearms are self-cleaning"], correctIndex: 2, explanation: "Clean after every use. This prevents fouling buildup and allows you to inspect for wear or damage.")
+            Question(id: "fire202_q1", type: .scenario, prompt: "You're about to clean your pistol after a range session. The absolute first step before touching any tools is:", choices: ["Gather cleaning supplies", "Remove the magazine", "Verify unloaded — magazine out, chamber clear, visual check", "Apply solvent to the bore"], correctIndex: 2, explanation: "Safety first — always verify the firearm is completely unloaded before any cleaning or disassembly."),
+            Question(id: "fire202_q2", prompt: "Most firearm malfunctions are caused by _____ and lack of lubrication.", acceptedAnswers: ["fouling", "carbon fouling", "carbon buildup", "dirt", "carbon"], explanation: "Carbon fouling buildup is the primary cause of reliability issues in firearms."),
+            Question(id: "fire202_q3", prompt: "Match each cleaning product to its purpose.", matchingPairs: [
+                MatchingPair(left: "Solvent", right: "Dissolves carbon fouling and copper deposits"),
+                MatchingPair(left: "Lubricant", right: "Reduces friction on moving parts"),
+                MatchingPair(left: "Bore brush", right: "Scrubs inside the barrel"),
+                MatchingPair(left: "Nylon brush", right: "Cleans exterior parts without scratching")
+            ], explanation: "Each cleaning tool and product serves a specific purpose. Solvent and lubricant are NOT the same thing."),
+            Question(id: "fire202_q4", type: .multiSelect, prompt: "Which are part of a proper cleaning process?", choices: ["Run solvent-soaked patches through the bore", "Fully disassemble without training", "Wipe down slide rails and feed ramp", "Apply lubricant to friction points", "Skip function check after reassembly"], correctIndices: [0, 2, 3], explanation: "Proper cleaning includes solvent patches, wiping key surfaces, and light lubrication. Never fully disassemble without training, and always function check after reassembly.")
         ]),
         flashcards: [
             Flashcard(id: "fire202_f1", front: "Field Strip", back: "Basic disassembly of a firearm for cleaning — does not require specialized tools or full disassembly"),
@@ -304,10 +330,15 @@ enum FirearmsLessons {
             ])
         ],
         quiz: Quiz(id: "fire203_q", passPercent: 80, questions: [
-            Question(id: "fire203_q1", prompt: "The best home storage option for firearms is:", choices: ["A closet shelf", "Under the bed", "A bolted, fire-rated gun safe", "A drawer with a lock"], correctIndex: 2, explanation: "A gun safe bolted to the structure provides the best security, fire protection, and access prevention."),
-            Question(id: "fire203_q2", prompt: "For interstate transport under FOPA, firearms must be:", choices: ["Loaded and accessible", "Concealed on your person", "Unloaded in a locked container, separate from ammo", "In the trunk with ammunition"], correctIndex: 2, explanation: "Federal safe passage requires firearms to be unloaded, in a locked container, with ammunition stored separately."),
-            Question(id: "fire203_q3", type: .scenario, prompt: "You're driving through a state with strict gun laws. What should you have done before the trip?", choices: ["Nothing — federal law overrides all state laws", "Researched the transit state's specific transport laws", "Left the firearm at home always", "Called the local police for permission"], correctIndex: 1, explanation: "State laws vary significantly. FOPA provides some protection but is not always enforced uniformly. Research before traveling."),
-            Question(id: "fire203_q4", prompt: "A cable lock prevents:", choices: ["The firearm from being stolen", "The action from being loaded and fired", "Rust and corrosion", "Unauthorized purchase"], correctIndex: 1, explanation: "A cable lock threads through the action, physically preventing the firearm from being loaded or fired.")
+            Question(id: "fire203_q1", prompt: "Match each storage option to its security level.", matchingPairs: [
+                MatchingPair(left: "Gun safe (bolted)", right: "Highest security — fire-rated, theft-resistant"),
+                MatchingPair(left: "Lock box", right: "Quick-access, moderate security"),
+                MatchingPair(left: "Cable lock", right: "Prevents loading/firing, low-cost barrier"),
+                MatchingPair(left: "Trigger lock", right: "Blocks trigger only, least secure option")
+            ], explanation: "Different storage solutions offer different levels of security. A bolted gun safe is the gold standard."),
+            Question(id: "fire203_q2", type: .scenario, prompt: "You're driving through three states to visit family, with a legally-owned firearm. Before departing you should:", choices: ["Just follow federal law — it overrides everything", "Research the specific transport laws of every state you'll pass through", "Leave the firearm at home to be safe", "Call each state's governor's office"], correctIndex: 1, explanation: "State laws vary dramatically. FOPA provides some safe passage protection but is not always enforced uniformly."),
+            Question(id: "fire203_q3", type: .multiSelect, prompt: "Under FOPA safe passage, which conditions must be met for interstate transport?", choices: ["Firearm must be unloaded", "Stored in a locked container", "Ammunition stored separately from firearm", "Concealed carry permit required", "Legal to possess at origin and destination"], correctIndices: [0, 1, 2, 4], explanation: "FOPA requires unloaded, locked container, separate ammo, and legal possession at both origin and destination. No carry permit is required for transport."),
+            Question(id: "fire203_q4", prompt: "A cable lock prevents a firearm from being loaded and fired by threading through the _____.", acceptedAnswers: ["action", "the action", "chamber", "receiver", "barrel"], explanation: "A cable lock threads through the action, physically preventing the firearm from being loaded or fired.")
         ]),
         flashcards: [
             Flashcard(id: "fire203_f1", front: "FOPA (Firearms Owners' Protection Act)", back: "Federal law providing safe passage for legal transport of firearms through states — requires unloaded, locked, separated from ammo"),
@@ -356,10 +387,14 @@ enum FirearmsLessons {
             ])
         ],
         quiz: Quiz(id: "fire301_q", passPercent: 80, questions: [
-            Question(id: "fire301_q1", prompt: "A squib load is dangerous because:", choices: ["It's too loud", "The bullet lodges in the barrel — firing again can explode it", "It always injures the shooter", "It damages the magazine"], correctIndex: 1, explanation: "A squib leaves a bullet stuck in the barrel. Firing another round into that obstruction causes a catastrophic barrel failure."),
-            Question(id: "fire301_q2", prompt: "After a suspected misfire, you should wait at least:", choices: ["5 seconds", "10 seconds", "30 seconds", "2 minutes"], correctIndex: 2, explanation: "Wait 30 seconds with the muzzle pointed downrange — it could be a hangfire with delayed ignition."),
-            Question(id: "fire301_q3", type: .scenario, prompt: "You fire and hear a quiet 'pop' instead of a normal bang, with less recoil. You should:", choices: ["Fire again — it was probably a light load", "Stop immediately and inspect the bore for an obstruction", "Keep shooting — it was just weak ammunition", "Tap-rack-bang to clear it"], correctIndex: 1, explanation: "A pop with reduced recoil is the classic squib indicator. Stop immediately and check for a barrel obstruction."),
-            Question(id: "fire301_q4", type: .fillBlank, prompt: "A _____ is a delayed ignition that can occur milliseconds to seconds after the trigger pull.", choices: ["Misfire", "Squib", "Hangfire", "Double feed"], correctIndex: 2, explanation: "A hangfire is a delayed ignition — the primer fires but there's a delay before the propellant ignites.")
+            Question(id: "fire301_q1", prompt: "Match each malfunction to its definition.", matchingPairs: [
+                MatchingPair(left: "Misfire", right: "Trigger pulled, firing pin strikes, nothing happens"),
+                MatchingPair(left: "Hangfire", right: "Delayed ignition — round fires after a pause"),
+                MatchingPair(left: "Squib Load", right: "Partial ignition — bullet lodges in barrel")
+            ], explanation: "These three malfunctions require different responses. Confusing them can be catastrophic."),
+            Question(id: "fire301_q2", type: .scenario, prompt: "You fire and hear a quiet 'pop' instead of a normal bang, with noticeably less recoil. Your immediate action should be:", choices: ["Fire again to clear it", "Tap-rack-bang drill", "Stop immediately — inspect the bore for a lodged bullet", "Wait 30 seconds then continue"], correctIndex: 2, explanation: "A pop with reduced recoil is the classic squib indicator. Stop immediately. Firing another round into an obstructed barrel causes catastrophic failure."),
+            Question(id: "fire301_q3", prompt: "After a suspected misfire, keep the muzzle pointed downrange and wait at least _____ seconds.", acceptedAnswers: ["30", "thirty", "30 seconds", "thirty seconds"], explanation: "Wait 30 seconds — it could be a hangfire with delayed ignition. Opening the action too early with a hangfire is extremely dangerous."),
+            Question(id: "fire301_q4", type: .multiSelect, prompt: "Which are indicators of a possible squib load?", choices: ["Quieter sound than normal (pop vs bang)", "Reduced or absent recoil", "Loud explosion", "Slide fails to cycle fully", "Normal recoil with a click"], correctIndices: [0, 1, 3], explanation: "A squib produces a quiet pop, reduced recoil, and may prevent the slide from cycling. Any of these should trigger an immediate stop.")
         ]),
         flashcards: [
             Flashcard(id: "fire301_f1", front: "Misfire", back: "Trigger pulled, firing pin strikes, no ignition occurs — the round fails to fire"),
@@ -411,10 +446,15 @@ enum FirearmsLessons {
             ])
         ],
         quiz: Quiz(id: "fire302_q", passPercent: 80, questions: [
-            Question(id: "fire302_q1", prompt: "The NICS background check system was established by:", choices: ["The NFA", "The GCA", "FOPA", "The Brady Act"], correctIndex: 3, explanation: "The Brady Handgun Violence Prevention Act of 1993 established the NICS background check system."),
-            Question(id: "fire302_q2", prompt: "The NFA regulates all of the following EXCEPT:", choices: ["Suppressors", "Machine guns", "Standard semi-automatic pistols", "Short-barreled rifles"], correctIndex: 2, explanation: "The NFA covers SBRs, SBSs, suppressors, machine guns, and destructive devices — not standard semi-automatic pistols."),
-            Question(id: "fire302_q3", prompt: "Constitutional carry means:", choices: ["Carrying only during elections", "No permit required to carry", "Carry restricted to the Capitol building", "Only veterans can carry"], correctIndex: 1, explanation: "Constitutional carry states allow lawful firearm carry without requiring a government-issued permit."),
-            Question(id: "fire302_q4", type: .scenario, prompt: "You're moving to a new state. Regarding firearms law, you should:", choices: ["Assume the same laws apply", "Research the new state's specific firearms laws before moving", "Only worry about it if you get pulled over", "Federal law overrides everything"], correctIndex: 1, explanation: "State laws vary dramatically. Research your new state's purchase, possession, carry, and storage laws before relocating.")
+            Question(id: "fire302_q1", prompt: "Match each federal law to what it established.", matchingPairs: [
+                MatchingPair(left: "GCA (1968)", right: "FFL system and prohibited persons"),
+                MatchingPair(left: "NFA (1934)", right: "Regulates SBRs, suppressors, machine guns"),
+                MatchingPair(left: "Brady Act (1993)", right: "NICS background check system"),
+                MatchingPair(left: "FOPA (1986)", right: "Safe passage and machine gun registry closure")
+            ], explanation: "Four major federal firearms laws form the regulatory framework every owner should understand."),
+            Question(id: "fire302_q2", type: .scenario, prompt: "You're relocating to a new state. Regarding your firearms, you should:", choices: ["Assume the same laws apply everywhere", "Research the new state's specific purchase, possession, carry, and storage laws", "Only check if you plan to buy new firearms", "Federal law is all that matters"], correctIndex: 1, explanation: "State laws vary dramatically. What's legal in one state may be a felony in another. Research before relocating."),
+            Question(id: "fire302_q3", type: .multiSelect, prompt: "Which items does the NFA specifically regulate?", choices: ["Standard semi-automatic pistols", "Short-barreled rifles", "Suppressors", "Hunting shotguns", "Machine guns", "Destructive devices"], correctIndices: [1, 2, 4, 5], explanation: "The NFA regulates SBRs, SBSs, suppressors, machine guns, and destructive devices — not standard pistols or hunting shotguns."),
+            Question(id: "fire302_q4", prompt: "'Constitutional carry' means a state allows lawful carry without requiring a _____.", acceptedAnswers: ["permit", "license", "government permit", "carry permit", "concealed carry permit"], explanation: "Constitutional carry states allow lawful firearm carry without requiring any government-issued permit or license.")
         ]),
         flashcards: [
             Flashcard(id: "fire302_f1", front: "GCA (Gun Control Act 1968)", back: "Federal law establishing the FFL system, prohibited persons categories, and interstate firearms commerce rules"),

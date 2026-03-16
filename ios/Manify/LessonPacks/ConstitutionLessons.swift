@@ -48,12 +48,17 @@ enum ConstitutionLessons {
             ])
         ],
         quiz: Quiz(id: "con101_q", passPercent: 80, questions: [
-            Question(id: "con101_q1", prompt: "What did the Constitution replace?", choices: ["The Declaration of Independence", "The Articles of Confederation", "The Federalist Papers", "The Magna Carta"], correctIndex: 1, explanation: "The Constitution replaced the Articles of Confederation in 1789 because the original system was too weak to govern effectively."),
-            Question(id: "con101_q2", prompt: "How many branches of government does the Constitution create?", choices: ["Two", "Four", "Three", "Five"], correctIndex: 2, explanation: "The Constitution creates three branches: legislative (Congress), executive (President), and judicial (courts)."),
-            Question(id: "con101_q3", type: .scenario, prompt: "A new federal law contradicts a provision of the Constitution. What happens?", choices: ["Courts can strike the law down", "The law overrides the Constitution", "The President decides", "States vote on it"], correctIndex: 0, explanation: "Courts have the power of judicial review to strike down laws that violate the Constitution."),
-            Question(id: "con101_q4", prompt: "The Constitution primarily restricts:", choices: ["Private citizens", "Foreign governments", "Corporations", "The government itself"], correctIndex: 3, explanation: "The Constitution limits what the government can do, not what private citizens can do."),
-            Question(id: "con101_q5", prompt: "Amending the Constitution requires:", choices: ["Supermajorities and state ratification", "Presidential executive order", "A simple majority vote", "Supreme Court approval"], correctIndex: 0, explanation: "Amendments require two-thirds of Congress and ratification by three-fourths of the states."),
-            Question(id: "con101_q6", type: .fillBlank, prompt: "The Constitution does not grant rights — it _____ the government from infringing on them.", choices: ["Encourages", "Allows", "Restricts", "Empowers"], correctIndex: 2, explanation: "The Constitution restricts government power, protecting pre-existing natural rights.")
+            Question(id: "con101_q1", type: .scenario, prompt: "A politician claims a new law is 'unconstitutional.' What does this actually mean?", choices: ["The law is unpopular", "The law conflicts with a provision of the Constitution", "The President vetoed it", "Congress didn't vote on it"], correctIndex: 1, explanation: "'Unconstitutional' means the law conflicts with the Constitution and can be struck down by courts through judicial review."),
+            Question(id: "con101_q2", prompt: "What did the Constitution replace in 1789?", choices: ["The Magna Carta", "The Federalist Papers", "The Declaration of Independence", "The Articles of Confederation"], correctIndex: 3, explanation: "The Constitution replaced the Articles of Confederation because the original system was too weak to govern effectively."),
+            Question(id: "con101_q3", type: .multiSelect, prompt: "Which of the following are branches of government created by the Constitution?", choices: ["Legislative", "Military", "Executive", "Judicial", "Administrative"], correctIndices: [0, 2, 3], explanation: "The Constitution creates three branches: legislative (Congress), executive (President), and judicial (courts)."),
+            Question(id: "con101_q4", prompt: "The Constitution does not grant rights — it _____ the government from infringing on them.", acceptedAnswers: ["restricts", "restrict", "limits", "prevents", "prohibits"], explanation: "The Constitution restricts government power, protecting pre-existing natural rights."),
+            Question(id: "con101_q5", prompt: "Match each concept to its description.", matchingPairs: [
+                MatchingPair(left: "Enumerated Powers", right: "Powers explicitly listed in the Constitution"),
+                MatchingPair(left: "Bill of Rights", right: "First ten amendments protecting liberties"),
+                MatchingPair(left: "Judicial Review", right: "Courts can strike down unconstitutional laws"),
+                MatchingPair(left: "Ratification", right: "Formal approval process for amendments")
+            ], explanation: "These are foundational concepts of American constitutional structure."),
+            Question(id: "con101_q6", prompt: "Amending the Constitution requires:", choices: ["A simple majority vote in Congress", "Presidential executive order", "Two-thirds of Congress and three-fourths of states", "Supreme Court approval"], correctIndex: 2, explanation: "Amendments require two-thirds of Congress and ratification by three-fourths of the states — intentionally difficult.")
         ]),
         flashcards: [
             Flashcard(id: "con101_f1", front: "Articles of Confederation", back: "The first governing document of the United States, replaced by the Constitution in 1789 due to structural weakness"),
@@ -101,10 +106,15 @@ enum ConstitutionLessons {
             ])
         ],
         quiz: Quiz(id: "con102_q", passPercent: 80, questions: [
-            Question(id: "con102_q1", prompt: "Who does the Preamble say holds sovereignty?", choices: ["The President", "The States", "The People", "Congress"], correctIndex: 2, explanation: "'We the People' establishes that sovereignty originates from the citizens."),
-            Question(id: "con102_q2", prompt: "Is the Preamble legally enforceable in court?", choices: ["Yes, always", "No, it provides interpretive context only", "Only in federal courts", "Only for criminal cases"], correctIndex: 1, explanation: "The Preamble is not used to decide cases; it's context, not operative law."),
-            Question(id: "con102_q3", prompt: "'Form a more perfect Union' refers to improving on:", choices: ["The British monarchy", "State constitutions", "The Declaration of Independence", "The Articles of Confederation"], correctIndex: 3, explanation: "The phrase acknowledges the weaknesses of the Articles and aims to improve upon them."),
-            Question(id: "con102_q4", type: .fillBlank, prompt: "The Preamble lists _____ core objectives of the Constitution.", choices: ["Four", "Five", "Seven", "Six"], correctIndex: 3, explanation: "The six objectives: form union, establish justice, insure tranquility, provide defense, promote welfare, secure liberty.")
+            Question(id: "con102_q1", prompt: "Match each Preamble phrase to its meaning.", matchingPairs: [
+                MatchingPair(left: "We the People", right: "Sovereignty comes from citizens"),
+                MatchingPair(left: "Establish Justice", right: "Create a fair legal system"),
+                MatchingPair(left: "Common Defence", right: "National security"),
+                MatchingPair(left: "Blessings of Liberty", right: "Protect freedom for future generations")
+            ], explanation: "The Preamble states the six core objectives of the entire constitutional system."),
+            Question(id: "con102_q2", type: .scenario, prompt: "A lawyer cites the Preamble to argue their case in court. The judge would likely:", choices: ["Accept it as binding law", "Note it as context but not a source of legal authority", "Throw out the case entirely", "Refer it to Congress"], correctIndex: 1, explanation: "The Preamble is interpretive context, not operative law. Courts do not use it to decide cases."),
+            Question(id: "con102_q3", prompt: "'Form a more perfect Union' refers to improving on:", choices: ["The British monarchy", "The Articles of Confederation", "State constitutions", "The Declaration of Independence"], correctIndex: 1, explanation: "The phrase acknowledges the weaknesses of the Articles and aims to improve upon them."),
+            Question(id: "con102_q4", prompt: "The Preamble lists _____ core objectives of the Constitution.", acceptedAnswers: ["six", "6", "six objectives"], explanation: "The six objectives: form union, establish justice, insure tranquility, provide defense, promote welfare, secure liberty.")
         ]),
         flashcards: [
             Flashcard(id: "con102_f1", front: "Popular Sovereignty", back: "The principle that government authority comes from the consent of the people"),
@@ -152,10 +162,14 @@ enum ConstitutionLessons {
             ])
         ],
         quiz: Quiz(id: "con103_q", passPercent: 80, questions: [
-            Question(id: "con103_q1", prompt: "Which article creates the legislative branch?", choices: ["Article I", "Article II", "Article III", "Article IV"], correctIndex: 0, explanation: "Article I establishes Congress — the Senate and House of Representatives."),
-            Question(id: "con103_q2", prompt: "Who has the power to declare war?", choices: ["The President", "The Secretary of Defense", "The Supreme Court", "Congress"], correctIndex: 3, explanation: "The power to declare war belongs to Congress under Article I, not the President."),
-            Question(id: "con103_q3", type: .scenario, prompt: "The President vetoes a bill. What can Congress do?", choices: ["Nothing — it's dead", "Take it to the Supreme Court", "Override with two-thirds of both chambers", "Pass it through executive order"], correctIndex: 2, explanation: "Congress can override a presidential veto with a two-thirds supermajority in both the House and Senate."),
-            Question(id: "con103_q4", prompt: "Federal judges serve:", choices: ["Four-year terms", "Eight-year terms", "Until retirement age", "Lifetime appointments"], correctIndex: 3, explanation: "Article III provides lifetime appointments for federal judges to insulate them from political pressure.")
+            Question(id: "con103_q1", prompt: "Match each Article to the branch it creates.", matchingPairs: [
+                MatchingPair(left: "Article I", right: "Legislative (Congress)"),
+                MatchingPair(left: "Article II", right: "Executive (President)"),
+                MatchingPair(left: "Article III", right: "Judicial (Courts)")
+            ], explanation: "Articles I, II, and III create the three branches of government in order."),
+            Question(id: "con103_q2", type: .scenario, prompt: "The President vetoes a bill that Congress strongly supports. What is Congress's recourse?", choices: ["Sue the President in court", "Override with two-thirds of both chambers", "Call a national referendum", "Wait for the next President"], correctIndex: 1, explanation: "Congress can override a presidential veto with a two-thirds supermajority in both the House and Senate."),
+            Question(id: "con103_q3", type: .multiSelect, prompt: "Which powers belong to Congress under Article I?", choices: ["Declaring war", "Commanding the military", "Taxing and spending", "Nominating judges", "Regulating commerce"], correctIndices: [0, 2, 4], explanation: "Congress has the power to declare war, tax, spend, and regulate commerce. The President commands the military and nominates judges."),
+            Question(id: "con103_q4", prompt: "Federal judges serve lifetime appointments to:", choices: ["Reward political loyalty", "Insulate them from political pressure", "Save money on elections", "Match Supreme Court tradition"], correctIndex: 1, explanation: "Lifetime appointments protect judicial independence by removing the pressure of elections or reappointment.")
         ]),
         flashcards: [
             Flashcard(id: "con103_f1", front: "Article I", back: "Creates the Legislative Branch (Congress) — makes laws"),
@@ -199,9 +213,14 @@ enum ConstitutionLessons {
             ])
         ],
         quiz: Quiz(id: "con104_q", passPercent: 80, questions: [
-            Question(id: "con104_q1", prompt: "Which amendment reserves powers to the states?", choices: ["First", "Fourteenth", "Tenth", "Fifth"], correctIndex: 2, explanation: "The Tenth Amendment reserves all powers not delegated to the federal government to the states or the people."),
-            Question(id: "con104_q2", prompt: "When federal and state laws conflict:", choices: ["State law wins", "The President decides", "Federal law wins if constitutional", "Courts always side with states"], correctIndex: 2, explanation: "The Supremacy Clause makes federal law supreme, but only if the federal government has constitutional authority."),
-            Question(id: "con104_q3", prompt: "Most laws affecting daily life are:", choices: ["Federal laws", "State laws", "International treaties", "Executive orders"], correctIndex: 1, explanation: "Driving, property, criminal law, education — these are primarily governed by state law.")
+            Question(id: "con104_q1", type: .scenario, prompt: "A state passes a law that directly contradicts a valid federal statute. Under the Supremacy Clause:", choices: ["The state law takes priority within state borders", "Both laws apply simultaneously", "The federal law prevails if Congress had constitutional authority", "Citizens choose which to follow"], correctIndex: 2, explanation: "The Supremacy Clause (Article VI) makes federal law supreme over conflicting state law, but only within the scope of federal constitutional authority."),
+            Question(id: "con104_q2", prompt: "Which amendment reserves non-delegated powers to the states?", acceptedAnswers: ["tenth", "10th", "the tenth", "the 10th", "tenth amendment", "10th amendment"], explanation: "The Tenth Amendment reserves all powers not delegated to the federal government to the states or the people."),
+            Question(id: "con104_q3", prompt: "Match each concept to its definition.", matchingPairs: [
+                MatchingPair(left: "Enumerated Powers", right: "Specific federal powers listed in Constitution"),
+                MatchingPair(left: "Reserved Powers", right: "Powers retained by states under 10th Amendment"),
+                MatchingPair(left: "Concurrent Powers", right: "Powers shared by federal and state governments")
+            ], explanation: "Federalism divides power between levels of government through these three categories."),
+            Question(id: "con104_q4", prompt: "Most laws affecting your daily life (driving, property, crime) are:", choices: ["Federal laws", "Executive orders", "International treaties", "State laws"], correctIndex: 3, explanation: "Driving, property, criminal law, education — these are primarily governed by state law, not federal.")
         ]),
         flashcards: [
             Flashcard(id: "con104_f1", front: "Federalism", back: "A system of government where power is divided between a central authority and constituent states"),
@@ -246,9 +265,14 @@ enum ConstitutionLessons {
             ])
         ],
         quiz: Quiz(id: "con105_q", passPercent: 80, questions: [
-            Question(id: "con105_q1", prompt: "The President's check on Congress is:", choices: ["Judicial review", "Declaring war", "The veto power", "Appointing senators"], correctIndex: 2, explanation: "The President can veto legislation passed by Congress."),
-            Question(id: "con105_q2", prompt: "Congress's check on the President includes:", choices: ["Impeachment and funding control", "Vetoing executive orders", "Appointing cabinet members", "Issuing judicial rulings"], correctIndex: 0, explanation: "Congress can impeach the President and controls the federal budget."),
-            Question(id: "con105_q3", type: .scenario, prompt: "The executive branch begins making law-like rules without Congress. This is an example of:", choices: ["Proper governance", "Separation of powers working", "Judicial review", "Executive overreach"], correctIndex: 3, explanation: "When the executive acts like the legislature, it violates the separation of powers.")
+            Question(id: "con105_q1", prompt: "Match each branch to the check it holds over another.", matchingPairs: [
+                MatchingPair(left: "President → Congress", right: "Veto power"),
+                MatchingPair(left: "Congress → President", right: "Impeachment and budget control"),
+                MatchingPair(left: "Courts → Congress", right: "Judicial review of laws"),
+                MatchingPair(left: "Congress → Courts", right: "Confirms judges, can amend Constitution")
+            ], explanation: "Each branch has specific tools to check the power of the other branches."),
+            Question(id: "con105_q2", type: .scenario, prompt: "The executive branch begins issuing regulations that effectively create new law without Congressional approval. This is an example of:", choices: ["Judicial review", "Executive overreach", "Proper delegation", "Separation of powers working as intended"], correctIndex: 1, explanation: "When the executive makes law-like rules without Congress, it violates the separation of powers principle."),
+            Question(id: "con105_q3", type: .multiSelect, prompt: "Which are legitimate checks Congress holds over other branches?", choices: ["Impeachment", "Vetoing court decisions", "Controlling federal spending", "Appointing judges directly", "Confirming judicial nominees"], correctIndices: [0, 2, 4], explanation: "Congress can impeach officials, control the budget, and confirm judges. It cannot veto court decisions or directly appoint judges.")
         ]),
         flashcards: [
             Flashcard(id: "con105_f1", front: "Separation of Powers", back: "The division of government responsibilities among the legislative, executive, and judicial branches"),
@@ -299,11 +323,16 @@ enum ConstitutionLessons {
             ])
         ],
         quiz: Quiz(id: "con201_q", passPercent: 80, questions: [
-            Question(id: "con201_q1", prompt: "Which amendment protects against unreasonable searches?", choices: ["Second", "Third", "Fifth", "Fourth"], correctIndex: 3, explanation: "The Fourth Amendment protects against unreasonable searches and seizures by the government."),
-            Question(id: "con201_q2", prompt: "The Ninth Amendment states that:", choices: ["All rights are listed in the Constitution", "Unenumerated rights still exist", "States have no rights", "The President can create new rights"], correctIndex: 1, explanation: "The Ninth Amendment preserves rights not explicitly mentioned in the Constitution."),
-            Question(id: "con201_q3", prompt: "The Bill of Rights originally restricted:", choices: ["Only the federal government", "All governments worldwide", "State governments only", "Private companies"], correctIndex: 0, explanation: "The Bill of Rights originally applied only to the federal government, later extended to states through incorporation."),
-            Question(id: "con201_q4", type: .scenario, prompt: "Police search your home without a warrant or probable cause. Which amendment is violated?", choices: ["First Amendment", "Fourth Amendment", "Eighth Amendment", "Tenth Amendment"], correctIndex: 1, explanation: "The Fourth Amendment requires warrants based on probable cause for searches."),
-            Question(id: "con201_q5", type: .fillBlank, prompt: "The Bill of Rights was the condition for _____ of the Constitution.", choices: ["Amendment", "Enforcement", "Ratification", "Interpretation"], correctIndex: 2, explanation: "Several states refused to ratify the Constitution without a guarantee that a Bill of Rights would be added.")
+            Question(id: "con201_q1", prompt: "Match each amendment to what it protects.", matchingPairs: [
+                MatchingPair(left: "1st Amendment", right: "Speech, religion, press, assembly"),
+                MatchingPair(left: "2nd Amendment", right: "Right to keep and bear arms"),
+                MatchingPair(left: "4th Amendment", right: "Protection from unreasonable searches"),
+                MatchingPair(left: "5th Amendment", right: "Due process, no self-incrimination")
+            ], explanation: "Each amendment in the Bill of Rights protects specific individual liberties from government overreach."),
+            Question(id: "con201_q2", type: .scenario, prompt: "Police search your home without a warrant, probable cause, or your consent. Which amendment is most directly violated?", choices: ["First Amendment", "Tenth Amendment", "Fourth Amendment", "Eighth Amendment"], correctIndex: 2, explanation: "The Fourth Amendment requires warrants based on probable cause for government searches and seizures."),
+            Question(id: "con201_q3", type: .multiSelect, prompt: "Which statements about the Bill of Rights are TRUE?", choices: ["Originally applied only to the federal government", "Grants rights that didn't exist before", "Was required for Constitution ratification", "Makes all rights absolute with no limits", "Was later extended to states through incorporation"], correctIndices: [0, 2, 4], explanation: "The Bill of Rights originally restricted only the federal government, was the condition for ratification, and was later incorporated against states via the 14th Amendment."),
+            Question(id: "con201_q4", prompt: "The Ninth Amendment is important because it establishes that:", choices: ["All rights are explicitly listed", "States have no reserved powers", "Rights not listed in the Constitution still exist", "The President can create new amendments"], correctIndex: 2, explanation: "The Ninth Amendment preserves unenumerated rights — rights not explicitly mentioned still belong to the people."),
+            Question(id: "con201_q5", prompt: "The Bill of Rights was the condition for _____ of the Constitution.", acceptedAnswers: ["ratification", "the ratification", "ratifying"], explanation: "Several states refused to ratify the Constitution without a guarantee that a Bill of Rights would be added.")
         ]),
         flashcards: [
             Flashcard(id: "con201_f1", front: "Incorporation Doctrine", back: "The legal process through which the Bill of Rights was applied to state governments via the 14th Amendment"),
@@ -348,10 +377,10 @@ enum ConstitutionLessons {
             ])
         ],
         quiz: Quiz(id: "con202_q", passPercent: 80, questions: [
-            Question(id: "con202_q1", prompt: "The First Amendment restricts:", choices: ["The government", "Private companies", "Individual citizens", "Foreign countries"], correctIndex: 0, explanation: "The First Amendment only restricts government action, not private actors."),
-            Question(id: "con202_q2", prompt: "Is 'hate speech' a legal exception to the First Amendment?", choices: ["Yes, it's always illegal", "Only in federal courts", "Only online", "No, there is no hate speech exception"], correctIndex: 3, explanation: "The Supreme Court has consistently ruled there is no hate speech exception to the First Amendment."),
-            Question(id: "con202_q3", type: .scenario, prompt: "A social media company removes your post. Is this a First Amendment violation?", choices: ["Yes, they censored you", "Only if it's political speech", "No, the First Amendment restricts government, not private companies", "Only if you're a journalist"], correctIndex: 2, explanation: "Private companies are not bound by the First Amendment — only the government is."),
-            Question(id: "con202_q4", type: .fillBlank, prompt: "The First Amendment contains _____ distinct protections.", choices: ["Three", "Four", "Five", "Six"], correctIndex: 2, explanation: "Speech, press, establishment clause, free exercise clause, and assembly/petition — five protections.")
+            Question(id: "con202_q1", type: .scenario, prompt: "A social media company removes your post about a political topic. Is this a First Amendment violation?", choices: ["Yes — any speech suppression violates it", "Only if the post was factual", "No — the First Amendment restricts government, not private companies", "Only if you paid for the platform"], correctIndex: 2, explanation: "Private companies are not bound by the First Amendment — it only restricts government action."),
+            Question(id: "con202_q2", type: .multiSelect, prompt: "Which are the five protections within the First Amendment?", choices: ["Free Speech", "Right to bear arms", "Free Press", "Free Exercise of Religion", "Assembly and Petition", "Establishment Clause"], correctIndices: [0, 2, 3, 4, 5], explanation: "The First Amendment protects speech, press, religious establishment, free exercise, and assembly/petition — five distinct protections."),
+            Question(id: "con202_q3", prompt: "Is 'hate speech' a legal exception to the First Amendment?", choices: ["Yes, it's always criminal", "Only online", "No, there is no hate speech exception", "Only when directed at protected groups"], correctIndex: 2, explanation: "The Supreme Court has consistently ruled there is no hate speech exception to the First Amendment."),
+            Question(id: "con202_q4", prompt: "The legal term for government censorship before speech is expressed is called _____.", acceptedAnswers: ["prior restraint", "prior restraints", "prior-restraint"], explanation: "Prior restraint — government censorship before expression — is almost always unconstitutional under the First Amendment.")
         ]),
         flashcards: [
             Flashcard(id: "con202_f1", front: "Establishment Clause", back: "Prohibits the government from establishing an official religion or favoring one religion over another"),
@@ -395,10 +424,14 @@ enum ConstitutionLessons {
             ])
         ],
         quiz: Quiz(id: "con203_q", passPercent: 80, questions: [
-            Question(id: "con203_q1", prompt: "District of Columbia v. Heller established:", choices: ["Only militia members can own firearms", "An individual right to keep and bear arms", "States can ban all firearms", "The Second Amendment is obsolete"], correctIndex: 1, explanation: "Heller held that the Second Amendment protects an individual right to keep and bear arms, unconnected to militia service."),
-            Question(id: "con203_q2", prompt: "McDonald v. Chicago (2010) did what?", choices: ["Banned handguns in Chicago", "Repealed the Second Amendment", "Incorporated the right against state governments", "Created a national gun registry"], correctIndex: 2, explanation: "McDonald applied the Second Amendment to state and local governments through the Fourteenth Amendment."),
-            Question(id: "con203_q3", prompt: "Under Heller, the Second Amendment right is:", choices: ["Absolute with no limits", "Limited to militia members only", "Individual but not unlimited", "Only for hunting purposes"], correctIndex: 2, explanation: "Heller recognized the individual right while also acknowledging that it is subject to reasonable regulations."),
-            Question(id: "con203_q4", type: .fillBlank, prompt: "The militia clause in the Second Amendment is considered _____, not limiting.", choices: ["Operative", "Prefatory", "Advisory", "Mandatory"], correctIndex: 1, explanation: "The Supreme Court in Heller determined the militia clause is prefatory — it announces a purpose but does not limit the operative clause.")
+            Question(id: "con203_q1", prompt: "Match each landmark case to what it established.", matchingPairs: [
+                MatchingPair(left: "DC v. Heller (2008)", right: "Individual right to keep and bear arms"),
+                MatchingPair(left: "McDonald v. Chicago (2010)", right: "Incorporated 2A against state governments"),
+                MatchingPair(left: "Prefatory Clause", right: "Announces purpose but doesn't limit the right")
+            ], explanation: "These cases and concepts form the foundation of modern Second Amendment jurisprudence."),
+            Question(id: "con203_q2", type: .scenario, prompt: "Someone argues the Second Amendment only applies to muskets since that's what existed at the founding. Under Heller, this argument is:", choices: ["Correct — only founding-era weapons are protected", "Incorrect — 'arms' is interpreted broadly as at the founding", "A matter for Congress to decide", "Still an open legal question"], correctIndex: 1, explanation: "Heller interpreted 'arms' broadly, consistent with founding-era understanding that the term covers weapons in common use."),
+            Question(id: "con203_q3", type: .multiSelect, prompt: "Under Heller, which regulations are still permissible?", choices: ["Prohibiting felons from possession", "Banning all handguns", "Restricting carry in sensitive places", "Regulating dangerous and unusual weapons", "Complete civilian disarmament"], correctIndices: [0, 2, 3], explanation: "Heller recognized the individual right but noted it is not unlimited — felon prohibitions, sensitive-place restrictions, and dangerous-weapon regulations remain valid."),
+            Question(id: "con203_q4", prompt: "The militia clause in the Second Amendment is considered _____, not limiting.", acceptedAnswers: ["prefatory", "a prefatory clause", "prefatory clause"], explanation: "The Supreme Court in Heller determined the militia clause is prefatory — it announces a purpose but does not limit the operative clause.")
         ]),
         flashcards: [
             Flashcard(id: "con203_f1", front: "DC v. Heller (2008)", back: "Supreme Court case establishing the Second Amendment protects an individual right to keep and bear arms"),
@@ -446,10 +479,15 @@ enum ConstitutionLessons {
             ])
         ],
         quiz: Quiz(id: "con204_q", passPercent: 80, questions: [
-            Question(id: "con204_q1", prompt: "Where do most bills die?", choices: ["On the Senate floor", "In the President's office", "In committee", "At conference"], correctIndex: 2, explanation: "The vast majority of bills introduced in Congress die in committee, never reaching a floor vote."),
-            Question(id: "con204_q2", prompt: "A filibuster in the Senate requires how many votes to end?", choices: ["51 (simple majority)", "60 (cloture)", "67 (two-thirds)", "75 (three-fourths)"], correctIndex: 1, explanation: "Cloture — ending a filibuster — requires 60 votes in the Senate."),
-            Question(id: "con204_q3", prompt: "To override a presidential veto, Congress needs:", choices: ["Simple majority in one chamber", "Two-thirds of both chambers", "Three-fourths of the Senate", "Unanimous consent"], correctIndex: 1, explanation: "A veto override requires a two-thirds supermajority vote in both the House and the Senate."),
-            Question(id: "con204_q4", type: .scenario, prompt: "The House passes a version of a bill different from the Senate version. What happens next?", choices: ["The President picks the version they prefer", "A conference committee reconciles differences", "The bill dies automatically", "The Supreme Court decides"], correctIndex: 1, explanation: "A conference committee of members from both chambers works to produce a single unified version of the bill.")
+            Question(id: "con204_q1", type: .scenario, prompt: "A senator talks for 14 hours straight to delay a vote on a bill. This tactic is called:", choices: ["Gerrymandering", "A filibuster", "Cloture", "A pocket veto"], correctIndex: 1, explanation: "A filibuster is unlimited debate in the Senate used to delay or prevent a vote on legislation."),
+            Question(id: "con204_q2", prompt: "The number of votes needed to end a Senate filibuster (cloture) is _____.", acceptedAnswers: ["60", "sixty", "60 votes", "sixty votes"], explanation: "Cloture — ending a filibuster — requires 60 votes in the Senate."),
+            Question(id: "con204_q3", prompt: "Match each 'kill point' to how it stops legislation.", matchingPairs: [
+                MatchingPair(left: "Committee", right: "Most bills die here without a floor vote"),
+                MatchingPair(left: "Filibuster", right: "Requires 60 Senate votes to end debate"),
+                MatchingPair(left: "Presidential Veto", right: "Requires two-thirds override in both chambers"),
+                MatchingPair(left: "Conference Disagreement", right: "House and Senate can't reconcile versions")
+            ], explanation: "Legislation can be killed at multiple points in the process — understanding these kill points reveals why so little passes."),
+            Question(id: "con204_q4", type: .scenario, prompt: "The House passes a version of a bill different from the Senate version. What happens next?", choices: ["The President picks their preferred version", "The bill dies automatically", "A conference committee reconciles differences", "The Supreme Court arbitrates"], correctIndex: 2, explanation: "A conference committee of members from both chambers works to produce a single unified version of the bill.")
         ]),
         flashcards: [
             Flashcard(id: "con204_f1", front: "Filibuster", back: "A Senate procedure allowing unlimited debate to delay or prevent a vote — requires 60 votes (cloture) to end"),
@@ -497,10 +535,10 @@ enum ConstitutionLessons {
             ])
         ],
         quiz: Quiz(id: "con301_q", passPercent: 80, questions: [
-            Question(id: "con301_q1", prompt: "Marbury v. Madison established:", choices: ["Executive privilege", "Congressional immunity", "The power of the presidential veto", "Judicial review"], correctIndex: 3, explanation: "Marbury v. Madison established judicial review — the power of courts to declare laws unconstitutional."),
-            Question(id: "con301_q2", prompt: "The Chief Justice who decided Marbury was:", choices: ["John Jay", "John Marshall", "Roger Taney", "Oliver Wendell Holmes"], correctIndex: 1, explanation: "Chief Justice John Marshall authored the opinion that created judicial review."),
-            Question(id: "con301_q3", type: .scenario, prompt: "Why did no one challenge Marshall's power grab in Marbury?", choices: ["The Constitution explicitly grants judicial review", "Everyone agreed with the decision", "The immediate result favored Jefferson, so he didn't fight it", "Congress passed a law confirming it"], correctIndex: 2, explanation: "Marshall ruled against Marbury (which Jefferson wanted) while claiming the larger power of judicial review — a strategic masterpiece."),
-            Question(id: "con301_q4", type: .fillBlank, prompt: "Judicial review is _____ stated in the Constitution.", choices: ["Explicitly", "Not explicitly", "Repeatedly", "Never"], correctIndex: 1, explanation: "The power of judicial review is not explicitly written in the Constitution — it was established by the Marshall Court's interpretation.")
+            Question(id: "con301_q1", type: .scenario, prompt: "Chief Justice Marshall ruled against Marbury's claim while simultaneously establishing judicial review. Why was this strategically brilliant?", choices: ["It made the Court look weak, avoiding conflict", "The immediate result favored Jefferson, so no one challenged the larger power grab", "Congress had already agreed to judicial review", "Marshall was retiring and had nothing to lose"], correctIndex: 1, explanation: "Marshall gave Jefferson the outcome he wanted (denying Marbury) while claiming the far more important power of judicial review — a masterclass in institutional strategy."),
+            Question(id: "con301_q2", prompt: "Judicial review is _____ stated in the Constitution.", acceptedAnswers: ["not explicitly", "not", "implied", "not directly", "implicitly"], explanation: "The power of judicial review is not explicitly written in the Constitution — it was established through Marshall's interpretation in Marbury."),
+            Question(id: "con301_q3", prompt: "Which Chief Justice established judicial review?", choices: ["Oliver Wendell Holmes", "Roger Taney", "John Marshall", "John Jay"], correctIndex: 2, explanation: "Chief Justice John Marshall authored Marbury v. Madison (1803), establishing the courts' power of judicial review."),
+            Question(id: "con301_q4", type: .multiSelect, prompt: "Which statements about Marbury v. Madison are true?", choices: ["It was decided in 1803", "It explicitly overturned a federal law", "Judicial review was already in the Constitution", "Marshall ruled against Marbury's claim", "It established the Supreme Court's power to declare laws unconstitutional"], correctIndices: [0, 1, 3, 4], explanation: "Marbury (1803) struck down part of the Judiciary Act and established judicial review. Marshall ruled against Marbury while claiming the larger institutional power.")
         ]),
         flashcards: [
             Flashcard(id: "con301_f1", front: "Marbury v. Madison (1803)", back: "The landmark case establishing judicial review — the power of courts to strike down unconstitutional laws"),
@@ -543,10 +581,14 @@ enum ConstitutionLessons {
             ])
         ],
         quiz: Quiz(id: "con302_q", passPercent: 80, questions: [
-            Question(id: "con302_q1", prompt: "Which amendment abolished slavery?", choices: ["12th", "14th", "13th", "15th"], correctIndex: 2, explanation: "The 13th Amendment (1865) abolished slavery and involuntary servitude."),
-            Question(id: "con302_q2", prompt: "The Equal Protection Clause is found in the:", choices: ["Bill of Rights", "Article III", "15th Amendment", "14th Amendment"], correctIndex: 3, explanation: "The Equal Protection Clause is part of the 14th Amendment."),
-            Question(id: "con302_q3", prompt: "The most litigated provision in the Constitution is:", choices: ["The First Amendment", "The Second Amendment", "The 14th Amendment", "Article I"], correctIndex: 2, explanation: "The 14th Amendment's Due Process and Equal Protection Clauses are the foundation of more constitutional litigation than any other provision."),
-            Question(id: "con302_q4", type: .scenario, prompt: "A state law treats one racial group differently than another. Which clause is most directly relevant?", choices: ["Free Exercise Clause", "Commerce Clause", "Supremacy Clause", "Equal Protection Clause"], correctIndex: 3, explanation: "The Equal Protection Clause of the 14th Amendment prohibits states from denying equal protection of the laws.")
+            Question(id: "con302_q1", prompt: "Match each Civil War Amendment to what it accomplished.", matchingPairs: [
+                MatchingPair(left: "13th Amendment (1865)", right: "Abolished slavery"),
+                MatchingPair(left: "14th Amendment (1868)", right: "Due process and equal protection"),
+                MatchingPair(left: "15th Amendment (1870)", right: "Voting rights regardless of race")
+            ], explanation: "The three Reconstruction amendments fundamentally reshaped the Constitution after the Civil War."),
+            Question(id: "con302_q2", type: .scenario, prompt: "A state law treats one racial group differently than another. Which clause is most directly violated?", choices: ["Free Exercise Clause", "Equal Protection Clause", "Commerce Clause", "Supremacy Clause"], correctIndex: 1, explanation: "The Equal Protection Clause of the 14th Amendment prohibits states from denying any person equal protection of the laws."),
+            Question(id: "con302_q3", type: .multiSelect, prompt: "Which are components or effects of the 14th Amendment?", choices: ["Defines citizenship", "Abolishes slavery", "Due Process Clause", "Equal Protection Clause", "Incorporates Bill of Rights against states"], correctIndices: [0, 2, 3, 4], explanation: "The 14th Amendment defines citizenship, establishes due process and equal protection, and is the basis for incorporating the Bill of Rights against states. The 13th Amendment abolished slavery."),
+            Question(id: "con302_q4", prompt: "The most litigated provision in the entire Constitution is the:", choices: ["First Amendment", "Second Amendment", "14th Amendment", "Commerce Clause"], correctIndex: 2, explanation: "The 14th Amendment's Due Process and Equal Protection Clauses are the foundation of more constitutional litigation than any other provision.")
         ]),
         flashcards: [
             Flashcard(id: "con302_f1", front: "13th Amendment", back: "Abolishes slavery and involuntary servitude (1865)"),
@@ -592,10 +634,14 @@ enum ConstitutionLessons {
             ])
         ],
         quiz: Quiz(id: "con303_q", passPercent: 80, questions: [
-            Question(id: "con303_q1", prompt: "Strict scrutiny requires the government to show:", choices: ["Any rational reason", "An important interest", "A compelling interest with narrow tailoring", "Majority public support"], correctIndex: 2, explanation: "Strict scrutiny — the highest level — requires a compelling government interest and narrowly tailored means."),
-            Question(id: "con303_q2", prompt: "Rational basis review is:", choices: ["The hardest standard to meet", "The easiest standard for the government to meet", "Only used for criminal cases", "Applied only to federal laws"], correctIndex: 1, explanation: "Rational basis is the most deferential standard — the government only needs a legitimate interest and rational connection."),
-            Question(id: "con303_q3", type: .scenario, prompt: "A law treats people differently based on race. What level of scrutiny applies?", choices: ["Rational basis", "Intermediate scrutiny", "No scrutiny", "Strict scrutiny"], correctIndex: 3, explanation: "Race-based classifications trigger strict scrutiny — the government must show a compelling interest and narrow tailoring."),
-            Question(id: "con303_q4", type: .fillBlank, prompt: "The first step in analyzing a constitutional dispute is identifying the _____ at issue.", choices: ["Politician", "Court", "Constitutional provision", "Political party"], correctIndex: 2, explanation: "Start with the text — identify which specific constitutional provision is being invoked or challenged.")
+            Question(id: "con303_q1", prompt: "Match each level of scrutiny to when it applies.", matchingPairs: [
+                MatchingPair(left: "Strict Scrutiny", right: "Race, religion, fundamental rights"),
+                MatchingPair(left: "Intermediate Scrutiny", right: "Gender discrimination"),
+                MatchingPair(left: "Rational Basis", right: "Most economic and social regulations")
+            ], explanation: "Different classifications trigger different levels of judicial review, from most to least demanding."),
+            Question(id: "con303_q2", type: .scenario, prompt: "A new law classifies people by race for a government program. A court reviewing this law must apply:", choices: ["Rational basis — the easiest standard", "Intermediate scrutiny", "Strict scrutiny — compelling interest and narrow tailoring", "No judicial review is required"], correctIndex: 2, explanation: "Race-based government classifications always trigger strict scrutiny — the most demanding standard of review."),
+            Question(id: "con303_q3", prompt: "The first step in analyzing any constitutional dispute is identifying the _____ at issue.", acceptedAnswers: ["constitutional provision", "provision", "text", "constitutional text", "clause"], explanation: "Start with the text — identify which specific constitutional provision is being invoked or challenged."),
+            Question(id: "con303_q4", type: .multiSelect, prompt: "Under strict scrutiny, what must the government demonstrate?", choices: ["A compelling government interest", "Public opinion support", "Narrow tailoring of the law", "Congressional supermajority", "That no less restrictive alternative exists"], correctIndices: [0, 2, 4], explanation: "Strict scrutiny requires a compelling interest, narrow tailoring, and that the law is the least restrictive means available.")
         ]),
         flashcards: [
             Flashcard(id: "con303_f1", front: "Strict Scrutiny", back: "Highest standard of judicial review — requires compelling interest and narrow tailoring. Applied to race, religion, and fundamental rights."),

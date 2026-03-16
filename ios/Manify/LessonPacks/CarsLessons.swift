@@ -49,10 +49,15 @@ enum CarsLessons {
             ])
         ],
         quiz: Quiz(id: "cars101_q", passPercent: 80, questions: [
-            Question(id: "cars101_q1", prompt: "The four requirements for combustion are:", choices: ["Air, fuel, spark, compression", "Oil, coolant, spark, air", "Fuel, oil, water, spark", "Air, electricity, fuel, exhaust"], correctIndex: 0, explanation: "Air, fuel, spark, and compression are the four requirements for internal combustion."),
-            Question(id: "cars101_q2", prompt: "During the compression stroke:", choices: ["Air-fuel enters the cylinder", "Exhaust gases exit", "Spark ignites the mixture", "The mixture is compressed by the piston"], correctIndex: 3, explanation: "The compression stroke is when the piston moves upward to compress the air-fuel mixture before ignition."),
-            Question(id: "cars101_q3", type: .scenario, prompt: "Your car is running rough and you smell unburned fuel. The likely issue category is:", choices: ["Air", "Compression", "Exhaust", "Fuel delivery or spark"], correctIndex: 3, explanation: "Unburned fuel smell suggests fuel isn't being properly ignited — likely a spark or fuel delivery issue."),
-            Question(id: "cars101_q4", type: .fillBlank, prompt: "The four strokes in order are: intake, compression, power, _____.", choices: ["Ignition", "Injection", "Exhaust", "Vacuum"], correctIndex: 2, explanation: "The four strokes are intake, compression, power, exhaust.")
+            Question(id: "cars101_q1", prompt: "Match each stroke of the four-stroke cycle to what happens.", matchingPairs: [
+                MatchingPair(left: "Intake", right: "Piston moves down, air-fuel enters"),
+                MatchingPair(left: "Compression", right: "Piston moves up, mixture is squeezed"),
+                MatchingPair(left: "Power", right: "Spark ignites, piston forced down"),
+                MatchingPair(left: "Exhaust", right: "Piston moves up, spent gases expelled")
+            ], explanation: "The four-stroke cycle is the operating principle of most car engines."),
+            Question(id: "cars101_q2", type: .scenario, prompt: "Your car is running rough and you smell unburned fuel from the exhaust. Which combustion requirement is most likely failing?", choices: ["Air intake", "Compression", "Spark or fuel delivery", "Exhaust flow"], correctIndex: 2, explanation: "Unburned fuel smell means the mixture isn't being properly ignited — pointing to a spark or fuel delivery issue."),
+            Question(id: "cars101_q3", type: .multiSelect, prompt: "Which are the four requirements for internal combustion?", choices: ["Air", "Oil", "Fuel", "Spark", "Coolant", "Compression"], correctIndices: [0, 2, 3, 5], explanation: "Air, fuel, spark, and compression are the four requirements. Oil lubricates and coolant cools, but neither is part of the combustion process."),
+            Question(id: "cars101_q4", prompt: "The four strokes in order are: intake, compression, power, _____.", acceptedAnswers: ["exhaust", "the exhaust stroke", "exhaust stroke"], explanation: "The four strokes are intake, compression, power, exhaust — completing one full engine cycle.")
         ]),
         flashcards: [
             Flashcard(id: "cars101_f1", front: "Four-Stroke Cycle", back: "Intake, Compression, Power, Exhaust — the operating cycle of most car engines"),
@@ -103,9 +108,9 @@ enum CarsLessons {
             ])
         ],
         quiz: Quiz(id: "cars102_q", passPercent: 80, questions: [
-            Question(id: "cars102_q1", prompt: "Oil serves all of these functions EXCEPT:", choices: ["Lubrication", "Cooling", "Cleaning", "Combustion"], correctIndex: 3, explanation: "Oil lubricates, cools, cleans, and creates hydraulic pressure — but it does not participate in combustion."),
-            Question(id: "cars102_q2", prompt: "The correct oil weight for your car is found in:", choices: ["The oil filter box", "The gas station attendant's recommendation", "Your owner's manual", "The oil cap only"], correctIndex: 2, explanation: "Your owner's manual specifies the exact oil weight your engine requires."),
-            Question(id: "cars102_q3", prompt: "How often should you check your oil level?", choices: ["Daily", "Only at oil changes", "Monthly", "Annually"], correctIndex: 2, explanation: "Checking monthly catches leaks and consumption issues before they cause damage.")
+            Question(id: "cars102_q1", type: .multiSelect, prompt: "Which functions does engine oil serve?", choices: ["Lubricates metal-on-metal contact", "Participates in combustion", "Cools engine components", "Cleans internal deposits", "Creates hydraulic pressure"], correctIndices: [0, 2, 3, 4], explanation: "Oil lubricates, cools, cleans, and creates hydraulic pressure. It does NOT participate in combustion."),
+            Question(id: "cars102_q2", type: .scenario, prompt: "A friend says they use whatever oil is cheapest because 'oil is oil.' The correct response is:", choices: ["They're right — brand doesn't matter", "Only synthetic matters", "The correct oil weight from the owner's manual is what matters most", "Thicker oil is always better for protection"], correctIndex: 2, explanation: "Your owner's manual specifies the exact oil weight (viscosity) your engine requires. Using the wrong weight can cause damage."),
+            Question(id: "cars102_q3", prompt: "Engine oil level should be checked at least _____.", acceptedAnswers: ["monthly", "once a month", "every month"], explanation: "Checking monthly catches leaks and consumption issues before they cause engine damage.")
         ]),
         flashcards: [
             Flashcard(id: "cars102_f1", front: "Viscosity", back: "A measure of oil's thickness and flow resistance — expressed as weight (5W-30, 0W-20, etc.)"),
@@ -156,9 +161,15 @@ enum CarsLessons {
             ])
         ],
         quiz: Quiz(id: "cars103_q", passPercent: 80, questions: [
-            Question(id: "cars103_q1", prompt: "You should check coolant level when the engine is:", choices: ["Hot", "Running", "Under load", "Cold"], correctIndex: 3, explanation: "Always check coolant when the engine is cold. Opening a hot radiator cap can cause severe burns."),
-            Question(id: "cars103_q2", prompt: "A stuck-closed thermostat causes:", choices: ["The engine to run too cool", "Low oil pressure", "Overheating", "Increased fuel economy"], correctIndex: 2, explanation: "A stuck-closed thermostat blocks coolant flow, causing the engine to overheat rapidly."),
-            Question(id: "cars103_q3", type: .scenario, prompt: "Your temperature gauge spikes while driving. You should:", choices: ["Turn on the heater and monitor", "Add cold water to the radiator immediately", "Keep driving to the nearest mechanic", "Pull over immediately and shut off the engine"], correctIndex: 3, explanation: "Pull over immediately. Continuing to drive an overheating engine can cause catastrophic damage.")
+            Question(id: "cars103_q1", prompt: "Match each cooling component to its role.", matchingPairs: [
+                MatchingPair(left: "Radiator", right: "Exchanges heat from coolant to outside air"),
+                MatchingPair(left: "Water Pump", right: "Circulates coolant through the system"),
+                MatchingPair(left: "Thermostat", right: "Valve regulating coolant flow by temperature"),
+                MatchingPair(left: "Cooling Fans", right: "Pull air through radiator at low speeds")
+            ], explanation: "Each component plays a critical role in preventing engine overheating."),
+            Question(id: "cars103_q2", type: .scenario, prompt: "Your temperature gauge spikes to the red zone while driving. Your immediate action should be:", choices: ["Turn on the heater and keep monitoring", "Pull over immediately — do NOT keep driving", "Add cold water to the radiator", "Rev the engine to increase water pump flow"], correctIndex: 1, explanation: "Pull over immediately. Continuing to drive an overheating engine for even a few minutes can cause catastrophic and expensive damage."),
+            Question(id: "cars103_q3", prompt: "Coolant should ONLY be checked when the engine is _____.", acceptedAnswers: ["cold", "cool", "cooled down", "not running"], explanation: "Never open a hot radiator cap. The pressurized system can release scalding coolant and cause severe burns."),
+            Question(id: "cars103_q4", prompt: "A stuck-closed thermostat causes:", choices: ["The engine to run too cool", "Increased fuel economy", "Rapid overheating", "Low oil pressure"], correctIndex: 2, explanation: "A stuck-closed thermostat blocks coolant flow to the radiator, causing the engine to overheat rapidly.")
         ]),
         flashcards: [
             Flashcard(id: "cars103_f1", front: "Thermostat", back: "A temperature-controlled valve that regulates coolant flow — closed when cold, opens when the engine reaches operating temperature"),
@@ -213,10 +224,15 @@ enum CarsLessons {
             ])
         ],
         quiz: Quiz(id: "cars201_q", passPercent: 80, questions: [
-            Question(id: "cars201_q1", prompt: "A squealing sound when braking indicates:", choices: ["Normal operation", "The engine is overheating", "Brake pads are wearing thin", "Low tire pressure"], correctIndex: 2, explanation: "Squealing is caused by built-in wear indicators contacting the rotor — it's a designed warning that pads need replacement."),
-            Question(id: "cars201_q2", prompt: "A soft or spongy brake pedal suggests:", choices: ["New brake pads", "Normal pad break-in", "Excellent braking power", "Air in the brake lines or low fluid"], correctIndex: 3, explanation: "A spongy pedal means the hydraulic system is compromised — likely air in the lines or low brake fluid."),
-            Question(id: "cars201_q3", prompt: "The caliper's job is to:", choices: ["Spin the rotor", "Store brake fluid", "Squeeze brake pads against the rotor", "Connect the wheel to the axle"], correctIndex: 2, explanation: "The caliper is a hydraulic clamp that forces the brake pads against the spinning rotor to create friction and slow the wheel."),
-            Question(id: "cars201_q4", type: .scenario, prompt: "You hear grinding when you brake. This means:", choices: ["Your brakes are working perfectly", "Brake pads are completely worn — rotors are being damaged", "Your tires need alignment", "The engine needs oil"], correctIndex: 1, explanation: "Grinding means the friction material is gone and metal is contacting metal — this damages rotors and is a safety emergency.")
+            Question(id: "cars201_q1", prompt: "Match each brake warning sign to what it means.", matchingPairs: [
+                MatchingPair(left: "Squealing", right: "Wear indicators contacting rotor — pads need replacement"),
+                MatchingPair(left: "Grinding", right: "Metal-on-metal — pads gone, rotors being damaged"),
+                MatchingPair(left: "Soft/spongy pedal", right: "Air in brake lines or low fluid"),
+                MatchingPair(left: "Pulling to one side", right: "Uneven pad wear or stuck caliper")
+            ], explanation: "Each brake symptom indicates a specific problem. Knowing what to listen and feel for can save your life."),
+            Question(id: "cars201_q2", type: .scenario, prompt: "You hear loud grinding every time you press the brake pedal. This is:", choices: ["Normal for new brake pads", "A safety emergency — pads are gone, rotors are being destroyed", "Just a minor noise issue", "Related to tire pressure"], correctIndex: 1, explanation: "Grinding means metal-on-metal contact. The friction material is gone and the rotor is being damaged. Address immediately."),
+            Question(id: "cars201_q3", prompt: "The hydraulic clamp that squeezes brake pads against the rotor is called the _____.", acceptedAnswers: ["caliper", "brake caliper", "the caliper"], explanation: "The caliper is a hydraulic clamp that squeezes the pads against the spinning rotor when you press the brake pedal."),
+            Question(id: "cars201_q4", type: .multiSelect, prompt: "Which brake symptoms require immediate attention?", choices: ["Squealing during braking", "Grinding during braking", "Soft or spongy brake pedal", "Slight noise when cold that goes away", "Vibration/pulsing when braking"], correctIndices: [1, 2, 4], explanation: "Grinding (metal-on-metal damage), spongy pedal (hydraulic failure), and vibration (warped rotors) all require immediate attention. Squealing is a warning but not an emergency. Cold noise that clears is normal.")
         ]),
         flashcards: [
             Flashcard(id: "cars201_f1", front: "Brake Rotor", back: "The spinning metal disc attached to the wheel hub — brake pads clamp against it to slow the vehicle"),
@@ -262,10 +278,15 @@ enum CarsLessons {
             ])
         ],
         quiz: Quiz(id: "cars202_q", passPercent: 80, questions: [
-            Question(id: "cars202_q1", prompt: "The correct tire pressure for your car is found:", choices: ["On the tire sidewall", "In the owner's manual or door jamb sticker", "At the gas station", "On the wheel rim"], correctIndex: 1, explanation: "The sidewall shows the maximum pressure. Your correct pressure is on the door jamb sticker or in the owner's manual."),
-            Question(id: "cars202_q2", prompt: "In 'P225/65R17', the '65' represents:", choices: ["Tire width in mm", "Wheel diameter", "Aspect ratio (sidewall height as % of width)", "Speed rating"], correctIndex: 2, explanation: "The aspect ratio is the sidewall height expressed as a percentage of the tire width."),
-            Question(id: "cars202_q3", prompt: "How often should tires be rotated?", choices: ["Every 1,000 miles", "Every 5,000-7,500 miles", "Once a year", "Never — they're designed to wear evenly"], correctIndex: 1, explanation: "Tire rotation every 5,000-7,500 miles ensures even wear across all four tires."),
-            Question(id: "cars202_q4", type: .fillBlank, prompt: "The last 4 digits of the DOT code indicate the _____ of manufacture.", choices: ["Country", "Factory", "Week and year", "Material type"], correctIndex: 2, explanation: "The last 4 digits show the week and year of manufacture — e.g., 2423 means week 24 of 2023.")
+            Question(id: "cars202_q1", prompt: "Match each part of 'P225/65R17' to what it means.", matchingPairs: [
+                MatchingPair(left: "P", right: "Passenger vehicle tire"),
+                MatchingPair(left: "225", right: "Tire width in millimeters"),
+                MatchingPair(left: "65", right: "Aspect ratio (sidewall height as % of width)"),
+                MatchingPair(left: "R17", right: "Radial construction, 17-inch wheel")
+            ], explanation: "Reading tire sidewall codes tells you everything about a tire's size and construction."),
+            Question(id: "cars202_q2", type: .scenario, prompt: "You're checking tire pressure. Where do you find the CORRECT pressure for your car?", choices: ["The number printed on the tire sidewall", "The owner's manual or door jamb sticker", "Whatever the gas station gauge says is average", "The tire shop's recommendation"], correctIndex: 1, explanation: "The sidewall shows the MAXIMUM pressure. Your correct pressure is on the door jamb sticker or in the owner's manual."),
+            Question(id: "cars202_q3", prompt: "The last 4 digits of the DOT code indicate the _____ of manufacture.", acceptedAnswers: ["week and year", "date", "manufacture date", "week and year of manufacture"], explanation: "The last 4 digits show the week and year — e.g., 2423 means week 24 of 2023. Important for knowing tire age."),
+            Question(id: "cars202_q4", type: .multiSelect, prompt: "Which are proper tire maintenance practices?", choices: ["Check pressure monthly", "Use the sidewall maximum as your target pressure", "Rotate every 5,000-7,500 miles", "Replace in pairs on the same axle", "Mix different tire types across an axle"], correctIndices: [0, 2, 3], explanation: "Monthly pressure checks, regular rotation, and replacing in pairs are correct. The sidewall shows max pressure (not target), and you should never mix tire types on the same axle.")
         ]),
         flashcards: [
             Flashcard(id: "cars202_f1", front: "Aspect Ratio", back: "The sidewall height expressed as a percentage of tire width — the second number in the tire size code"),
@@ -312,10 +333,15 @@ enum CarsLessons {
             ])
         ],
         quiz: Quiz(id: "cars203_q", passPercent: 80, questions: [
-            Question(id: "cars203_q1", prompt: "A red oil pressure warning light means:", choices: ["Time for an oil change", "Oil is at normal temperature", "Stop driving immediately — engine damage in seconds", "The oil filter needs replacement"], correctIndex: 2, explanation: "Red oil pressure light means critically low oil pressure. Continuing to drive will destroy the engine within seconds to minutes."),
-            Question(id: "cars203_q2", prompt: "OBD-II diagnostic codes tell you:", choices: ["Exactly what part to replace", "What the computer detected, not necessarily the root cause", "How much the repair will cost", "When the car was last serviced"], correctIndex: 1, explanation: "A DTC indicates what the computer's sensors detected — the actual root cause may require further diagnosis."),
-            Question(id: "cars203_q3", type: .scenario, prompt: "Your check engine light comes on but the car seems to drive normally. You should:", choices: ["Ignore it — it's probably nothing", "Get it scanned soon but don't panic", "Stop driving immediately", "Disconnect the battery to reset it"], correctIndex: 1, explanation: "An amber check engine light means something needs attention but isn't immediately dangerous. Get it scanned soon."),
-            Question(id: "cars203_q4", prompt: "The OBD-II port is located:", choices: ["Under the hood", "In the trunk", "Under the dashboard on the driver side", "Behind the glove box"], correctIndex: 2, explanation: "The OBD-II port is standardized under the dashboard on the driver's side, typically near the steering column.")
+            Question(id: "cars203_q1", prompt: "Match each warning light color/type to the correct response.", matchingPairs: [
+                MatchingPair(left: "Red oil pressure", right: "Stop driving immediately"),
+                MatchingPair(left: "Red temperature", right: "Pull over immediately"),
+                MatchingPair(left: "Amber check engine", right: "Get scanned soon, don't panic"),
+                MatchingPair(left: "Amber TPMS", right: "Check tire pressure soon")
+            ], explanation: "Red = stop or pull over immediately. Amber = diagnose soon but not an emergency."),
+            Question(id: "cars203_q2", type: .scenario, prompt: "Your check engine light comes on but the car drives normally. The correct response is:", choices: ["Ignore it until something feels wrong", "Disconnect the battery to reset it", "Get it scanned with an OBD-II reader soon", "Stop driving immediately"], correctIndex: 2, explanation: "An amber check engine light means something needs attention but isn't immediately dangerous. Scan for codes to understand the issue."),
+            Question(id: "cars203_q3", prompt: "OBD-II codes tell you what the computer _____, not necessarily the root cause.", acceptedAnswers: ["detected", "sensed", "found", "recorded", "observed"], explanation: "A DTC indicates what the computer's sensors detected — the actual root cause may require further professional diagnosis."),
+            Question(id: "cars203_q4", type: .multiSelect, prompt: "Which dashboard warning lights require you to STOP driving immediately?", choices: ["Red oil pressure light", "Amber check engine light", "Red temperature gauge", "Amber TPMS light", "Red battery/charging light"], correctIndices: [0, 2], explanation: "Red oil pressure and red temperature are stop-immediately warnings. Battery is urgent but you have limited time. Amber lights mean diagnose soon.")
         ]),
         flashcards: [
             Flashcard(id: "cars203_f1", front: "OBD-II", back: "On-Board Diagnostics II — a standardized diagnostic system and port in all cars since 1996"),
@@ -366,10 +392,15 @@ enum CarsLessons {
             ])
         ],
         quiz: Quiz(id: "cars301_q", passPercent: 80, questions: [
-            Question(id: "cars301_q1", prompt: "The first action when your temperature gauge spikes is:", choices: ["Open the radiator cap to check coolant", "Pull over, turn off AC, turn heater to max", "Keep driving to a mechanic", "Add water immediately"], correctIndex: 1, explanation: "Pull over safely, turn off AC (reduces engine load), and turn the heater on max (acts as a secondary radiator to draw heat away from the engine)."),
-            Question(id: "cars301_q2", prompt: "If the lower radiator hose is cold while the engine is hot, the likely cause is:", choices: ["Normal operation", "A clogged radiator", "A stuck-closed thermostat", "A broken fan"], correctIndex: 2, explanation: "A cold lower hose means coolant isn't circulating through the radiator — the thermostat is likely stuck closed."),
-            Question(id: "cars301_q3", type: .fillBlank, prompt: "The most common cause of overheating is _____.", choices: ["A broken fan", "A cracked block", "Low coolant from a leak", "Bad spark plugs"], correctIndex: 2, explanation: "Low coolant — usually from a slow leak — is the single most common cause of engine overheating."),
-            Question(id: "cars301_q4", type: .scenario, prompt: "You find a broken serpentine belt under the hood. This affects:", choices: ["Only the stereo", "Only the power steering", "The water pump, alternator, and possibly other accessories", "Nothing critical"], correctIndex: 2, explanation: "The serpentine belt drives multiple components including the water pump (cooling) and alternator (charging). A broken belt is a breakdown.")
+            Question(id: "cars301_q1", prompt: "Put the overheating diagnostic steps in the correct order.", matchingPairs: [
+                MatchingPair(left: "Step 1", right: "Pull over, turn off AC, heater to max"),
+                MatchingPair(left: "Step 2", right: "Check coolant level (when cooled)"),
+                MatchingPair(left: "Step 3", right: "Look for visible leaks"),
+                MatchingPair(left: "Step 4", right: "Check cooling fan and hoses")
+            ], explanation: "Following the diagnostic chain in order helps you identify the cause without making things worse."),
+            Question(id: "cars301_q2", type: .scenario, prompt: "The lower radiator hose is cold while the engine is overheating. This tells you:", choices: ["The radiator is clogged", "The water pump has failed", "The thermostat is stuck closed — coolant can't circulate", "The cooling fan isn't working"], correctIndex: 2, explanation: "A cold lower hose means coolant isn't flowing through the radiator — the thermostat is stuck in the closed position."),
+            Question(id: "cars301_q3", prompt: "The most common cause of engine overheating is _____.", acceptedAnswers: ["low coolant", "low coolant from a leak", "a coolant leak", "coolant leak", "low coolant level"], explanation: "Low coolant from a slow leak is the single most common cause of engine overheating."),
+            Question(id: "cars301_q4", type: .multiSelect, prompt: "A broken serpentine belt disables which systems?", choices: ["Water pump (cooling)", "Alternator (charging)", "Fuel injectors", "AC compressor", "Spark plugs", "Power steering"], correctIndices: [0, 1, 3, 5], explanation: "The serpentine belt drives the water pump, alternator, AC compressor, and power steering pump. Fuel injectors and spark plugs are electrically controlled.")
         ]),
         flashcards: [
             Flashcard(id: "cars301_f1", front: "Head Gasket", back: "The seal between the engine block and cylinder head — failure from overheating causes coolant/oil mixing and compression loss"),
@@ -418,10 +449,15 @@ enum CarsLessons {
             ])
         ],
         quiz: Quiz(id: "cars302_q", passPercent: 80, questions: [
-            Question(id: "cars302_q1", prompt: "The alternator's primary job is to:", choices: ["Start the engine", "Charge the battery and power electronics while running", "Regulate engine temperature", "Control the transmission"], correctIndex: 1, explanation: "The alternator charges the battery and powers all electrical systems while the engine is running."),
-            Question(id: "cars302_q2", prompt: "You jump start the car and it runs for 5 minutes then dies. This suggests:", choices: ["A dead battery", "A bad alternator", "Low fuel", "A failed starter"], correctIndex: 1, explanation: "If the car dies shortly after jump starting, the alternator is not charging the battery — the battery is draining without being replenished."),
-            Question(id: "cars302_q3", type: .scenario, prompt: "Your battery dies overnight but charges fine and the alternator tests good. The likely issue is:", choices: ["The battery is too old", "A parasitic electrical drain", "The starter is failing", "Low coolant"], correctIndex: 1, explanation: "A parasitic drain means something is drawing power when the car is off — a stuck relay, aftermarket accessory, or faulty module."),
-            Question(id: "cars302_q4", type: .fillBlank, prompt: "A healthy alternator should read _____ volts at the battery while the engine is running.", choices: ["10-11", "12-12.5", "13.5-14.5", "16-18"], correctIndex: 2, explanation: "A properly charging alternator produces 13.5-14.5 volts. Below 13V indicates a charging problem.")
+            Question(id: "cars302_q1", prompt: "Match each symptom to its most likely cause.", matchingPairs: [
+                MatchingPair(left: "No crank, dim lights, clicking", right: "Dead battery"),
+                MatchingPair(left: "Jump starts but dies again shortly", right: "Bad alternator"),
+                MatchingPair(left: "Battery dies overnight repeatedly", right: "Parasitic electrical drain"),
+                MatchingPair(left: "Dimming lights while driving", right: "Failing alternator")
+            ], explanation: "Distinguishing dead battery, bad alternator, and parasitic drain symptoms prevents replacing the wrong part."),
+            Question(id: "cars302_q2", type: .scenario, prompt: "You jump start your car and it runs for 5 minutes, then all electrical systems fade and the engine dies. This most likely indicates:", choices: ["The battery needs replacement", "The alternator is not charging — battery draining without replenishment", "You need more fuel", "The starter motor is failing"], correctIndex: 1, explanation: "If the car dies after jump starting, the alternator isn't charging. The battery depletes without being replenished."),
+            Question(id: "cars302_q3", prompt: "A healthy alternator should produce _____ volts at the battery while running.", acceptedAnswers: ["13.5-14.5", "13.5 to 14.5", "13.5-14.5 volts", "14", "13.5", "14.5"], explanation: "A properly charging alternator produces 13.5-14.5 volts. Below 13V indicates a charging system problem."),
+            Question(id: "cars302_q4", type: .multiSelect, prompt: "Which are signs of a failing alternator (not just a dead battery)?", choices: ["Battery warning light on the dashboard", "Dimming headlights while driving", "Car won't crank at all", "Engine dies shortly after jump start", "Electrical systems failing while engine runs"], correctIndices: [0, 1, 3, 4], explanation: "Alternator failure shows as charging light, dimming while running, dying after jump start, and electrical failures. A car that won't crank at all is typically a dead battery.")
         ]),
         flashcards: [
             Flashcard(id: "cars302_f1", front: "Alternator", back: "The engine-driven generator that charges the battery and powers all electronics while the engine runs"),

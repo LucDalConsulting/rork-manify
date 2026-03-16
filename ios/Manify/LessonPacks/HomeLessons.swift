@@ -50,10 +50,15 @@ enum HomeLessons {
             ])
         ],
         quiz: Quiz(id: "home101_q", passPercent: 80, questions: [
-            Question(id: "home101_q1", prompt: "The five core home systems include all EXCEPT:", choices: ["Plumbing", "Landscaping", "Electrical", "HVAC"], correctIndex: 1, explanation: "The five core systems are structural, plumbing, electrical, HVAC, and building envelope."),
-            Question(id: "home101_q2", prompt: "Poor insulation primarily affects:", choices: ["Plumbing pressure", "Roof strength", "HVAC efficiency and energy bills", "Electrical capacity"], correctIndex: 2, explanation: "The building envelope (insulation) determines how hard HVAC has to work to maintain temperature."),
-            Question(id: "home101_q3", type: .scenario, prompt: "You hear running water but no faucets are on. Your first action should be:", choices: ["Call a plumber immediately", "Turn off the electricity", "Wait and listen again tomorrow", "Locate and check the main water shutoff"], correctIndex: 3, explanation: "Knowing your main water shutoff location is critical — it's the first thing to check if you suspect a leak."),
-            Question(id: "home101_q4", type: .fillBlank, prompt: "A failure in one home system can _____ into others.", choices: ["Cascade", "Stabilize", "Neutralize", "Bypass"], correctIndex: 0, explanation: "Home systems are interconnected. A roof leak can damage electrical wiring and cause mold.")
+            Question(id: "home101_q1", prompt: "Match each home system to what it controls.", matchingPairs: [
+                MatchingPair(left: "Structural", right: "Foundation, framing, and roof"),
+                MatchingPair(left: "Plumbing", right: "Water supply and drainage"),
+                MatchingPair(left: "HVAC", right: "Heating, cooling, and ventilation"),
+                MatchingPair(left: "Building Envelope", right: "Insulation, windows, and weatherproofing")
+            ], explanation: "The five core systems (including electrical) are all interconnected and depend on each other."),
+            Question(id: "home101_q2", type: .scenario, prompt: "You hear running water but no faucets are on. Your first action should be:", choices: ["Call a plumber immediately", "Wait until tomorrow to see if it stops", "Locate and check the main water shutoff", "Turn off the electricity"], correctIndex: 2, explanation: "Knowing your main water shutoff location is critical — it's the first thing to check if you suspect a hidden leak."),
+            Question(id: "home101_q3", prompt: "A failure in one home system can _____ into others.", acceptedAnswers: ["cascade", "spread", "transfer", "flow"], explanation: "Home systems are interconnected. A roof leak can damage electrical wiring, cause mold, and compromise structural integrity."),
+            Question(id: "home101_q4", type: .multiSelect, prompt: "Which are among the five core home systems?", choices: ["Structural", "Landscaping", "Electrical", "HVAC", "Security cameras", "Building Envelope"], correctIndices: [0, 2, 3, 5], explanation: "The five core systems are structural, plumbing, electrical, HVAC, and building envelope. Landscaping and security are not core systems.")
         ]),
         flashcards: [
             Flashcard(id: "home101_f1", front: "Building Envelope", back: "The physical barrier between the interior and exterior: insulation, windows, doors, siding, and roof"),
@@ -111,9 +116,15 @@ enum HomeLessons {
             ])
         ],
         quiz: Quiz(id: "home102_q", passPercent: 80, questions: [
-            Question(id: "home102_q1", prompt: "The anode rod's purpose is to:", choices: ["Heat the water", "Filter sediment", "Corrode instead of the tank", "Control water pressure"], correctIndex: 2, explanation: "The anode rod is a sacrificial component that corrodes to protect the tank interior."),
-            Question(id: "home102_q2", prompt: "The T&P relief valve prevents:", choices: ["Tank explosion from excess temperature/pressure", "Freezing", "Low pressure", "Sediment buildup"], correctIndex: 0, explanation: "The Temperature & Pressure relief valve is a critical safety device that prevents dangerous pressure buildup."),
-            Question(id: "home102_q3", prompt: "How often should you flush a tank water heater?", choices: ["Monthly", "Every 5 years", "Annually", "Never"], correctIndex: 2, explanation: "Annual flushing removes sediment that reduces efficiency and causes noise.")
+            Question(id: "home102_q1", prompt: "Match each water heater component to its function.", matchingPairs: [
+                MatchingPair(left: "Anode Rod", right: "Sacrificial rod that corrodes instead of the tank"),
+                MatchingPair(left: "T&P Relief Valve", right: "Safety valve preventing explosion from excess pressure"),
+                MatchingPair(left: "Dip Tube", right: "Directs cold water to bottom for even heating"),
+                MatchingPair(left: "Thermostat", right: "Controls water temperature")
+            ], explanation: "Each component serves a specific function in the water heater system."),
+            Question(id: "home102_q2", type: .scenario, prompt: "You notice popping and rumbling sounds from your water heater. The most likely cause is:", choices: ["A failing thermostat", "Normal operation", "Sediment buildup at the bottom of the tank", "A broken dip tube"], correctIndex: 2, explanation: "Popping and rumbling sounds indicate sediment buildup. Annual flushing prevents this issue."),
+            Question(id: "home102_q3", prompt: "The anode rod should be checked or replaced every _____ years.", acceptedAnswers: ["3-5", "3 to 5", "three to five", "3", "4", "5"], explanation: "The anode rod is a sacrificial component that should be inspected every 3-5 years. Once depleted, the tank starts corroding."),
+            Question(id: "home102_q4", type: .multiSelect, prompt: "Which are critical owner maintenance tasks for a water heater?", choices: ["Flush the tank annually", "Replace the anode rod every 3-5 years", "Test the T&P relief valve annually", "Repaint the tank exterior yearly", "Know the age of your unit"], correctIndices: [0, 1, 2, 4], explanation: "Annual flushing, anode rod replacement, T&P testing, and knowing the unit's age are all critical maintenance tasks.")
         ]),
         flashcards: [
             Flashcard(id: "home102_f1", front: "Anode Rod", back: "A sacrificial metal rod inside the water heater tank that corrodes to protect the tank — replace every 3-5 years"),
@@ -166,9 +177,15 @@ enum HomeLessons {
             ])
         ],
         quiz: Quiz(id: "home103_q", passPercent: 80, questions: [
-            Question(id: "home103_q1", prompt: "A breaker that trips repeatedly indicates:", choices: ["Normal operation", "A potential wiring problem", "The breaker is too large", "A power surge from the utility"], correctIndex: 1, explanation: "A repeatedly tripping breaker is a warning sign — it means there's an overcurrent condition that needs to be diagnosed."),
-            Question(id: "home103_q2", prompt: "Typical residential main breaker capacity is:", choices: ["50-75 amps", "300-400 amps", "100-200 amps", "500+ amps"], correctIndex: 2, explanation: "Most residential electrical panels have 100-200 amp main breakers."),
-            Question(id: "home103_q3", type: .scenario, prompt: "You smell burning near your electrical panel. You should:", choices: ["Reset all breakers", "Open the panel to look inside", "Ignore it if nothing is visibly wrong", "Turn off the main breaker and call an electrician"], correctIndex: 3, explanation: "A burning smell at the panel is a potential fire hazard. Kill the main breaker and call a licensed electrician immediately.")
+            Question(id: "home103_q1", type: .scenario, prompt: "You smell burning near your electrical panel. Your immediate action should be:", choices: ["Reset all breakers to find the problem", "Open the panel cover to inspect inside", "Turn off the main breaker and call an electrician immediately", "Spray water on the panel to cool it"], correctIndex: 2, explanation: "A burning smell at the panel is a potential fire hazard. Kill the main breaker and call a licensed electrician immediately."),
+            Question(id: "home103_q2", prompt: "Match each panel component to its function.", matchingPairs: [
+                MatchingPair(left: "Main Breaker", right: "Master switch controlling all power"),
+                MatchingPair(left: "Branch Breakers", right: "Individual circuits for rooms/appliances"),
+                MatchingPair(left: "Bus Bars", right: "Metal strips distributing power"),
+                MatchingPair(left: "Ground Bar", right: "Connection point for safety ground wires")
+            ], explanation: "Understanding panel components helps you safely manage your home's electrical system."),
+            Question(id: "home103_q3", type: .multiSelect, prompt: "Which are warning signs that require calling an electrician?", choices: ["Burning smell from the panel", "Scorch marks on breakers", "A breaker tripping once during a storm", "Panel is warm to the touch", "You have a Federal Pacific panel"], correctIndices: [0, 1, 3, 4], explanation: "Burning smell, scorch marks, warm panels, and Federal Pacific panels are all serious warning signs. A single trip during a storm is usually normal."),
+            Question(id: "home103_q4", prompt: "Typical residential main breaker capacity is:", choices: ["50-75 amps", "100-200 amps", "300-400 amps", "500+ amps"], correctIndex: 1, explanation: "Most residential electrical panels have 100-200 amp main breakers.")
         ]),
         flashcards: [
             Flashcard(id: "home103_f1", front: "Main Breaker", back: "The master switch that controls all power to the home — typically 100-200 amps residential"),
@@ -219,10 +236,15 @@ enum HomeLessons {
             ])
         ],
         quiz: Quiz(id: "home201_q", passPercent: 80, questions: [
-            Question(id: "home201_q1", prompt: "A heat pump works by:", choices: ["Burning gas to generate heat", "Moving heat from one place to another", "Creating heat through electrical resistance", "Using solar energy"], correctIndex: 1, explanation: "A heat pump moves heat rather than generating it — extracting heat from outside air (even cold air) and moving it inside."),
-            Question(id: "home201_q2", prompt: "How often should you replace HVAC air filters?", choices: ["Once a year", "Every 1-3 months", "Only when the system fails", "Every 5 years"], correctIndex: 1, explanation: "Filters should be replaced every 1-3 months depending on type, pets, and usage."),
-            Question(id: "home201_q3", prompt: "Leaky ductwork can waste up to:", choices: ["5% of conditioned air", "10% of conditioned air", "20-30% of conditioned air", "50% of conditioned air"], correctIndex: 2, explanation: "Leaky ducts can waste 20-30% of your conditioned air, significantly increasing energy costs."),
-            Question(id: "home201_q4", type: .scenario, prompt: "Your AC is running but blowing warm air. A likely first check is:", choices: ["Replace the compressor", "Check if the air filter is clogged", "Replace the thermostat", "Call for duct cleaning"], correctIndex: 1, explanation: "A clogged air filter is the most common cause of reduced cooling — always check it first before calling a technician.")
+            Question(id: "home201_q1", prompt: "Match each HVAC system to how it works.", matchingPairs: [
+                MatchingPair(left: "Furnace", right: "Burns gas or uses electric elements to heat air"),
+                MatchingPair(left: "Heat Pump", right: "Moves heat instead of generating it"),
+                MatchingPair(left: "Central AC", right: "Refrigerant absorbs indoor heat, releases it outside"),
+                MatchingPair(left: "Boiler", right: "Heats water for radiators or radiant floors")
+            ], explanation: "Different HVAC systems use fundamentally different methods to condition your home."),
+            Question(id: "home201_q2", type: .scenario, prompt: "Your AC is running but blowing warm air. Before calling a technician, you should first check:", choices: ["The compressor", "The refrigerant level", "Whether the air filter is clogged", "The ductwork for leaks"], correctIndex: 2, explanation: "A clogged air filter is the most common cause of reduced cooling. Always check it first — it's free and takes 30 seconds."),
+            Question(id: "home201_q3", prompt: "HVAC air filters should be replaced every _____.", acceptedAnswers: ["1-3 months", "1 to 3 months", "one to three months", "monthly", "every month", "every 1-3 months"], explanation: "Filters should be replaced every 1-3 months depending on type, pets, and usage. This is the single highest-impact maintenance habit."),
+            Question(id: "home201_q4", type: .multiSelect, prompt: "Which are proper HVAC owner maintenance tasks?", choices: ["Replace air filters every 1-3 months", "Recharge refrigerant yourself", "Keep outdoor unit clear of debris", "Schedule professional maintenance twice yearly", "Close most vents to save energy"], correctIndices: [0, 2, 3], explanation: "Filter replacement, outdoor unit clearance, and professional maintenance are owner tasks. Refrigerant requires a licensed tech, and closing too many vents strains the system.")
         ]),
         flashcards: [
             Flashcard(id: "home201_f1", front: "Heat Pump", back: "A system that moves heat rather than generating it — can both heat and cool by reversing the refrigerant cycle"),
@@ -275,10 +297,15 @@ enum HomeLessons {
             ])
         ],
         quiz: Quiz(id: "home202_q", passPercent: 80, questions: [
-            Question(id: "home202_q1", prompt: "Drain lines move water using:", choices: ["Pressure from the supply", "Electric pumps", "Gravity", "Suction from the sewer"], correctIndex: 2, explanation: "Drain lines rely on gravity — they slope downward toward the sewer or septic system."),
-            Question(id: "home202_q2", prompt: "A P-trap's purpose is to:", choices: ["Increase water pressure", "Filter debris", "Regulate temperature", "Hold water to block sewer gas"], correctIndex: 3, explanation: "The P-trap holds a small amount of water that creates a seal preventing sewer gas from entering your home."),
-            Question(id: "home202_q3", type: .fillBlank, prompt: "A running toilet is most commonly caused by a worn _____.", choices: ["Supply line", "Wax ring", "Flapper valve", "Drain pipe"], correctIndex: 2, explanation: "The flapper valve seals the tank. When it wears out, water continuously leaks from the tank into the bowl."),
-            Question(id: "home202_q4", prompt: "Safe residential water pressure is typically:", choices: ["10-20 PSI", "40-80 PSI", "100-150 PSI", "200+ PSI"], correctIndex: 1, explanation: "Normal residential water pressure is 40-80 PSI. Higher pressure can damage pipes and fixtures.")
+            Question(id: "home202_q1", prompt: "Match each plumbing component to its function.", matchingPairs: [
+                MatchingPair(left: "P-Trap", right: "Holds water to block sewer gas"),
+                MatchingPair(left: "Vent Pipe", right: "Allows air in to prevent vacuum locks"),
+                MatchingPair(left: "Pressure Regulator", right: "Reduces incoming water pressure to safe levels"),
+                MatchingPair(left: "Cleanout", right: "Access point for clearing drain blockages")
+            ], explanation: "Each plumbing component serves a specific purpose in the supply or drain system."),
+            Question(id: "home202_q2", type: .scenario, prompt: "Your toilet keeps running continuously. The most common cause is:", choices: ["A broken supply line", "A cracked bowl", "A worn flapper valve in the tank", "High water pressure"], correctIndex: 2, explanation: "The flapper valve seals the tank. When it wears out, water continuously leaks from the tank into the bowl — a cheap and easy fix."),
+            Question(id: "home202_q3", prompt: "Drain lines move water using _____, not pressure.", acceptedAnswers: ["gravity", "gravitational force", "slope"], explanation: "Drain lines rely on gravity — they slope downward toward the sewer or septic system."),
+            Question(id: "home202_q4", type: .multiSelect, prompt: "Which are common plumbing problems a homeowner can often diagnose?", choices: ["Slow drains from hair or grease buildup", "Low pressure from a partially closed valve", "Main sewer line collapse", "Running toilet from worn flapper", "Water hammer from quick-closing valves"], correctIndices: [0, 1, 3, 4], explanation: "Most of these are diagnosable by homeowners. A main sewer line collapse requires professional inspection with a camera.")
         ]),
         flashcards: [
             Flashcard(id: "home202_f1", front: "P-Trap", back: "A curved pipe fitting that holds water to create a seal blocking sewer gas from entering the home"),
@@ -331,10 +358,15 @@ enum HomeLessons {
             ])
         ],
         quiz: Quiz(id: "home203_q", passPercent: 80, questions: [
-            Question(id: "home203_q1", prompt: "The most impactful monthly maintenance task is:", choices: ["Cleaning the garage", "Replacing HVAC filters", "Painting walls", "Mowing the lawn"], correctIndex: 1, explanation: "Replacing HVAC filters monthly is the single highest-impact maintenance habit for home systems."),
-            Question(id: "home203_q2", prompt: "Before winter, you should:", choices: ["Turn off the furnace", "Disconnect and drain garden hoses", "Open all windows", "Remove insulation"], correctIndex: 1, explanation: "Garden hoses left connected can cause the hose bib and supply line to freeze and burst."),
-            Question(id: "home203_q3", type: .scenario, prompt: "It's spring and you notice a few missing shingles after winter storms. You should:", choices: ["Wait until they fall off completely", "Paint over the exposed area", "Ignore it — roofs are self-healing", "Have the roof inspected and repaired promptly"], correctIndex: 3, explanation: "Missing shingles expose the roof deck to water intrusion. Address it promptly before the next rain."),
-            Question(id: "home203_q4", prompt: "How often should smoke detector batteries be checked?", choices: ["Every 5 years", "Monthly", "Annually", "Only when they beep"], correctIndex: 1, explanation: "Test smoke and CO detectors monthly. Replace batteries at least annually or when they chirp.")
+            Question(id: "home203_q1", prompt: "Match each season to its primary maintenance focus.", matchingPairs: [
+                MatchingPair(left: "Spring", right: "Inspect roof, clean gutters, service AC"),
+                MatchingPair(left: "Fall", right: "Service furnace, winterize hose bibs, check detectors"),
+                MatchingPair(left: "Monthly", right: "Replace HVAC filters, test smoke detectors"),
+                MatchingPair(left: "Annually", right: "Test T&P valve, inspect anode rod, clean dryer vent")
+            ], explanation: "A seasonal maintenance calendar keeps you ahead of problems instead of reacting to them."),
+            Question(id: "home203_q2", type: .scenario, prompt: "It's late October and temperatures are about to drop below freezing. Which task is most urgent?", choices: ["Clean the gutters", "Disconnect and drain garden hoses before pipes freeze", "Service the AC unit", "Paint the exterior trim"], correctIndex: 1, explanation: "Garden hoses left connected can cause the hose bib and indoor supply line to freeze and burst — causing serious water damage."),
+            Question(id: "home203_q3", prompt: "The single most impactful monthly maintenance habit is replacing _____.", acceptedAnswers: ["HVAC filters", "air filters", "hvac filter", "air filter", "the HVAC filter", "filters"], explanation: "Replacing HVAC filters monthly is the highest-impact maintenance habit — it protects the system and improves air quality."),
+            Question(id: "home203_q4", type: .multiSelect, prompt: "Which are fall winterization tasks?", choices: ["Schedule furnace maintenance", "Service the AC", "Disconnect garden hoses", "Check smoke and CO detector batteries", "Reverse ceiling fans clockwise", "Clean pool filter"], correctIndices: [0, 2, 3, 4], explanation: "Fall tasks focus on heating prep and freeze prevention. AC service is a spring task.")
         ]),
         flashcards: [
             Flashcard(id: "home203_f1", front: "Hose Bib Winterization", back: "Disconnecting garden hoses and shutting off interior supply valves before freezing weather to prevent burst pipes"),
@@ -383,10 +415,15 @@ enum HomeLessons {
             ])
         ],
         quiz: Quiz(id: "home301_q", passPercent: 80, questions: [
-            Question(id: "home301_q1", prompt: "The first diagnostic step for no hot water is:", choices: ["Replace the water heater", "Check if ANY faucet has hot water", "Call a plumber", "Turn up the thermostat"], correctIndex: 1, explanation: "First determine if the problem is whole-house or localized — check multiple faucets for hot water."),
-            Question(id: "home301_q2", prompt: "For an electric water heater with no hot water, you should check:", choices: ["The gas line", "The pilot light", "The dedicated circuit breaker", "The water meter"], correctIndex: 2, explanation: "Electric water heaters run on dedicated breakers. A tripped breaker means no heating."),
-            Question(id: "home301_q3", type: .scenario, prompt: "You smell gas near your water heater. You should:", choices: ["Relight the pilot", "Check the thermostat", "Leave immediately and call the gas company from outside", "Open a window and wait"], correctIndex: 2, explanation: "Gas smell is a potential explosion risk. Evacuate and call the gas company. Do not operate any switches or flames."),
-            Question(id: "home301_q4", type: .fillBlank, prompt: "A water heater leaking from the base means it needs _____.", choices: ["Repair", "Flushing", "Replacement", "Insulation"], correctIndex: 2, explanation: "A leaking tank has failed structurally and cannot be repaired — it must be replaced.")
+            Question(id: "home301_q1", prompt: "Put the no-hot-water diagnostic steps in the correct priority order.", matchingPairs: [
+                MatchingPair(left: "Step 1", right: "Check if ANY faucet has hot water"),
+                MatchingPair(left: "Step 2", right: "Check pilot light (gas) or breaker (electric)"),
+                MatchingPair(left: "Step 3", right: "Verify thermostat setting"),
+                MatchingPair(left: "Step 4", right: "Check for leaks around the base")
+            ], explanation: "Following the diagnostic chain in order prevents unnecessary panic and service calls."),
+            Question(id: "home301_q2", type: .scenario, prompt: "You smell gas near your water heater. Your immediate action should be:", choices: ["Relight the pilot light", "Check the thermostat", "Open a window and wait", "Leave immediately and call the gas company from outside"], correctIndex: 3, explanation: "Gas smell is a potential explosion risk. Evacuate without operating any switches or flames. Call the gas company from outside."),
+            Question(id: "home301_q3", prompt: "A water heater leaking from the base means it needs _____.", acceptedAnswers: ["replacement", "to be replaced", "a replacement", "replacing"], explanation: "A leaking tank has failed structurally and cannot be repaired — it must be replaced."),
+            Question(id: "home301_q4", type: .multiSelect, prompt: "Which situations require calling a professional rather than DIY troubleshooting?", choices: ["Gas smell near the water heater", "Thermostat accidentally turned down", "Leaking tank base", "Pilot light won't stay lit after multiple attempts", "Running out of hot water temporarily"], correctIndices: [0, 2, 3], explanation: "Gas smell (evacuate first), leaking tanks, and persistent pilot failure all require professional attention. Thermostat and recovery time are owner-level checks.")
         ]),
         flashcards: [
             Flashcard(id: "home301_f1", front: "Thermocouple", back: "A safety device that detects whether the pilot light is lit — if it fails, the gas valve stays closed"),
@@ -437,10 +474,10 @@ enum HomeLessons {
             ])
         ],
         quiz: Quiz(id: "home302_q", passPercent: 80, questions: [
-            Question(id: "home302_q1", prompt: "The #1 cause of a frozen evaporator coil is:", choices: ["Low refrigerant", "A clogged air filter", "Outdoor temperature", "A broken thermostat"], correctIndex: 1, explanation: "A clogged air filter restricts airflow over the evaporator coil, causing it to freeze — this is the most common cause."),
-            Question(id: "home302_q2", prompt: "When you find a frozen coil, you should:", choices: ["Scrape the ice off immediately", "Turn off the system and run only the fan to thaw", "Pour hot water on it", "Turn the heat on to maximum"], correctIndex: 1, explanation: "Turn the cooling off but leave the fan running. Let the coil thaw naturally over 2-4 hours."),
-            Question(id: "home302_q3", type: .scenario, prompt: "You replaced the filter and thawed the coil, but it froze again within a day. The likely cause is:", choices: ["The filter was the wrong size", "Low refrigerant from a leak", "Too many windows open", "The thermostat is broken"], correctIndex: 1, explanation: "If the coil refreezes after correcting airflow, low refrigerant (usually from a leak) is the likely cause — requires a professional."),
-            Question(id: "home302_q4", prompt: "Who can legally handle refrigerant?", choices: ["Any homeowner", "Only licensed HVAC technicians", "Any handyman", "Hardware store employees"], correctIndex: 1, explanation: "Refrigerant handling requires EPA certification. Only licensed HVAC technicians can legally add or recover refrigerant.")
+            Question(id: "home302_q1", type: .scenario, prompt: "Your AC is blowing warm air and you notice ice on the indoor unit. Before calling a technician, you should:", choices: ["Scrape the ice off and restart", "Pour warm water on the coil", "Turn off cooling, run fan only to thaw, and check/replace the air filter", "Turn the system to maximum cooling"], correctIndex: 2, explanation: "Turn off cooling, let the coil thaw with the fan running (2-4 hours), and check the air filter — it's the #1 cause of frozen coils."),
+            Question(id: "home302_q2", prompt: "The #1 cause of a frozen evaporator coil is a _____.", acceptedAnswers: ["clogged air filter", "dirty air filter", "clogged filter", "dirty filter", "blocked filter", "air filter"], explanation: "A clogged air filter restricts airflow over the evaporator coil, causing it to freeze. Always check the filter first."),
+            Question(id: "home302_q3", type: .scenario, prompt: "You replaced the filter and thawed the coil, but it froze again within a day. This strongly suggests:", choices: ["The filter was installed backwards", "Too many vents are open", "Low refrigerant from a leak — requires a professional", "The outdoor unit needs cleaning"], correctIndex: 2, explanation: "If the coil refreezes after correcting airflow, low refrigerant from a leak is the likely cause. Only licensed HVAC technicians can handle refrigerant."),
+            Question(id: "home302_q4", type: .multiSelect, prompt: "Which are owner-level steps for a frozen coil before calling a pro?", choices: ["Turn off cooling, run fan to thaw", "Replace or clean the air filter", "Add refrigerant yourself", "Check that supply vents are open", "Scrape ice off the coil with a tool"], correctIndices: [0, 1, 3], explanation: "Owners can turn off cooling, run the fan to thaw, replace the filter, and check vents. Refrigerant requires a licensed tech, and scraping can damage the coil.")
         ]),
         flashcards: [
             Flashcard(id: "home302_f1", front: "Frozen Evaporator Coil", back: "Ice buildup on the indoor coil caused by restricted airflow or low refrigerant — blocks cooling and must be thawed"),

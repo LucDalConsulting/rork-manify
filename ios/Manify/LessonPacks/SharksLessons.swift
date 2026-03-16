@@ -44,9 +44,14 @@ enum SharksLessons {
             ])
         ],
         quiz: Quiz(id: "shark101_q", passPercent: 80, questions: [
-            Question(id: "shark101_q1", prompt: "Sharks are approximately how old as a species group?", choices: ["50 million years", "450 million years", "200 million years", "1 billion years"], correctIndex: 1, explanation: "Sharks have been around for approximately 450 million years — predating dinosaurs and trees."),
-            Question(id: "shark101_q2", prompt: "How many shark species exist?", choices: ["About 50", "About 150", "About 2,000", "About 500+"], correctIndex: 3, explanation: "There are over 500 known species of sharks, ranging wildly in size and habitat."),
-            Question(id: "shark101_q3", prompt: "Sharks are considered keystone predators because:", choices: ["They're the largest fish", "They eat the most", "Removing them collapses ecosystems", "They have no predators"], correctIndex: 2, explanation: "As keystone predators, sharks regulate populations below them in the food chain. Remove them and the whole system destabilizes.")
+            Question(id: "shark101_q1", type: .scenario, prompt: "Someone says 'sharks are just dumb fish.' Based on what you know, the best response is:", choices: ["They're right — sharks are primitive", "Sharks are 450 million years old and have outlasted dinosaurs, trees, and every government in history", "Sharks are mammals, not fish", "Sharks aren't that old"], correctIndex: 1, explanation: "Sharks have been around for approximately 450 million years — they predate trees, dinosaurs, and every government. Not primitive at all."),
+            Question(id: "shark101_q2", prompt: "Sharks are considered keystone predators because removing them _____.", acceptedAnswers: ["collapses ecosystems", "destabilizes ecosystems", "collapses the ecosystem", "disrupts the food chain", "causes ecosystem collapse"], explanation: "As keystone predators, sharks regulate populations below them. Remove them and entire marine ecosystems destabilize."),
+            Question(id: "shark101_q3", prompt: "Match each shark fact to its correct value.", matchingPairs: [
+                MatchingPair(left: "Age as a species group", right: "~450 million years"),
+                MatchingPair(left: "Number of known species", right: "500+"),
+                MatchingPair(left: "Smallest shark", right: "Dwarf lanternshark (~8 inches)"),
+                MatchingPair(left: "Largest shark", right: "Whale shark (~40+ feet)")
+            ], explanation: "Sharks span an incredible range of sizes and have existed far longer than most life on Earth.")
         ]),
         flashcards: [
             Flashcard(id: "shark101_f1", front: "Keystone Predator", back: "A predator whose removal would fundamentally alter the structure of its ecosystem"),
@@ -92,9 +97,14 @@ enum SharksLessons {
             ])
         ],
         quiz: Quiz(id: "shark102_q", passPercent: 80, questions: [
-            Question(id: "shark102_q1", prompt: "Shark skeletons are made of:", choices: ["Bone", "Calcium", "Cartilage", "Chitin"], correctIndex: 2, explanation: "Shark skeletons are made of cartilage, which is lighter and more flexible than bone."),
-            Question(id: "shark102_q2", prompt: "Ampullae of Lorenzini detect:", choices: ["Sound waves", "Temperature changes", "Light", "Electrical fields"], correctIndex: 3, explanation: "The ampullae of Lorenzini are electroreceptors that detect the faint electrical fields produced by prey muscle movement."),
-            Question(id: "shark102_q3", prompt: "Dermal denticles are:", choices: ["A type of shark tooth", "Sensory organs", "Tiny scales that reduce drag", "Reproductive structures"], correctIndex: 2, explanation: "Dermal denticles are tiny tooth-like scales covering shark skin that reduce hydrodynamic drag.")
+            Question(id: "shark102_q1", prompt: "Match each shark feature to its function.", matchingPairs: [
+                MatchingPair(left: "Cartilage skeleton", right: "Lighter and more flexible than bone"),
+                MatchingPair(left: "Ampullae of Lorenzini", right: "Detect electrical fields from prey"),
+                MatchingPair(left: "Dermal denticles", right: "Tiny tooth-like scales reducing drag"),
+                MatchingPair(left: "Lateral line", right: "Detects vibrations and pressure changes")
+            ], explanation: "Sharks have multiple specialized features that explain their 450 million years of evolutionary success."),
+            Question(id: "shark102_q2", type: .multiSelect, prompt: "Which are shark hunting senses?", choices: ["Smell (long-range)", "Echolocation (like dolphins)", "Electroreception (short-range)", "Lateral line vibration detection", "Sonar", "Vision (better than most assume)"], correctIndices: [0, 2, 3, 5], explanation: "Sharks use smell, electroreception, lateral line, and vision. They do NOT use echolocation or sonar — those are dolphin/whale abilities."),
+            Question(id: "shark102_q3", prompt: "Shark teeth are replaced _____.", acceptedAnswers: ["continuously", "continuously throughout life", "constantly", "multiple times", "throughout their life"], explanation: "Sharks have multiple rows of teeth that replace continuously throughout their life — some species go through thousands.")
         ]),
         flashcards: [
             Flashcard(id: "shark102_f1", front: "Ampullae of Lorenzini", back: "Electroreceptor organs that detect faint electrical fields — used for prey detection at close range"),
@@ -146,9 +156,9 @@ enum SharksLessons {
             ])
         ],
         quiz: Quiz(id: "shark103_q", passPercent: 80, questions: [
-            Question(id: "shark103_q1", prompt: "Great white sharks are:", choices: ["Cold-blooded like all fish", "Temperature-neutral", "Partially endothermic — can regulate body temperature", "Warm-blooded mammals"], correctIndex: 2, explanation: "Great whites have endothermic capabilities — they can maintain body temperature above surrounding water temperature."),
-            Question(id: "shark103_q2", prompt: "Most great white attacks on humans are:", choices: ["Feeding attacks", "Territorial defense", "Random aggression", "Investigatory bites"], correctIndex: 3, explanation: "Most interactions with humans are investigatory — the shark is testing what you are, not trying to eat you."),
-            Question(id: "shark103_q3", prompt: "The author of Jaws later:", choices: ["Wrote a sequel celebrating sharks", "Started a shark hunting company", "Denied sharks were dangerous", "Became a shark conservation advocate"], correctIndex: 3, explanation: "Peter Benchley spent his later career advocating for shark conservation, regretting the fear his novel created.")
+            Question(id: "shark103_q1", type: .scenario, prompt: "A news report describes a great white attack as 'a vicious predatory feeding.' Based on what you know, this is most likely:", choices: ["Accurate — great whites target humans", "Sensationalized — most attacks are investigatory bites, not feeding", "Impossible — great whites don't bite humans", "Only true in warm water"], correctIndex: 1, explanation: "Most great white interactions with humans are investigatory bites — the shark is testing what you are, not trying to eat you."),
+            Question(id: "shark103_q2", type: .multiSelect, prompt: "Which statements about great white sharks are TRUE?", choices: ["They can regulate body temperature above surrounding water", "They are the largest shark species", "They are ambush predators attacking from below", "Peter Benchley later became a conservation advocate", "They primarily eat humans"], correctIndices: [0, 2, 3], explanation: "Great whites are endothermic, ambush predators, and Benchley did become a conservation advocate. Whale sharks are the largest species, and humans are not on the menu."),
+            Question(id: "shark103_q3", prompt: "The scientific name for the great white shark is _____.", acceptedAnswers: ["Carcharodon carcharias", "carcharodon carcharias", "C. carcharias"], explanation: "Carcharodon carcharias — the most famous predator on Earth, yet most people only know the Jaws version.")
         ]),
         flashcards: [
             Flashcard(id: "shark103_f1", front: "Carcharodon carcharias", back: "The scientific name for the great white shark"),
@@ -198,10 +208,14 @@ enum SharksLessons {
             ])
         ],
         quiz: Quiz(id: "shark201_q", passPercent: 80, questions: [
-            Question(id: "shark201_q1", prompt: "What makes bull sharks uniquely dangerous?", choices: ["They're the largest sharks", "They can live in fresh water and prefer shallow areas", "They're the fastest swimmers", "They hunt in packs"], correctIndex: 1, explanation: "Bull sharks tolerate fresh water and prefer murky, shallow coastal waters — putting them in direct contact with humans."),
-            Question(id: "shark201_q2", prompt: "Tiger sharks are called 'garbage cans of the sea' because:", choices: ["They're dirty", "They live near trash dumps", "They eat almost anything, including non-food items", "They only eat dead things"], correctIndex: 2, explanation: "Tiger sharks are famously indiscriminate feeders — license plates, tires, and other objects have been found in their stomachs."),
-            Question(id: "shark201_q3", prompt: "Which shark has been found in rivers and lakes?", choices: ["Great white", "Hammerhead", "Tiger shark", "Bull shark"], correctIndex: 3, explanation: "Bull sharks have a unique ability to regulate salt in their bodies, allowing them to thrive in fresh water."),
-            Question(id: "shark201_q4", type: .fillBlank, prompt: "Tiger sharks are named for their distinctive vertical _____ that fade with age.", choices: ["Spots", "Stripes", "Rings", "Patches"], correctIndex: 1, explanation: "Tiger sharks have dark vertical stripes on their sides that are most prominent in juveniles and fade as they mature.")
+            Question(id: "shark201_q1", prompt: "Match each dangerous shark to its key characteristic.", matchingPairs: [
+                MatchingPair(left: "Bull Shark", right: "Freshwater tolerance, shallow water aggression"),
+                MatchingPair(left: "Tiger Shark", right: "Indiscriminate feeder, eats almost anything"),
+                MatchingPair(left: "Great White", right: "Ambush predator, investigatory bites")
+            ], explanation: "Each species poses different risks based on habitat, behavior, and feeding patterns."),
+            Question(id: "shark201_q2", type: .scenario, prompt: "You're swimming in a murky river estuary in warm water. Which shark species is MOST likely to be in the same water?", choices: ["Great white", "Hammerhead", "Bull shark", "Whale shark"], correctIndex: 2, explanation: "Bull sharks tolerate fresh water and prefer murky, warm, shallow water — exactly where humans swim. They're the most dangerous by proximity."),
+            Question(id: "shark201_q3", prompt: "Tiger sharks are named for their distinctive vertical _____ that fade with age.", acceptedAnswers: ["stripes", "stripe", "vertical stripes", "dark stripes"], explanation: "Tiger sharks have dark vertical stripes that are most prominent in juveniles and gradually fade as they mature."),
+            Question(id: "shark201_q4", type: .multiSelect, prompt: "Which statements about bull sharks are true?", choices: ["They can live in fresh water", "They are the largest shark species", "They have high testosterone levels", "They prefer deep ocean waters", "They have been found in rivers and lakes"], correctIndices: [0, 2, 4], explanation: "Bull sharks tolerate freshwater, have high testosterone, and have been found in rivers and lakes. They prefer shallow water, not deep ocean, and are not the largest species.")
         ]),
         flashcards: [
             Flashcard(id: "shark201_f1", front: "Bull Shark", back: "Carcharhinus leucas — aggressive, territorial shark that can tolerate fresh water. Found in shallow coastal waters, rivers, and estuaries."),
@@ -247,10 +261,15 @@ enum SharksLessons {
             ])
         ],
         quiz: Quiz(id: "shark202_q", passPercent: 80, questions: [
-            Question(id: "shark202_q1", prompt: "Approximately how many unprovoked shark bites occur worldwide per year?", choices: ["About 70", "About 500", "About 5,000", "About 50,000"], correctIndex: 0, explanation: "There are approximately 70 unprovoked shark bites per year worldwide, with about 5 fatalities."),
-            Question(id: "shark202_q2", prompt: "Humans kill approximately how many sharks per year?", choices: ["1,000", "10,000", "1 million", "100 million"], correctIndex: 3, explanation: "Humans kill approximately 100 million sharks per year through fishing, finning, and bycatch."),
-            Question(id: "shark202_q3", prompt: "The claim that 'sharks must constantly swim or die' is:", choices: ["True for all sharks", "A myth — many species can rest on the bottom", "True only for great whites", "True only in cold water"], correctIndex: 1, explanation: "While some species like great whites do need to swim for oxygen, many shark species can rest on the bottom and actively pump water over their gills."),
-            Question(id: "shark202_q4", type: .scenario, prompt: "Someone tells you sharks are 'taking over the oceans.' Based on data, this is:", choices: ["Correct — populations are exploding", "Backwards — shark populations have declined 70%+ in 50 years", "Partly true — some species are increasing", "Unknown — we don't have data"], correctIndex: 1, explanation: "Global shark populations have declined dramatically — over 70% in the last half century due to fishing, finning, and habitat loss.")
+            Question(id: "shark202_q1", prompt: "Match each statistic to its correct value.", matchingPairs: [
+                MatchingPair(left: "Unprovoked bites per year", right: "~70 worldwide"),
+                MatchingPair(left: "Fatal attacks per year", right: "~5"),
+                MatchingPair(left: "Sharks killed by humans per year", right: "~100 million"),
+                MatchingPair(left: "Population decline in 50 years", right: "70%+")
+            ], explanation: "The risk ratio is absurdly lopsided. Humans are the apex threat, not sharks."),
+            Question(id: "shark202_q2", type: .scenario, prompt: "Someone tells you sharks are 'taking over the oceans and becoming more dangerous.' Based on actual data, this is:", choices: ["Correct — populations are growing", "Completely backwards — populations have declined 70%+ in 50 years", "Partly true for some species", "Unknown — we can't track shark populations"], correctIndex: 1, explanation: "Global shark populations have declined dramatically due to fishing, finning, and habitat loss. They are the ones in danger, not us."),
+            Question(id: "shark202_q3", type: .multiSelect, prompt: "Which common shark myths are FALSE?", choices: ["Sharks are mindless killing machines", "Sharks hunt humans deliberately", "All sharks must swim constantly or die", "Shark populations are declining", "Most bites are investigatory, not predatory"], correctIndices: [0, 1, 2], explanation: "Sharks are selective predators, don't target humans, and many species can rest on the bottom. Population decline and investigatory bites are TRUE facts, not myths."),
+            Question(id: "shark202_q4", prompt: "The practice of cutting shark fins and discarding the body is called _____.", acceptedAnswers: ["shark finning", "finning", "shark fin harvesting"], explanation: "Shark finning drives massive population decline. Fins are cut for soup and the shark is thrown back alive to die.")
         ]),
         flashcards: [
             Flashcard(id: "shark202_f1", front: "Shark Finning", back: "The practice of cutting shark fins for soup and discarding the body — drives massive population decline"),
@@ -297,10 +316,14 @@ enum SharksLessons {
             ])
         ],
         quiz: Quiz(id: "shark203_q", passPercent: 80, questions: [
-            Question(id: "shark203_q1", prompt: "Shark Week has been running since:", choices: ["1975", "1988", "2001", "2010"], correctIndex: 1, explanation: "Shark Week premiered on the Discovery Channel in 1988 and has aired annually since."),
-            Question(id: "shark203_q2", prompt: "The movie that created the modern fear of sharks was:", choices: ["Finding Nemo", "The Meg", "Deep Blue Sea", "Jaws"], correctIndex: 3, explanation: "Steven Spielberg's Jaws (1975) fundamentally changed public perception of sharks and created a cultural fear that persists today."),
-            Question(id: "shark203_q3", type: .scenario, prompt: "A dramatic TV special implies sharks are an ever-present coastal threat. Based on what you know, this is:", choices: ["Accurate — sharks are everywhere", "Media sensationalism for ratings", "True but understated", "Only accurate in Australia"], correctIndex: 1, explanation: "Dramatic framing sells. The actual risk is minuscule — ~70 bites, ~5 deaths per year globally. Media exaggerates for engagement."),
-            Question(id: "shark203_q4", type: .fillBlank, prompt: "Symbols travel faster than _____.", choices: ["Sharks", "Water", "Facts", "Media"], correctIndex: 2, explanation: "The cultural symbol of the shark as a monster spread far faster than the actual biological and statistical facts about shark behavior.")
+            Question(id: "shark203_q1", prompt: "Match each media milestone to its impact on shark perception.", matchingPairs: [
+                MatchingPair(left: "Jaws (1975)", right: "Created the modern cultural fear of sharks"),
+                MatchingPair(left: "Shark Week (since 1988)", right: "Turned fear into annual fascination ritual"),
+                MatchingPair(left: "Peter Benchley's later career", right: "Became a shark conservation advocate")
+            ], explanation: "The arc from Jaws to Shark Week to conservation advocacy tells the full story of sharks in American media."),
+            Question(id: "shark203_q2", type: .scenario, prompt: "A dramatic TV special implies sharks are an ever-present, growing coastal threat. Based on everything you've learned, this is:", choices: ["Accurate reporting", "Media sensationalism — ~70 bites/year, populations declining 70%+", "True but understated", "Only relevant in tropical waters"], correctIndex: 1, explanation: "Dramatic framing sells. The actual risk is minuscule, and shark populations are declining, not growing. Sensationalism funds ratings, not accuracy."),
+            Question(id: "shark203_q3", prompt: "Symbols travel faster than _____.", acceptedAnswers: ["facts", "the facts", "truth", "data", "reality"], explanation: "The cultural symbol of the shark as a monster spread far faster than the actual biological and statistical facts about shark behavior."),
+            Question(id: "shark203_q4", type: .multiSelect, prompt: "Which are true about Shark Week?", choices: ["Premiered on Discovery Channel in 1988", "Is purely educational with no sensationalism", "Turned shark fear into an annual American ritual", "Has both boosted awareness and exaggerated danger", "Was created by Peter Benchley"], correctIndices: [0, 2, 3], explanation: "Shark Week started in 1988, became a cultural ritual, and is a mix of education and entertainment. It is NOT purely educational and was NOT created by Benchley.")
         ]),
         flashcards: [
             Flashcard(id: "shark203_f1", front: "Shark Week", back: "Annual Discovery Channel programming event since 1988 — a mix of education and sensationalism that made sharks a cultural phenomenon"),
