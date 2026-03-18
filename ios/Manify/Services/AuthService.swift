@@ -11,10 +11,7 @@ final class AuthService {
     private(set) var authProvider: String?
     private(set) var isLoading: Bool = false
     var errorMessage: String?
-
-    var hasCompletedOnboarding: Bool {
-        UserDefaults.standard.bool(forKey: onboardingKey)
-    }
+    private(set) var hasCompletedOnboarding: Bool = false
 
     private let onboardingKey = "manify_onboarding_complete"
     private let authStateKey = "manify_auth_state"
@@ -24,6 +21,7 @@ final class AuthService {
     private let guestKey = "manify_is_guest"
 
     init() {
+        hasCompletedOnboarding = UserDefaults.standard.bool(forKey: onboardingKey)
         loadState()
     }
 
@@ -141,6 +139,7 @@ final class AuthService {
 
     private func markOnboardingComplete() {
         UserDefaults.standard.set(true, forKey: onboardingKey)
+        hasCompletedOnboarding = true
     }
 
     private func saveState() {
