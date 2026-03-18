@@ -1,17 +1,7 @@
 import AuthenticationServices
 import SwiftUI
 
-private enum AccountSheet: Identifiable {
-    case signIn
-    case createAccount
 
-    var id: String {
-        switch self {
-        case .signIn: "signIn"
-        case .createAccount: "createAccount"
-        }
-    }
-}
 
 struct MyAccountScreen: View {
     @Environment(AuthService.self) private var auth
@@ -20,7 +10,8 @@ struct MyAccountScreen: View {
     @Environment(NotificationService.self) private var notifications
     @State private var showPaywall: Bool = false
     @State private var showEditUsername: Bool = false
-    @State private var activeSheet: AccountSheet? = nil
+    @State private var showSignIn: Bool = false
+    @State private var showCreateAccount: Bool = false
     @State private var editedUsername: String = ""
     @State private var showSignOutConfirm: Bool = false
 
@@ -49,13 +40,11 @@ struct MyAccountScreen: View {
             .sheet(isPresented: $showEditUsername) {
                 editUsernameSheet
             }
-            .sheet(item: $activeSheet) { sheet in
-                switch sheet {
-                case .signIn:
-                    SignInSheetAccount(auth: auth, onDismiss: { activeSheet = nil })
-                case .createAccount:
-                    CreateAccountSheetAccount(auth: auth, onDismiss: { activeSheet = nil })
-                }
+            .sheet(isPresented: $showSignIn) {
+                SignInSheetAccount(auth: auth, onDismiss: { showSignIn = false })
+            }
+            .sheet(isPresented: $showCreateAccount) {
+                CreateAccountSheetAccount(auth: auth, onDismiss: { showCreateAccount = false })
             }
             .alert("Sign Out", isPresented: $showSignOutConfirm) {
                 Button("Sign Out", role: .destructive) {
@@ -133,7 +122,7 @@ struct MyAccountScreen: View {
                 .clipShape(.rect(cornerRadius: 10))
 
                 Button {
-                    activeSheet = .createAccount
+                    showCreateAccount = true
                 } label: {
                     HStack(spacing: 8) {
                         Image(systemName: "envelope.fill")
@@ -149,7 +138,7 @@ struct MyAccountScreen: View {
                 }
 
                 Button {
-                    activeSheet = .signIn
+                    showSignIn = true
                 } label: {
                     Text("Already have an account? Sign In")
                         .font(.caption.weight(.medium))
