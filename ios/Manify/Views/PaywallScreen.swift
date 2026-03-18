@@ -3,6 +3,7 @@ import SwiftUI
 struct PaywallScreen: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(MembershipService.self) private var membership
+    @State private var showSuccess: Bool = false
 
     var body: some View {
         NavigationStack {
@@ -41,6 +42,20 @@ struct PaywallScreen: View {
                 }
             }
             .toolbarColorScheme(.dark, for: .navigationBar)
+            .overlay {
+                if showSuccess {
+                    successOverlay
+                }
+            }
+            .onChange(of: membership.isPremium) { _, isPremium in
+                if isPremium {
+                    showSuccess = true
+                    Task {
+                        try? await Task.sleep(for: .seconds(2))
+                        dismiss()
+                    }
+                }
+            }
         }
     }
 
@@ -167,7 +182,7 @@ struct PaywallScreen: View {
                 Task { await membership.purchase() }
             } label: {
                 HStack {
-                    if membership.isLoading {
+                    if membership.isPurchasing {
                         ProgressView()
                             .tint(ManifyTheme.bg)
                     } else {
@@ -181,7 +196,7 @@ struct PaywallScreen: View {
                 .background(ManifyTheme.goldGradient)
                 .clipShape(.rect(cornerRadius: 14))
             }
-            .disabled(membership.isLoading)
+            .disabled(membership.isPurchasing || membership.isLoading)
             .sensoryFeedback(.impact(weight: .heavy), trigger: membership.isPremium)
 
             Text("One-time payment. No subscription.")
@@ -203,7 +218,7 @@ struct PaywallScreen: View {
                     .multilineTextAlignment(.center)
             }
 
-            if membership.isPremium {
+            if membership.isPremium && !showSuccess {
                 HStack(spacing: 6) {
                     Image(systemName: "checkmark.seal.fill")
                         .foregroundStyle(ManifyTheme.success)
@@ -214,5 +229,28 @@ struct PaywallScreen: View {
                 .padding(.top, 8)
             }
         }
+    }
+
+    private var successOverlay: some View {
+        ZStack {
+            Color.black.opacity(0.85)
+                .ignoresSafeArea()
+
+            VStack(spacing: 20) {
+                Image(systemName: "shield.checkered")
+                    .font(.system(size: 56))
+                    .foregroundStyle(ManifyTheme.goldGradient)
+
+                Text("Manly Membership Unlocked")
+                    .font(.title3.weight(.bold))
+                    .foregroundStyle(ManifyTheme.textPrimary)
+
+                Text("You now have full access.\nTrain without limits.")
+                    .font(.subheadline)
+                    .foregroundStyle(ManifyTheme.textSecondary)
+                    .multilineTextAlignment(.center)
+            }
+        }
+        .transition(.opacity)
     }
 }

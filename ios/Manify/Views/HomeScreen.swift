@@ -5,7 +5,6 @@ struct HomeScreen: View {
     @Environment(ProgressStore.self) private var progressStore
     @Environment(MembershipService.self) private var membership
     @State private var showPaywall: Bool = false
-    @State private var showSettings: Bool = false
 
     private let streakMessages = [
         "Hold the line.",
@@ -42,11 +41,6 @@ struct HomeScreen: View {
             .sheet(isPresented: $showPaywall) {
                 PaywallScreen()
             }
-            .sheet(isPresented: $showSettings) {
-                NavigationStack {
-                    SettingsScreen()
-                }
-            }
         }
     }
 
@@ -65,17 +59,7 @@ struct HomeScreen: View {
 
             Spacer()
 
-            HStack(spacing: 10) {
-                RankBadge(rank: progressStore.currentRank, totalXP: progressStore.totalXP, compact: true)
-
-                Button {
-                    showSettings = true
-                } label: {
-                    Image(systemName: "gearshape.fill")
-                        .font(.subheadline)
-                        .foregroundStyle(ManifyTheme.textSecondary)
-                }
-            }
+            RankBadge(rank: progressStore.currentRank, totalXP: progressStore.totalXP, compact: true)
         }
         .padding(.top, 8)
     }

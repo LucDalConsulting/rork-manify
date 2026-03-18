@@ -16,11 +16,15 @@ struct ContentView: View {
             Tab("Progress", systemImage: "chart.bar.fill", value: .progress) {
                 ProgressScreen()
             }
+
+            Tab("My Account", systemImage: "person.crop.circle.fill", value: .account) {
+                MyAccountScreen()
+            }
         }
         .tint(ManifyTheme.gold)
     }
 }
 
 enum AppTab: Hashable {
-    case home, training, progress
+    case home, training, progress, account
 }
