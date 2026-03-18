@@ -46,13 +46,11 @@ struct HomeScreen: View {
 
     private var header: some View {
         HStack(alignment: .center, spacing: 12) {
-            if let uiImage = UIImage(named: "AppIcon") {
-                Image(uiImage: uiImage)
-                    .resizable()
-                    .aspectRatio(contentMode: .fill)
-                    .frame(width: 44, height: 44)
-                    .clipShape(.rect(cornerRadius: 10))
-            }
+            Image("AppLogo")
+                .resizable()
+                .aspectRatio(contentMode: .fill)
+                .frame(width: 44, height: 44)
+                .clipShape(.rect(cornerRadius: 10))
 
             VStack(alignment: .leading, spacing: 2) {
                 Text("MANIFY")
