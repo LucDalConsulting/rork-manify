@@ -8,10 +8,14 @@ struct MyAccountScreen: View {
     @Environment(NotificationService.self) private var notifications
     @State private var showPaywall: Bool = false
     @State private var showEditUsername: Bool = false
-    @State private var showSignIn: Bool = false
-    @State private var showCreateAccount: Bool = false
+    @State private var activeSheet: AccountSheetType? = nil
     @State private var editedUsername: String = ""
     @State private var showSignOutConfirm: Bool = false
+
+    nonisolated enum AccountSheetType: Identifiable {
+        case signIn, createAccount, paywall, editUsername
+        var id: Self { self }
+    }
 
     var body: some View {
         NavigationStack {
@@ -32,17 +36,17 @@ struct MyAccountScreen: View {
             .navigationTitle("My Account")
             .navigationBarTitleDisplayMode(.large)
             .toolbarColorScheme(.dark, for: .navigationBar)
-            .sheet(isPresented: $showPaywall) {
-                PaywallScreen()
-            }
-            .sheet(isPresented: $showEditUsername) {
-                editUsernameSheet
-            }
-            .sheet(isPresented: $showSignIn) {
-                SignInSheetAccount(auth: auth, onDismiss: { showSignIn = false })
-            }
-            .sheet(isPresented: $showCreateAccount) {
-                CreateAccountSheetAccount(auth: auth, onDismiss: { showCreateAccount = false })
+            .sheet(item: $activeSheet) { sheet in
+                switch sheet {
+                case .paywall:
+                    PaywallScreen()
+                case .editUsername:
+                    editUsernameSheet
+                case .signIn:
+                    SignInSheetAccount(auth: auth, onDismiss: { activeSheet = nil })
+                case .createAccount:
+                    CreateAccountSheetAccount(auth: auth, onDismiss: { activeSheet = nil })
+                }
             }
             .alert("Sign Out", isPresented: $showSignOutConfirm) {
                 Button("Sign Out", role: .destructive) {
@@ -120,7 +124,7 @@ struct MyAccountScreen: View {
                 .clipShape(.rect(cornerRadius: 10))
 
                 Button {
-                    showCreateAccount = true
+                    activeSheet = .createAccount
                 } label: {
                     HStack(spacing: 8) {
                         Image(systemName: "envelope.fill")
@@ -136,7 +140,7 @@ struct MyAccountScreen: View {
                 }
 
                 Button {
-                    showSignIn = true
+                    activeSheet = .signIn
                 } label: {
                     Text("Already have an account? Sign In")
                         .font(.caption.weight(.medium))
@@ -222,7 +226,7 @@ struct MyAccountScreen: View {
                 .listRowBackground(ManifyTheme.panel)
             } else {
                 Button {
-                    showPaywall = true
+                    activeSheet = .paywall
                 } label: {
                     HStack(spacing: 12) {
                         Image(systemName: "shield.checkered")
@@ -317,7 +321,7 @@ struct MyAccountScreen: View {
         Section {
             Button {
                 editedUsername = auth.username
-                showEditUsername = true
+                activeSheet = .editUsername
             } label: {
                 HStack {
                     Label("Change Username", systemImage: "pencil")
@@ -358,7 +362,7 @@ struct MyAccountScreen: View {
 
                 Button {
                     auth.updateUsername(editedUsername)
-                    showEditUsername = false
+                    activeSheet = nil
                 } label: {
                     Text("Save")
                         .font(.headline.weight(.bold))
@@ -376,7 +380,7 @@ struct MyAccountScreen: View {
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button {
-                        showEditUsername = false
+                        activeSheet = nil
                     } label: {
                         Image(systemName: "xmark")
                             .font(.subheadline.weight(.medium))

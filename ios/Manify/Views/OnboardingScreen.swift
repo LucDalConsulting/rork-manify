@@ -3,8 +3,12 @@ import SwiftUI
 
 struct OnboardingScreen: View {
     @Environment(AuthService.self) private var auth
-    @State private var showSignIn: Bool = false
-    @State private var showCreateAccount: Bool = false
+    @State private var activeSheet: OnboardingSheetType? = nil
+
+    nonisolated enum OnboardingSheetType: Identifiable {
+        case signIn, createAccount
+        var id: Self { self }
+    }
 
     var body: some View {
         ZStack {
@@ -33,11 +37,13 @@ struct OnboardingScreen: View {
             }
             .padding(.horizontal, 28)
         }
-        .sheet(isPresented: $showSignIn) {
-            SignInSheet(auth: auth, onDismiss: { showSignIn = false })
-        }
-        .sheet(isPresented: $showCreateAccount) {
-            CreateAccountSheet(auth: auth, onDismiss: { showCreateAccount = false })
+        .sheet(item: $activeSheet) { sheet in
+            switch sheet {
+            case .signIn:
+                SignInSheet(auth: auth, onDismiss: { activeSheet = nil })
+            case .createAccount:
+                CreateAccountSheet(auth: auth, onDismiss: { activeSheet = nil })
+            }
         }
     }
 
@@ -80,7 +86,7 @@ struct OnboardingScreen: View {
             .clipShape(.rect(cornerRadius: 12))
 
             Button {
-                showCreateAccount = true
+                activeSheet = .createAccount
             } label: {
                 HStack(spacing: 10) {
                     Image(systemName: "envelope.fill")
@@ -96,7 +102,7 @@ struct OnboardingScreen: View {
             }
 
             Button {
-                showSignIn = true
+                activeSheet = .signIn
             } label: {
                 Text("Sign In")
                     .font(.headline.weight(.semibold))
