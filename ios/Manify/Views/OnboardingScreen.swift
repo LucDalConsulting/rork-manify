@@ -47,9 +47,11 @@ struct OnboardingScreen: View {
 
     private var heroSection: some View {
         VStack(spacing: 20) {
-            Image(systemName: "shield.checkered")
-                .font(.system(size: 64))
-                .foregroundStyle(ManifyTheme.goldGradient)
+            Image("AppLogo")
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .frame(width: 80, height: 80)
+                .clipShape(.rect(cornerRadius: 16))
 
             VStack(spacing: 8) {
                 Text("MANIFY")
