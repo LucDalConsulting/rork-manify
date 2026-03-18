@@ -31,8 +31,9 @@ final class MembershipService {
         isLoading = true
         do {
             offerings = try await Purchases.shared.offerings()
+            purchaseError = nil
         } catch {
-            purchaseError = error.localizedDescription
+            // Don't show raw SDK config errors to users
         }
         isLoading = false
     }

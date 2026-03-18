@@ -5,10 +5,6 @@ struct OnboardingScreen: View {
     @Environment(AuthService.self) private var auth
     @State private var showSignIn: Bool = false
     @State private var showCreateAccount: Bool = false
-    @State private var emailInput: String = ""
-    @State private var passwordInput: String = ""
-    @State private var displayName: String = ""
-    @State private var isSignInMode: Bool = true
 
     var body: some View {
         ZStack {
@@ -38,10 +34,10 @@ struct OnboardingScreen: View {
             .padding(.horizontal, 28)
         }
         .sheet(isPresented: $showSignIn) {
-            emailAuthSheet(isCreating: false)
+            SignInSheet(auth: auth, onDismiss: { showSignIn = false })
         }
         .sheet(isPresented: $showCreateAccount) {
-            emailAuthSheet(isCreating: true)
+            CreateAccountSheet(auth: auth, onDismiss: { showCreateAccount = false })
         }
     }
 
@@ -84,10 +80,6 @@ struct OnboardingScreen: View {
             .clipShape(.rect(cornerRadius: 12))
 
             Button {
-                isSignInMode = false
-                emailInput = ""
-                passwordInput = ""
-                displayName = ""
                 showCreateAccount = true
             } label: {
                 HStack(spacing: 10) {
@@ -104,9 +96,6 @@ struct OnboardingScreen: View {
             }
 
             Button {
-                isSignInMode = true
-                emailInput = ""
-                passwordInput = ""
                 showSignIn = true
             } label: {
                 Text("Sign In")
@@ -135,26 +124,34 @@ struct OnboardingScreen: View {
         }
     }
 
-    private func emailAuthSheet(isCreating: Bool) -> some View {
+}
+
+private struct CreateAccountSheet: View {
+    var auth: AuthService
+    var onDismiss: () -> Void
+    @State private var displayName: String = ""
+    @State private var emailInput: String = ""
+    @State private var passwordInput: String = ""
+    @State private var confirmPassword: String = ""
+
+    var body: some View {
         NavigationStack {
             VStack(spacing: 24) {
                 VStack(spacing: 8) {
-                    Text(isCreating ? "Create Account" : "Sign In")
+                    Text("Create Account")
                         .font(.title2.weight(.bold))
                         .foregroundStyle(ManifyTheme.textPrimary)
 
-                    Text(isCreating ? "Join the ranks." : "Welcome back.")
+                    Text("Join the ranks.")
                         .font(.subheadline)
                         .foregroundStyle(ManifyTheme.textSecondary)
                 }
                 .padding(.top, 8)
 
                 VStack(spacing: 14) {
-                    if isCreating {
-                        TextField("Display Name", text: $displayName)
-                            .textFieldStyle(.roundedBorder)
-                            .textContentType(.name)
-                    }
+                    TextField("Your Name", text: $displayName)
+                        .textFieldStyle(.roundedBorder)
+                        .textContentType(.name)
 
                     TextField("Email", text: $emailInput)
                         .textFieldStyle(.roundedBorder)
@@ -164,7 +161,11 @@ struct OnboardingScreen: View {
 
                     SecureField("Password", text: $passwordInput)
                         .textFieldStyle(.roundedBorder)
-                        .textContentType(isCreating ? .newPassword : .password)
+                        .textContentType(.newPassword)
+
+                    SecureField("Confirm Password", text: $confirmPassword)
+                        .textFieldStyle(.roundedBorder)
+                        .textContentType(.newPassword)
                 }
 
                 if let error = auth.errorMessage {
@@ -175,18 +176,17 @@ struct OnboardingScreen: View {
                 }
 
                 Button {
-                    if isCreating {
-                        auth.createAccount(emailInput: emailInput, password: passwordInput, displayName: displayName)
-                    } else {
-                        auth.signInWithEmail(emailInput: emailInput, password: passwordInput)
+                    guard passwordInput == confirmPassword else {
+                        auth.errorMessage = "Passwords do not match."
+                        return
                     }
+                    auth.createAccount(emailInput: emailInput, password: passwordInput, displayName: displayName)
                 } label: {
                     HStack {
                         if auth.isLoading {
-                            ProgressView()
-                                .tint(ManifyTheme.bg)
+                            ProgressView().tint(ManifyTheme.bg)
                         } else {
-                            Text(isCreating ? "Create Account" : "Sign In")
+                            Text("Create Account")
                                 .font(.headline.weight(.bold))
                         }
                     }
@@ -205,8 +205,7 @@ struct OnboardingScreen: View {
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button {
-                        showSignIn = false
-                        showCreateAccount = false
+                        onDismiss()
                     } label: {
                         Image(systemName: "xmark")
                             .font(.subheadline.weight(.medium))
@@ -216,5 +215,103 @@ struct OnboardingScreen: View {
             }
             .toolbarColorScheme(.dark, for: .navigationBar)
         }
+        .onAppear { auth.errorMessage = nil }
+    }
+}
+
+private struct SignInSheet: View {
+    var auth: AuthService
+    var onDismiss: () -> Void
+    @State private var emailInput: String = ""
+    @State private var passwordInput: String = ""
+
+    var body: some View {
+        NavigationStack {
+            VStack(spacing: 24) {
+                VStack(spacing: 8) {
+                    Text("Sign In")
+                        .font(.title2.weight(.bold))
+                        .foregroundStyle(ManifyTheme.textPrimary)
+
+                    Text("Welcome back.")
+                        .font(.subheadline)
+                        .foregroundStyle(ManifyTheme.textSecondary)
+                }
+                .padding(.top, 8)
+
+                SignInWithAppleButton(.signIn) { request in
+                    request.requestedScopes = [.fullName, .email]
+                } onCompletion: { result in
+                    auth.signInWithApple(result: result)
+                    onDismiss()
+                }
+                .signInWithAppleButtonStyle(.white)
+                .frame(height: 48)
+                .clipShape(.rect(cornerRadius: 10))
+
+                HStack {
+                    Rectangle().fill(Color.white.opacity(0.1)).frame(height: 1)
+                    Text("or")
+                        .font(.caption)
+                        .foregroundStyle(ManifyTheme.textSecondary)
+                    Rectangle().fill(Color.white.opacity(0.1)).frame(height: 1)
+                }
+
+                VStack(spacing: 14) {
+                    TextField("Email", text: $emailInput)
+                        .textFieldStyle(.roundedBorder)
+                        .textContentType(.emailAddress)
+                        .keyboardType(.emailAddress)
+                        .textInputAutocapitalization(.never)
+
+                    SecureField("Password", text: $passwordInput)
+                        .textFieldStyle(.roundedBorder)
+                        .textContentType(.password)
+                }
+
+                if let error = auth.errorMessage {
+                    Text(error)
+                        .font(.caption)
+                        .foregroundStyle(ManifyTheme.danger)
+                        .multilineTextAlignment(.center)
+                }
+
+                Button {
+                    auth.signInWithEmail(emailInput: emailInput, password: passwordInput)
+                } label: {
+                    HStack {
+                        if auth.isLoading {
+                            ProgressView().tint(ManifyTheme.bg)
+                        } else {
+                            Text("Sign In")
+                                .font(.headline.weight(.bold))
+                        }
+                    }
+                    .foregroundStyle(ManifyTheme.bg)
+                    .frame(maxWidth: .infinity)
+                    .padding(16)
+                    .background(ManifyTheme.goldGradient)
+                    .clipShape(.rect(cornerRadius: 12))
+                }
+                .disabled(auth.isLoading)
+
+                Spacer()
+            }
+            .padding(.horizontal, 24)
+            .background(ManifyTheme.bg.ignoresSafeArea())
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button {
+                        onDismiss()
+                    } label: {
+                        Image(systemName: "xmark")
+                            .font(.subheadline.weight(.medium))
+                            .foregroundStyle(ManifyTheme.textSecondary)
+                    }
+                }
+            }
+            .toolbarColorScheme(.dark, for: .navigationBar)
+        }
+        .onAppear { auth.errorMessage = nil }
     }
 }

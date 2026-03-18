@@ -11,9 +11,6 @@ struct MyAccountScreen: View {
     @State private var showSignIn: Bool = false
     @State private var showCreateAccount: Bool = false
     @State private var editedUsername: String = ""
-    @State private var emailInput: String = ""
-    @State private var passwordInput: String = ""
-    @State private var displayName: String = ""
     @State private var showSignOutConfirm: Bool = false
 
     var body: some View {
@@ -42,10 +39,10 @@ struct MyAccountScreen: View {
                 editUsernameSheet
             }
             .sheet(isPresented: $showSignIn) {
-                authSheet(isCreating: false)
+                SignInSheetAccount(auth: auth, onDismiss: { showSignIn = false })
             }
             .sheet(isPresented: $showCreateAccount) {
-                authSheet(isCreating: true)
+                CreateAccountSheetAccount(auth: auth, onDismiss: { showCreateAccount = false })
             }
             .alert("Sign Out", isPresented: $showSignOutConfirm) {
                 Button("Sign Out", role: .destructive) {
@@ -123,9 +120,6 @@ struct MyAccountScreen: View {
                 .clipShape(.rect(cornerRadius: 10))
 
                 Button {
-                    emailInput = ""
-                    passwordInput = ""
-                    displayName = ""
                     showCreateAccount = true
                 } label: {
                     HStack(spacing: 8) {
@@ -142,8 +136,6 @@ struct MyAccountScreen: View {
                 }
 
                 Button {
-                    emailInput = ""
-                    passwordInput = ""
                     showSignIn = true
                 } label: {
                     Text("Already have an account? Sign In")
@@ -396,14 +388,24 @@ struct MyAccountScreen: View {
         }
     }
 
-    private func authSheet(isCreating: Bool) -> some View {
+}
+
+private struct CreateAccountSheetAccount: View {
+    var auth: AuthService
+    var onDismiss: () -> Void
+    @State private var displayName: String = ""
+    @State private var emailInput: String = ""
+    @State private var passwordInput: String = ""
+    @State private var confirmPassword: String = ""
+
+    var body: some View {
         NavigationStack {
             VStack(spacing: 24) {
                 VStack(spacing: 8) {
-                    Text(isCreating ? "Create Account" : "Sign In")
+                    Text("Create Account")
                         .font(.title2.weight(.bold))
                         .foregroundStyle(ManifyTheme.textPrimary)
-                    Text(isCreating ? "Join the ranks." : "Welcome back.")
+                    Text("Join the ranks.")
                         .font(.subheadline)
                         .foregroundStyle(ManifyTheme.textSecondary)
                 }
@@ -413,8 +415,7 @@ struct MyAccountScreen: View {
                     request.requestedScopes = [.fullName, .email]
                 } onCompletion: { result in
                     auth.signInWithApple(result: result)
-                    showSignIn = false
-                    showCreateAccount = false
+                    onDismiss()
                 }
                 .signInWithAppleButtonStyle(.white)
                 .frame(height: 48)
@@ -429,19 +430,23 @@ struct MyAccountScreen: View {
                 }
 
                 VStack(spacing: 14) {
-                    if isCreating {
-                        TextField("Display Name", text: $displayName)
-                            .textFieldStyle(.roundedBorder)
-                            .textContentType(.name)
-                    }
+                    TextField("Your Name", text: $displayName)
+                        .textFieldStyle(.roundedBorder)
+                        .textContentType(.name)
+
                     TextField("Email", text: $emailInput)
                         .textFieldStyle(.roundedBorder)
                         .textContentType(.emailAddress)
                         .keyboardType(.emailAddress)
                         .textInputAutocapitalization(.never)
+
                     SecureField("Password", text: $passwordInput)
                         .textFieldStyle(.roundedBorder)
-                        .textContentType(isCreating ? .newPassword : .password)
+                        .textContentType(.newPassword)
+
+                    SecureField("Confirm Password", text: $confirmPassword)
+                        .textFieldStyle(.roundedBorder)
+                        .textContentType(.newPassword)
                 }
 
                 if let error = auth.errorMessage {
@@ -451,17 +456,17 @@ struct MyAccountScreen: View {
                 }
 
                 Button {
-                    if isCreating {
-                        auth.createAccount(emailInput: emailInput, password: passwordInput, displayName: displayName)
-                    } else {
-                        auth.signInWithEmail(emailInput: emailInput, password: passwordInput)
+                    guard passwordInput == confirmPassword else {
+                        auth.errorMessage = "Passwords do not match."
+                        return
                     }
+                    auth.createAccount(emailInput: emailInput, password: passwordInput, displayName: displayName)
                 } label: {
                     HStack {
                         if auth.isLoading {
                             ProgressView().tint(ManifyTheme.bg)
                         } else {
-                            Text(isCreating ? "Create Account" : "Sign In")
+                            Text("Create Account")
                                 .font(.headline.weight(.bold))
                         }
                     }
@@ -480,8 +485,7 @@ struct MyAccountScreen: View {
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button {
-                        showSignIn = false
-                        showCreateAccount = false
+                        onDismiss()
                     } label: {
                         Image(systemName: "xmark")
                             .font(.subheadline.weight(.medium))
@@ -491,5 +495,101 @@ struct MyAccountScreen: View {
             }
             .toolbarColorScheme(.dark, for: .navigationBar)
         }
+        .onAppear { auth.errorMessage = nil }
+    }
+}
+
+private struct SignInSheetAccount: View {
+    var auth: AuthService
+    var onDismiss: () -> Void
+    @State private var emailInput: String = ""
+    @State private var passwordInput: String = ""
+
+    var body: some View {
+        NavigationStack {
+            VStack(spacing: 24) {
+                VStack(spacing: 8) {
+                    Text("Sign In")
+                        .font(.title2.weight(.bold))
+                        .foregroundStyle(ManifyTheme.textPrimary)
+                    Text("Welcome back.")
+                        .font(.subheadline)
+                        .foregroundStyle(ManifyTheme.textSecondary)
+                }
+                .padding(.top, 8)
+
+                SignInWithAppleButton(.signIn) { request in
+                    request.requestedScopes = [.fullName, .email]
+                } onCompletion: { result in
+                    auth.signInWithApple(result: result)
+                    onDismiss()
+                }
+                .signInWithAppleButtonStyle(.white)
+                .frame(height: 48)
+                .clipShape(.rect(cornerRadius: 10))
+
+                HStack {
+                    Rectangle().fill(Color.white.opacity(0.1)).frame(height: 1)
+                    Text("or")
+                        .font(.caption)
+                        .foregroundStyle(ManifyTheme.textSecondary)
+                    Rectangle().fill(Color.white.opacity(0.1)).frame(height: 1)
+                }
+
+                VStack(spacing: 14) {
+                    TextField("Email", text: $emailInput)
+                        .textFieldStyle(.roundedBorder)
+                        .textContentType(.emailAddress)
+                        .keyboardType(.emailAddress)
+                        .textInputAutocapitalization(.never)
+
+                    SecureField("Password", text: $passwordInput)
+                        .textFieldStyle(.roundedBorder)
+                        .textContentType(.password)
+                }
+
+                if let error = auth.errorMessage {
+                    Text(error)
+                        .font(.caption)
+                        .foregroundStyle(ManifyTheme.danger)
+                }
+
+                Button {
+                    auth.signInWithEmail(emailInput: emailInput, password: passwordInput)
+                } label: {
+                    HStack {
+                        if auth.isLoading {
+                            ProgressView().tint(ManifyTheme.bg)
+                        } else {
+                            Text("Sign In")
+                                .font(.headline.weight(.bold))
+                        }
+                    }
+                    .foregroundStyle(ManifyTheme.bg)
+                    .frame(maxWidth: .infinity)
+                    .padding(16)
+                    .background(ManifyTheme.goldGradient)
+                    .clipShape(.rect(cornerRadius: 12))
+                }
+                .disabled(auth.isLoading)
+
+                Spacer()
+            }
+            .padding(.horizontal, 24)
+            .background(ManifyTheme.bg.ignoresSafeArea())
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button {
+                        onDismiss()
+                    } label: {
+                        Image(systemName: "xmark")
+                            .font(.subheadline.weight(.medium))
+                            .foregroundStyle(ManifyTheme.textSecondary)
+                    }
+                }
+            }
+            .toolbarColorScheme(.dark, for: .navigationBar)
+        }
+        .onAppear { auth.errorMessage = nil }
     }
 }
