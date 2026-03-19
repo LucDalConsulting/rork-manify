@@ -8,20 +8,15 @@ struct MyAccountScreen: View {
     @Environment(MembershipService.self) private var membership
     @Environment(ProgressStore.self) private var progressStore
     @Environment(NotificationService.self) private var notifications
-    @State private var activeSheet: AccountSheet?
     @State private var editedUsername: String = ""
     @State private var showSignOutConfirm: Bool = false
+    @State private var showPaywall: Bool = false
+    @State private var showEditUsername: Bool = false
+    @State private var showAuthSheet: Bool = false
+    @State private var authSheetMode: AuthSheetMode = .createAccount
 
-    nonisolated enum AccountSheet: Identifiable {
-        case paywall, editUsername, signIn, createAccount
-        nonisolated var id: Int {
-            switch self {
-            case .paywall: return 0
-            case .editUsername: return 1
-            case .signIn: return 2
-            case .createAccount: return 3
-            }
-        }
+    nonisolated enum AuthSheetMode {
+        case signIn, createAccount
     }
 
     var body: some View {
@@ -43,16 +38,18 @@ struct MyAccountScreen: View {
             .navigationTitle("My Account")
             .navigationBarTitleDisplayMode(.large)
             .toolbarColorScheme(.dark, for: .navigationBar)
-            .sheet(item: $activeSheet) { sheet in
-                switch sheet {
-                case .paywall:
-                    PaywallScreen()
-                case .editUsername:
-                    editUsernameSheetContent
-                case .signIn:
-                    SignInSheetAccount(auth: auth, onDismiss: { activeSheet = nil })
+            .sheet(isPresented: $showPaywall) {
+                PaywallScreen()
+            }
+            .sheet(isPresented: $showEditUsername) {
+                editUsernameSheetContent
+            }
+            .sheet(isPresented: $showAuthSheet) {
+                switch authSheetMode {
                 case .createAccount:
-                    CreateAccountSheetAccount(auth: auth, onDismiss: { activeSheet = nil })
+                    CreateAccountSheetAccount(auth: auth, onDismiss: { showAuthSheet = false })
+                case .signIn:
+                    SignInSheetAccount(auth: auth, onDismiss: { showAuthSheet = false })
                 }
             }
             .alert("Sign Out", isPresented: $showSignOutConfirm) {
@@ -131,7 +128,8 @@ struct MyAccountScreen: View {
                 .clipShape(.rect(cornerRadius: 10))
 
                 Button {
-                    activeSheet = .createAccount
+                    authSheetMode = .createAccount
+                    showAuthSheet = true
                 } label: {
                     HStack(spacing: 8) {
                         Image(systemName: "envelope.fill")
@@ -147,7 +145,8 @@ struct MyAccountScreen: View {
                 }
 
                 Button {
-                    activeSheet = .signIn
+                    authSheetMode = .signIn
+                    showAuthSheet = true
                 } label: {
                     Text("Already have an account? Sign In")
                         .font(.caption.weight(.medium))
@@ -233,7 +232,7 @@ struct MyAccountScreen: View {
                 .listRowBackground(ManifyTheme.panel)
             } else {
                 Button {
-                    activeSheet = .paywall
+                    showPaywall = true
                 } label: {
                     HStack(spacing: 12) {
                         Image(systemName: "shield.checkered")
@@ -328,7 +327,7 @@ struct MyAccountScreen: View {
         Section {
             Button {
                 editedUsername = auth.username
-                activeSheet = .editUsername
+                showEditUsername = true
             } label: {
                 HStack {
                     Label("Change Username", systemImage: "pencil")
@@ -369,7 +368,7 @@ struct MyAccountScreen: View {
 
                 Button {
                     auth.updateUsername(editedUsername)
-                    activeSheet = nil
+                    showEditUsername = false
                 } label: {
                     Text("Save")
                         .font(.headline.weight(.bold))
@@ -387,7 +386,7 @@ struct MyAccountScreen: View {
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button {
-                        activeSheet = nil
+                        showEditUsername = false
                     } label: {
                         Image(systemName: "xmark")
                             .font(.subheadline.weight(.medium))
