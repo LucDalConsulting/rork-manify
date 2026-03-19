@@ -12,11 +12,11 @@ struct MyAccountScreen: View {
     @State private var showSignOutConfirm: Bool = false
     @State private var showPaywall: Bool = false
     @State private var showEditUsername: Bool = false
-    @State private var showAuthSheet: Bool = false
-    @State private var authSheetMode: AuthSheetMode = .createAccount
+    @State private var activeAuthSheet: AuthSheetType?
 
-    nonisolated enum AuthSheetMode {
+    nonisolated enum AuthSheetType: String, Identifiable {
         case signIn, createAccount
+        var id: String { rawValue }
     }
 
     var body: some View {
@@ -44,12 +44,12 @@ struct MyAccountScreen: View {
             .sheet(isPresented: $showEditUsername) {
                 editUsernameSheetContent
             }
-            .sheet(isPresented: $showAuthSheet) {
-                switch authSheetMode {
+            .sheet(item: $activeAuthSheet) { sheet in
+                switch sheet {
                 case .createAccount:
-                    CreateAccountSheetAccount(auth: auth, onDismiss: { showAuthSheet = false })
+                    CreateAccountSheetAccount(auth: auth, onDismiss: { activeAuthSheet = nil })
                 case .signIn:
-                    SignInSheetAccount(auth: auth, onDismiss: { showAuthSheet = false })
+                    SignInSheetAccount(auth: auth, onDismiss: { activeAuthSheet = nil })
                 }
             }
             .alert("Sign Out", isPresented: $showSignOutConfirm) {
@@ -128,8 +128,7 @@ struct MyAccountScreen: View {
                 .clipShape(.rect(cornerRadius: 10))
 
                 Button {
-                    authSheetMode = .createAccount
-                    showAuthSheet = true
+                    activeAuthSheet = .createAccount
                 } label: {
                     HStack(spacing: 8) {
                         Image(systemName: "envelope.fill")
@@ -145,8 +144,7 @@ struct MyAccountScreen: View {
                 }
 
                 Button {
-                    authSheetMode = .signIn
-                    showAuthSheet = true
+                    activeAuthSheet = .signIn
                 } label: {
                     Text("Already have an account? Sign In")
                         .font(.caption.weight(.medium))
