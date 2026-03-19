@@ -40,11 +40,11 @@ struct MyAccountScreen: View {
             .sheet(isPresented: $showEditUsername) {
                 editUsernameSheet
             }
-            .sheet(isPresented: $showSignIn) {
-                SignInSheetAccount(auth: auth, onDismiss: { showSignIn = false })
-            }
             .sheet(isPresented: $showCreateAccount) {
                 CreateAccountSheetAccount(auth: auth, onDismiss: { showCreateAccount = false })
+            }
+            .sheet(isPresented: $showSignIn) {
+                SignInSheetAccount(auth: auth, onDismiss: { showSignIn = false })
             }
             .alert("Sign Out", isPresented: $showSignOutConfirm) {
                 Button("Sign Out", role: .destructive) {
