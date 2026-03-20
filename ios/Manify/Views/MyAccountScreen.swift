@@ -13,7 +13,7 @@ struct MyAccountScreen: View {
     @State private var activeSheet: AccountSheetType?
 
     nonisolated enum AccountSheetType: String, Identifiable {
-        case paywall, editUsername, signIn, createAccount
+        case paywall, editUsername, createAccount
         var id: String { rawValue }
     }
 
@@ -44,8 +44,6 @@ struct MyAccountScreen: View {
                     editUsernameSheetContent
                 case .createAccount:
                     CreateAccountSheetAccount(auth: auth, onDismiss: { activeSheet = nil })
-                case .signIn:
-                    SignInSheetAccount(auth: auth, onDismiss: { activeSheet = nil })
                 }
             }
             .alert("Sign Out", isPresented: $showSignOutConfirm) {
@@ -139,14 +137,7 @@ struct MyAccountScreen: View {
                     .clipShape(.rect(cornerRadius: 10))
                 }
 
-                Button {
-                    activeSheet = .signIn
-                } label: {
-                    Text("Already have an account? Sign In")
-                        .font(.caption.weight(.medium))
-                        .foregroundStyle(ManifyTheme.gold)
-                        .frame(maxWidth: .infinity)
-                }
+
             }
             .listRowBackground(ManifyTheme.panel)
         } header: {
