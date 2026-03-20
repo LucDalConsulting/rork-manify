@@ -12,14 +12,28 @@ final class MembershipService {
 
     private let premiumKey = "manify_is_premium"
 
+    private var isConfigured: Bool {
+        Purchases.isConfigured
+    }
+
     init() {
         isPremium = UserDefaults.standard.bool(forKey: premiumKey)
-        Task { await listenForUpdates() }
-        Task { await fetchOfferings() }
-        Task { await checkStatus() }
+        Task {
+            guard isConfigured else { return }
+            await listenForUpdates()
+        }
+        Task {
+            guard isConfigured else { return }
+            await fetchOfferings()
+        }
+        Task {
+            guard isConfigured else { return }
+            await checkStatus()
+        }
     }
 
     private func listenForUpdates() async {
+        guard isConfigured else { return }
         for await info in Purchases.shared.customerInfoStream {
             let active = info.entitlements["premium"]?.isActive == true
             isPremium = active
@@ -28,6 +42,7 @@ final class MembershipService {
     }
 
     func fetchOfferings() async {
+        guard isConfigured else { return }
         isLoading = true
         do {
             offerings = try await Purchases.shared.offerings()
@@ -39,6 +54,10 @@ final class MembershipService {
     }
 
     func purchase() async {
+        guard isConfigured else {
+            purchaseError = "Purchases not configured."
+            return
+        }
         guard let package = offerings?.current?.availablePackages.first else {
             isPurchasing = true
             purchaseError = nil
@@ -61,6 +80,10 @@ final class MembershipService {
     }
 
     private func doPurchase(package: Package) async {
+        guard isConfigured else {
+            purchaseError = "Purchases not configured."
+            return
+        }
         isPurchasing = true
         purchaseError = nil
 
@@ -83,6 +106,10 @@ final class MembershipService {
     }
 
     func restorePurchases() async {
+        guard isConfigured else {
+            purchaseError = "Purchases not configured."
+            return
+        }
         isLoading = true
         purchaseError = nil
 
@@ -111,6 +138,7 @@ final class MembershipService {
     }
 
     func checkStatus() async {
+        guard isConfigured else { return }
         do {
             let info = try await Purchases.shared.customerInfo()
             let active = info.entitlements["premium"]?.isActive == true
