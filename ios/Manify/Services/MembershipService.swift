@@ -102,6 +102,14 @@ final class MembershipService {
         isLoading = false
     }
 
+    var currentPackage: Package? {
+        offerings?.current?.availablePackages.first
+    }
+
+    var priceString: String? {
+        currentPackage?.storeProduct.localizedPriceString
+    }
+
     func checkStatus() async {
         do {
             let info = try await Purchases.shared.customerInfo()

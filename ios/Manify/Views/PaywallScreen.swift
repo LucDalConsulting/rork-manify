@@ -186,7 +186,7 @@ struct PaywallScreen: View {
                         ProgressView()
                             .tint(ManifyTheme.bg)
                     } else {
-                        Text("Unlock for $10")
+                        Text("Unlock for \(membership.priceString ?? "$9.99")")
                             .font(.headline.weight(.bold))
                     }
                 }
