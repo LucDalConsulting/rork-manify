@@ -10,12 +10,16 @@ struct ManifyApp: App {
     @State private var authService = AuthService()
 
     init() {
+        let apiKey: String
         #if DEBUG
         Purchases.logLevel = .debug
-        Purchases.configure(withAPIKey: Config.EXPO_PUBLIC_REVENUECAT_TEST_API_KEY)
+        apiKey = Bundle.main.object(forInfoDictionaryKey: "RCTestAPIKey") as? String ?? ""
         #else
-        Purchases.configure(withAPIKey: Config.EXPO_PUBLIC_REVENUECAT_IOS_API_KEY)
+        apiKey = Bundle.main.object(forInfoDictionaryKey: "RCAPIKey") as? String ?? ""
         #endif
+        if !apiKey.isEmpty {
+            Purchases.configure(withAPIKey: apiKey)
+        }
     }
 
     var body: some Scene {
