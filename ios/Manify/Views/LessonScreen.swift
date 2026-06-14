@@ -209,7 +209,7 @@ struct LessonScreen: View {
                     if speech.isSpeaking {
                         speech.togglePauseResume()
                     } else {
-                        speech.start(segments: buildSegments())
+                        speech.start(lesson: lesson, segments: buildSegments())
                     }
                 } label: {
                     Image(systemName: playPauseIcon)
@@ -461,12 +461,14 @@ struct SpeechSegment {
 final class SpeechService: NSObject, AVSpeechSynthesizerDelegate {
     static let speedOptions: [Float] = [0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0]
 
+    // Pre-generated "Adam" (Kokoro) narration, served free via jsDelivr over the repo.
+    private static let audioBaseURL = "https://cdn.jsdelivr.net/gh/LucDalConsulting/rork-manify@audio-assets/audio/"
+
     private let synthesizer = AVSpeechSynthesizer()
 
-    // Pick the best available deep male English voice. Premium/Enhanced voices —
-    // which the user can download in Settings > Accessibility > Spoken Content >
-    // Voices — sound dramatically more natural than the default compact voice; if
-    // none are downloaded this still chooses the best male voice present.
+    // Best available deep male English voice — the OFFLINE fallback used when the
+    // streamed Adam audio isn't reachable. Premium/Enhanced downloaded voices sound
+    // far better than the default compact voice.
     private let preferredVoice: AVSpeechSynthesisVoice? = SpeechService.bestMaleEnglishVoice()
 
     private static func bestMaleEnglishVoice() -> AVSpeechSynthesisVoice? {
@@ -494,20 +496,26 @@ final class SpeechService: NSObject, AVSpeechSynthesizerDelegate {
 
     // User-facing playback speed multiplier (1.0 = normal).
     var rate: Float = 1.0 {
-        didSet {
-            recomputeDuration()
-            guard isSpeaking, !isPaused else { return }
-            jump(to: currentIndex)
-        }
+        didSet { applyRate() }
     }
 
+    private enum Mode { case idle, streaming, synth }
+    private var mode: Mode = .idle
+
+    // Streaming engine (AVPlayer) — plays the pre-generated Adam audio.
+    private var player: AVPlayer?
+    private var timeObserver: Any?
+    private var statusObservation: NSKeyValueObservation?
+    private var endObserver: NSObjectProtocol?
+    private var blockTimeline: [(start: Double, id: String)] = []
+
+    // Synth engine (AVSpeechSynthesizer) — offline fallback, chunked by segment.
     private var segments: [SpeechSegment] = []
     private var segmentStart: [Int] = []
     private var totalChars = 1
     private var currentIndex = 0
     private var charsBeforeCurrent = 0
     private var rangeWithinCurrent = 0
-
     private let baseCharsPerSecond = 14.0
 
     override init() {
@@ -517,28 +525,45 @@ final class SpeechService: NSObject, AVSpeechSynthesizerDelegate {
 
     // MARK: - Public controls
 
-    func start(segments newSegments: [SpeechSegment]) {
-        load(newSegments)
+    func start(lesson: Lesson, segments newSegments: [SpeechSegment]) {
+        stop()
+        loadSegments(newSegments)
         guard !segments.isEmpty else { return }
-        activateSession()
-        isSpeaking = true
-        isPaused = false
-        jump(to: 0)
+        if let url = URL(string: SpeechService.audioBaseURL + lesson.id + ".mp3") {
+            startStreaming(url: url)
+        } else {
+            startSynth()
+        }
     }
 
     func togglePauseResume() {
         guard isSpeaking else { return }
-        if isPaused {
-            synthesizer.continueSpeaking()
-            isPaused = false
-        } else {
-            synthesizer.pauseSpeaking(at: .word)
-            isPaused = true
+        switch mode {
+        case .streaming:
+            if isPaused {
+                player?.rate = rate
+                isPaused = false
+            } else {
+                player?.pause()
+                isPaused = true
+            }
+        case .synth:
+            if isPaused {
+                synthesizer.continueSpeaking()
+                isPaused = false
+            } else {
+                synthesizer.pauseSpeaking(at: .word)
+                isPaused = true
+            }
+        case .idle:
+            break
         }
     }
 
     func stop() {
+        teardownStreaming()
         synthesizer.stopSpeaking(at: .immediate)
+        mode = .idle
         isSpeaking = false
         isPaused = false
         currentIndex = 0
@@ -551,39 +576,160 @@ final class SpeechService: NSObject, AVSpeechSynthesizerDelegate {
     }
 
     func skip(by seconds: Double) {
-        guard !segments.isEmpty else { return }
-        let cps = max(baseCharsPerSecond * Double(rate), 1)
-        let spokenChars = charsBeforeCurrent + rangeWithinCurrent
-        seek(toChar: Double(spokenChars) + seconds * cps)
+        switch mode {
+        case .streaming:
+            guard let player, totalDuration > 0 else { return }
+            let target = min(max(player.currentTime().seconds + seconds, 0), totalDuration)
+            player.seek(to: CMTime(seconds: target, preferredTimescale: 600))
+        case .synth:
+            guard !segments.isEmpty else { return }
+            let cps = max(baseCharsPerSecond * Double(rate), 1)
+            let spokenChars = charsBeforeCurrent + rangeWithinCurrent
+            seekSynth(toChar: Double(spokenChars) + seconds * cps)
+        case .idle:
+            break
+        }
     }
 
     func seek(toProgress p: Double) {
-        guard !segments.isEmpty else { return }
-        seek(toChar: p * Double(totalChars))
+        switch mode {
+        case .streaming:
+            guard let player, totalDuration > 0 else { return }
+            player.seek(to: CMTime(seconds: p * totalDuration, preferredTimescale: 600))
+        case .synth:
+            guard !segments.isEmpty else { return }
+            seekSynth(toChar: p * Double(totalChars))
+        case .idle:
+            break
+        }
     }
 
-    // MARK: - Internal
-
-    private func seek(toChar rawChar: Double) {
-        let clamped = min(max(rawChar, 0), Double(max(totalChars - 1, 0)))
-        let index = segmentIndex(forChar: Int(clamped))
-        if !isSpeaking {
-            activateSession()
-            isSpeaking = true
+    private func applyRate() {
+        switch mode {
+        case .streaming:
+            if isSpeaking, !isPaused { player?.rate = rate }
+        case .synth:
+            recomputeSynthDuration()
+            if isSpeaking, !isPaused { jumpSynth(to: currentIndex) }
+        case .idle:
+            break
         }
+    }
+
+    // MARK: - Streaming engine (AVPlayer)
+
+    private func startStreaming(url: URL) {
+        activateSession()
+        buildBlockTimeline()
+        let item = AVPlayerItem(url: url)
+        item.audioTimePitchAlgorithm = .timeDomain
+        let p = AVPlayer(playerItem: item)
+        player = p
+        mode = .streaming
+        isSpeaking = true
         isPaused = false
-        jump(to: index)
-    }
+        progress = 0
+        elapsed = 0
+        totalDuration = 0
 
-    private func segmentIndex(forChar c: Int) -> Int {
-        var idx = 0
-        for i in 0..<segments.count {
-            if segmentStart[i] <= c { idx = i } else { break }
+        statusObservation = item.observe(\.status, options: [.new]) { [weak self] obsItem, _ in
+            Task { @MainActor in
+                guard let self, self.mode == .streaming else { return }
+                switch obsItem.status {
+                case .readyToPlay:
+                    let d = obsItem.duration.seconds
+                    if d.isFinite, d > 0 { self.totalDuration = d }
+                    self.player?.rate = self.rate
+                case .failed:
+                    self.fallbackToSynth()
+                default:
+                    break
+                }
+            }
         }
-        return idx
+
+        endObserver = NotificationCenter.default.addObserver(
+            forName: .AVPlayerItemDidPlayToEndTime, object: item, queue: .main
+        ) { [weak self] _ in
+            Task { @MainActor in self?.finishStreaming() }
+        }
+
+        timeObserver = p.addPeriodicTimeObserver(
+            forInterval: CMTime(seconds: 0.25, preferredTimescale: 600), queue: .main
+        ) { [weak self] time in
+            let secs = time.seconds
+            Task { @MainActor in self?.tickStreaming(time: secs) }
+        }
     }
 
-    private func load(_ newSegments: [SpeechSegment]) {
+    private func tickStreaming(time: Double) {
+        guard mode == .streaming, totalDuration > 0 else { return }
+        elapsed = time
+        progress = min(max(time / totalDuration, 0), 1)
+        var bid = currentBlockId
+        for entry in blockTimeline {
+            if entry.start <= progress { bid = entry.id } else { break }
+        }
+        if let bid, bid != currentBlockId { currentBlockId = bid }
+    }
+
+    private func buildBlockTimeline() {
+        var total = 0
+        for s in segments { total += max(s.charCount, 1) }
+        total = max(total, 1)
+        var running = 0
+        var timeline: [(start: Double, id: String)] = []
+        var last: String?
+        for s in segments {
+            if let bid = s.blockId, bid != last {
+                timeline.append((start: Double(running) / Double(total), id: bid))
+                last = bid
+            }
+            running += max(s.charCount, 1)
+        }
+        blockTimeline = timeline
+    }
+
+    private func finishStreaming() {
+        isSpeaking = false
+        isPaused = false
+        progress = 1
+        elapsed = totalDuration
+        deactivateSession()
+    }
+
+    private func fallbackToSynth() {
+        teardownStreaming()
+        startSynth()
+    }
+
+    private func teardownStreaming() {
+        if let t = timeObserver {
+            player?.removeTimeObserver(t)
+            timeObserver = nil
+        }
+        statusObservation?.invalidate()
+        statusObservation = nil
+        if let e = endObserver {
+            NotificationCenter.default.removeObserver(e)
+            endObserver = nil
+        }
+        player?.pause()
+        player = nil
+    }
+
+    // MARK: - Synth engine (AVSpeechSynthesizer fallback)
+
+    private func startSynth() {
+        guard !segments.isEmpty else { return }
+        activateSession()
+        mode = .synth
+        isSpeaking = true
+        isPaused = false
+        jumpSynth(to: 0)
+    }
+
+    private func loadSegments(_ newSegments: [SpeechSegment]) {
         segments = newSegments.filter { !$0.text.isEmpty }
         segmentStart = []
         var running = 0
@@ -592,24 +738,38 @@ final class SpeechService: NSObject, AVSpeechSynthesizerDelegate {
             running += max(seg.charCount, 1)
         }
         totalChars = max(running, 1)
-        recomputeDuration()
+        recomputeSynthDuration()
     }
 
-    private func recomputeDuration() {
+    private func recomputeSynthDuration() {
+        guard mode != .streaming else { return }
         let cps = max(baseCharsPerSecond * Double(rate), 1)
         totalDuration = Double(totalChars) / cps
     }
 
-    // Cancel whatever is currently speaking and start the given segment fresh.
-    private func jump(to index: Int) {
-        guard index >= 0, index < segments.count else { finishPlayback(); return }
-        synthesizer.stopSpeaking(at: .immediate) // delivers didCancel, which we ignore
+    private func seekSynth(toChar rawChar: Double) {
+        let clamped = min(max(rawChar, 0), Double(max(totalChars - 1, 0)))
+        var idx = 0
+        for i in 0..<segments.count {
+            if segmentStart[i] <= Int(clamped) { idx = i } else { break }
+        }
+        if !isSpeaking {
+            activateSession()
+            mode = .synth
+            isSpeaking = true
+        }
+        isPaused = false
+        jumpSynth(to: idx)
+    }
+
+    private func jumpSynth(to index: Int) {
+        guard index >= 0, index < segments.count else { finishSynth(); return }
+        synthesizer.stopSpeaking(at: .immediate)
         speakSegment(at: index)
     }
 
-    // Speak one segment. Called by jump() and by natural advance in didFinish.
     private func speakSegment(at index: Int) {
-        guard index >= 0, index < segments.count else { finishPlayback(); return }
+        guard index >= 0, index < segments.count else { finishSynth(); return }
         currentIndex = index
         charsBeforeCurrent = segmentStart[index]
         rangeWithinCurrent = 0
@@ -622,10 +782,10 @@ final class SpeechService: NSObject, AVSpeechSynthesizerDelegate {
         utterance.pitchMultiplier = 0.96
         utterance.postUtteranceDelay = 0.05
         synthesizer.speak(utterance)
-        updateProgress()
+        updateSynthProgress()
     }
 
-    private func finishPlayback() {
+    private func finishSynth() {
         isSpeaking = false
         isPaused = false
         progress = 1
@@ -634,22 +794,23 @@ final class SpeechService: NSObject, AVSpeechSynthesizerDelegate {
         deactivateSession()
     }
 
-    private func updateProgress() {
+    private func updateSynthProgress() {
         let spoken = min(charsBeforeCurrent + rangeWithinCurrent, totalChars)
         progress = Double(spoken) / Double(totalChars)
         elapsed = progress * totalDuration
     }
 
+    // MARK: - Audio session
+
     private func activateSession() {
-        // THE fix for "no voice": without an active .playback session, speech is
-        // silenced whenever the hardware mute switch is on. .spokenAudio tunes the
-        // route for narration; .duckOthers lowers any background audio while reading.
+        // Without an active .playback session, audio is silenced when the hardware
+        // mute switch is on. .spokenAudio tunes the route for narration; .duckOthers
+        // lowers any background audio while reading.
         do {
             let session = AVAudioSession.sharedInstance()
             try session.setCategory(.playback, mode: .spokenAudio, options: [.duckOthers])
             try session.setActive(true)
         } catch {
-            // If the session can't be configured we still attempt to speak.
         }
     }
 
@@ -657,24 +818,25 @@ final class SpeechService: NSObject, AVSpeechSynthesizerDelegate {
         try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
     }
 
-    // MARK: - AVSpeechSynthesizerDelegate
+    // MARK: - AVSpeechSynthesizerDelegate (synth fallback only)
 
     nonisolated func speechSynthesizer(_ synthesizer: AVSpeechSynthesizer, didFinish utterance: AVSpeechUtterance) {
         Task { @MainActor in
-            guard self.isSpeaking, !self.isPaused else { return }
+            guard self.mode == .synth, self.isSpeaking, !self.isPaused else { return }
             let next = self.currentIndex + 1
             if next < self.segments.count {
                 self.speakSegment(at: next)
             } else {
-                self.finishPlayback()
+                self.finishSynth()
             }
         }
     }
 
     nonisolated func speechSynthesizer(_ synthesizer: AVSpeechSynthesizer, willSpeakRangeOfSpeechString characterRange: NSRange, utterance: AVSpeechUtterance) {
         Task { @MainActor in
+            guard self.mode == .synth else { return }
             self.rangeWithinCurrent = characterRange.location + characterRange.length
-            self.updateProgress()
+            self.updateSynthProgress()
         }
     }
 }
