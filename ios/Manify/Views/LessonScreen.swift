@@ -23,7 +23,6 @@ struct LessonScreen: View {
             ScrollView {
                 VStack(spacing: 16) {
                     lessonHeader
-                    audioPlayerBar
                     progressBar
                     sectionControls
 
@@ -54,6 +53,9 @@ struct LessonScreen: View {
                 .padding(.bottom, 40)
             }
             .background(ManifyTheme.bg.ignoresSafeArea())
+            .safeAreaInset(edge: .bottom) {
+                bottomPlayerBar
+            }
             .onChange(of: speech.currentBlockId) { _, newId in
                 guard let newId else { return }
                 withAnimation(.snappy(duration: 0.3)) {
@@ -161,20 +163,67 @@ struct LessonScreen: View {
         .clipShape(.rect(cornerRadius: 14))
     }
 
-    // MARK: - Audio player
+    // MARK: - Audio player (docked bottom bar, iPhone-style)
 
-    private var audioPlayerBar: some View {
-        VStack(spacing: 12) {
-            HStack(spacing: 10) {
-                Image(systemName: "headphones")
-                    .font(.subheadline)
-                    .foregroundStyle(ManifyTheme.gold)
+    private var bottomPlayerBar: some View {
+        VStack(spacing: 6) {
+            Slider(
+                value: Binding(
+                    get: { isScrubbing ? scrubValue : speech.progress },
+                    set: { scrubValue = $0 }
+                ),
+                in: 0...1,
+                onEditingChanged: { editing in
+                    if editing {
+                        isScrubbing = true
+                    } else {
+                        isScrubbing = false
+                        speech.seek(toProgress: scrubValue)
+                    }
+                }
+            )
+            .controlSize(.mini)
+            .tint(ManifyTheme.gold)
 
-                Text(speech.isSpeaking ? (speech.isPaused ? "Paused" : "Now Reading…") : "Listen to Lesson")
-                    .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(ManifyTheme.textPrimary)
+            HStack(spacing: 14) {
+                VStack(alignment: .leading, spacing: 1) {
+                    Text(speech.isSpeaking ? (speech.isPaused ? "Paused" : "Now Reading") : "Listen to Lesson")
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(ManifyTheme.textPrimary)
+                        .lineLimit(1)
+                    Text("\(formatTime(speech.elapsed)) / \(formatTime(speech.totalDuration))")
+                        .font(.caption2.monospacedDigit())
+                        .foregroundStyle(ManifyTheme.textSecondary)
+                }
 
-                Spacer()
+                Spacer(minLength: 8)
+
+                Button {
+                    speech.skip(by: -10)
+                } label: {
+                    Image(systemName: "gobackward.10").font(.title3)
+                }
+                .foregroundStyle(ManifyTheme.textPrimary)
+
+                Button {
+                    if speech.isSpeaking {
+                        speech.togglePauseResume()
+                    } else {
+                        speech.start(segments: buildSegments())
+                    }
+                } label: {
+                    Image(systemName: playPauseIcon)
+                        .font(.system(size: 42))
+                        .foregroundStyle(ManifyTheme.gold)
+                }
+                .sensoryFeedback(.impact(weight: .medium), trigger: speech.isSpeaking)
+
+                Button {
+                    speech.skip(by: 10)
+                } label: {
+                    Image(systemName: "goforward.10").font(.title3)
+                }
+                .foregroundStyle(ManifyTheme.textPrimary)
 
                 Menu {
                     ForEach(SpeechService.speedOptions, id: \.self) { opt in
@@ -192,91 +241,23 @@ struct LessonScreen: View {
                     Text("\(speedLabel(speech.rate))×")
                         .font(.caption.weight(.bold))
                         .foregroundStyle(ManifyTheme.gold)
-                        .padding(.horizontal, 10)
-                        .padding(.vertical, 5)
+                        .frame(minWidth: 30)
+                        .padding(.vertical, 6)
+                        .padding(.horizontal, 4)
                         .background(ManifyTheme.gold.opacity(0.12))
                         .clipShape(Capsule())
                 }
             }
-
-            VStack(spacing: 4) {
-                Slider(
-                    value: Binding(
-                        get: { isScrubbing ? scrubValue : speech.progress },
-                        set: { scrubValue = $0 }
-                    ),
-                    in: 0...1,
-                    onEditingChanged: { editing in
-                        if editing {
-                            isScrubbing = true
-                        } else {
-                            isScrubbing = false
-                            speech.seek(toProgress: scrubValue)
-                        }
-                    }
-                )
-                .tint(ManifyTheme.gold)
-
-                HStack {
-                    Text(formatTime(speech.elapsed))
-                    Spacer()
-                    Text(formatTime(speech.totalDuration))
-                }
-                .font(.caption2.monospacedDigit())
-                .foregroundStyle(ManifyTheme.textSecondary)
-            }
-
-            HStack(spacing: 36) {
-                Button {
-                    speech.skip(by: -10)
-                } label: {
-                    Image(systemName: "gobackward.10")
-                        .font(.title2)
-                }
-
-                Button {
-                    if speech.isSpeaking {
-                        speech.togglePauseResume()
-                    } else {
-                        speech.start(segments: buildSegments())
-                    }
-                } label: {
-                    Image(systemName: playPauseIcon)
-                        .font(.system(size: 46))
-                        .foregroundStyle(ManifyTheme.gold)
-                }
-                .sensoryFeedback(.impact(weight: .medium), trigger: speech.isSpeaking)
-
-                Button {
-                    speech.skip(by: 10)
-                } label: {
-                    Image(systemName: "goforward.10")
-                        .font(.title2)
-                }
-            }
-            .foregroundStyle(ManifyTheme.textPrimary)
-            .padding(.top, 2)
-
-            if speech.isSpeaking {
-                Button {
-                    speech.stop()
-                } label: {
-                    HStack(spacing: 6) {
-                        Image(systemName: "stop.fill")
-                        Text("Stop")
-                    }
-                    .font(.caption.weight(.medium))
-                    .foregroundStyle(ManifyTheme.textSecondary)
-                }
-            }
         }
-        .padding(16)
-        .background(ManifyTheme.panel)
-        .overlay(
-            RoundedRectangle(cornerRadius: 14)
-                .stroke(ManifyTheme.gold.opacity(0.2), lineWidth: 1)
-        )
-        .clipShape(.rect(cornerRadius: 14))
+        .padding(.horizontal, 16)
+        .padding(.top, 8)
+        .padding(.bottom, 6)
+        .background(.ultraThinMaterial)
+        .overlay(alignment: .top) {
+            Rectangle()
+                .fill(Color.white.opacity(0.08))
+                .frame(height: 0.5)
+        }
     }
 
     private var playPauseIcon: String {
@@ -482,6 +463,28 @@ final class SpeechService: NSObject, AVSpeechSynthesizerDelegate {
 
     private let synthesizer = AVSpeechSynthesizer()
 
+    // Pick the best available deep male English voice. Premium/Enhanced voices —
+    // which the user can download in Settings > Accessibility > Spoken Content >
+    // Voices — sound dramatically more natural than the default compact voice; if
+    // none are downloaded this still chooses the best male voice present.
+    private let preferredVoice: AVSpeechSynthesisVoice? = SpeechService.bestMaleEnglishVoice()
+
+    private static func bestMaleEnglishVoice() -> AVSpeechSynthesisVoice? {
+        let english = AVSpeechSynthesisVoice.speechVoices().filter { $0.language.hasPrefix("en") }
+        func score(_ v: AVSpeechSynthesisVoice) -> Int {
+            var s = 0
+            s += (v.language == "en-US") ? 100 : 40
+            if v.gender == .male { s += 50 }
+            switch v.quality {
+            case .premium: s += 30
+            case .enhanced: s += 20
+            default: break
+            }
+            return s
+        }
+        return english.max { score($0) < score($1) }
+    }
+
     private(set) var isSpeaking = false
     private(set) var isPaused = false
     private(set) var currentBlockId: String?
@@ -613,7 +616,7 @@ final class SpeechService: NSObject, AVSpeechSynthesizerDelegate {
         if let bid = segments[index].blockId { currentBlockId = bid }
 
         let utterance = AVSpeechUtterance(string: segments[index].text)
-        utterance.voice = AVSpeechSynthesisVoice(language: "en-US")
+        utterance.voice = preferredVoice ?? AVSpeechSynthesisVoice(language: "en-US")
         let mapped = AVSpeechUtteranceDefaultSpeechRate * rate
         utterance.rate = min(max(mapped, AVSpeechUtteranceMinimumSpeechRate), AVSpeechUtteranceMaximumSpeechRate)
         utterance.pitchMultiplier = 0.96
