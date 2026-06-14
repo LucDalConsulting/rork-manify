@@ -72,10 +72,15 @@ platform :ios do
   lane :beta do
     key = asc_api_key
     build_ipa
+    # Wait for Apple to finish processing so we can auto-expire the previous
+    # builds (the "skip waiting" shortcut also skips expiring/distribution).
+    # This retires old builds automatically so a stale build never lingers in a
+    # test group, and makes the new build available to internal testers.
     upload_to_testflight(
       api_key: key,
-      skip_waiting_for_build_processing: true,
-      distribute_external: false
+      skip_waiting_for_build_processing: false,
+      distribute_external: false,
+      expire_previous_builds: true
     )
   end
 
