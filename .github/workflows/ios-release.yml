@@ -1,0 +1,60 @@
+name: iOS Release (TestFlight / App Store)
+
+# Manual "send the app to my phone" button. Builds, signs (via App Store Connect
+# API key + Xcode cloud signing), and uploads to TestFlight (default) or the
+# App Store. Requires the repository secrets listed in REBUILD_AND_PUBLISH.md.
+
+on:
+  workflow_dispatch:
+    inputs:
+      lane:
+        description: "Where to send the build"
+        required: true
+        default: "beta"
+        type: choice
+        options:
+          - beta      # TestFlight (lands on your test phone)
+          - release   # App Store (you still submit for review in App Store Connect)
+
+concurrency:
+  group: ios-release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: macos-15
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Select latest stable Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
+
+      - name: Set up Ruby + Fastlane
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.3"
+
+      - name: Install Fastlane
+        run: gem install fastlane --no-document
+
+      - name: Build & upload (${{ github.event.inputs.lane }})
+        working-directory: ios
+        env:
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+          ASC_KEY_P8: ${{ secrets.ASC_KEY_P8 }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          REVENUECAT_IOS_API_KEY: ${{ secrets.REVENUECAT_IOS_API_KEY }}
+          BUILD_NUMBER: ${{ github.run_number }}
+        run: fastlane ${{ github.event.inputs.lane }}
+
+      - name: Upload build artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: manify-ipa
+          path: ios/build/*.ipa
+          if-no-files-found: ignore

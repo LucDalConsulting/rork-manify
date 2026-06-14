@@ -37,6 +37,11 @@ struct ManifyApp: App {
             .environment(notificationService)
             .environment(authService)
             .preferredColorScheme(.dark)
+            .task {
+                // RevenueCat is configured by now; start the entitlement listener
+                // and load offerings/price app-wide.
+                membershipService.bootstrap()
+            }
         }
     }
 }

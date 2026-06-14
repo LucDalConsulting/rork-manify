@@ -1,0 +1,47 @@
+name: iOS Build Check
+
+# Compiles the app on a real Mac on every push so Swift errors are caught even
+# though the project is edited on Windows. No Apple account or secrets required
+# (code signing is disabled and dummy RevenueCat keys are used).
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - "ios/**"
+      - ".github/workflows/ios-build-check.yml"
+  pull_request:
+    paths:
+      - "ios/**"
+  workflow_dispatch:
+
+concurrency:
+  group: build-check-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: macos-15
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Select latest stable Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
+
+      - name: Show Xcode version
+        run: xcodebuild -version
+
+      - name: Build for iOS Simulator (no code signing)
+        working-directory: ios
+        run: |
+          xcodebuild build \
+            -project Manify.xcodeproj \
+            -scheme Manify \
+            -configuration Debug \
+            -destination 'generic/platform=iOS Simulator' \
+            CODE_SIGNING_ALLOWED=NO \
+            EXPO_PUBLIC_REVENUECAT_IOS_API_KEY=dummy \
+            EXPO_PUBLIC_REVENUECAT_TEST_API_KEY=dummy

@@ -370,20 +370,16 @@ struct CategoryScreen: View {
         }
     }
 
+    // Universal progression labels — topic-agnostic so they scale to any number of
+    // tiers (the topic-specific flavor lives in the lesson titles and content).
     private func tierLabel(_ tier: Int) -> String {
-        if category == .sharks {
-            switch tier {
-            case 1: "Basics & Legend"
-            case 2: "Anatomy, Species & Myth"
-            default: ""
-            }
-        } else {
-            switch tier {
-            case 1: "Structural Awareness"
-            case 2: "Operational Competence"
-            case 3: "Diagnostic Thinking"
-            default: ""
-            }
+        switch tier {
+        case 1: "Foundations"
+        case 2: "Working Knowledge"
+        case 3: "Advanced Skills"
+        case 4: "Mastery"
+        case 5: "Expert"
+        default: "Tier \(tier)"
         }
     }
 

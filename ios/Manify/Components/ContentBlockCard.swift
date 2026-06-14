@@ -17,7 +17,22 @@ struct ContentBlockCard: View {
         case .callPro: ManifyTheme.warning
         case .summary: ManifyTheme.textSecondary
         case .history: .indigo
+        case .keyTerms: .cyan
+        case .stepByStep: .mint
+        case .commonMistakes: .orange
+        case .proTips: .yellow
+        case .principles: .blue
+        case .safety: ManifyTheme.danger
+        case .realWorld: .green
+        case .gear: .brown
+        case .context: .teal
         }
+    }
+
+    // The reader-facing header: the block's own topic-specific title when present
+    // (e.g. "The Four-Stroke Cycle"), otherwise the generic type label as a fallback.
+    private var headerText: String {
+        block.title.isEmpty ? block.type.displayTitle : block.title
     }
 
     var body: some View {
@@ -39,10 +54,13 @@ struct ContentBlockCard: View {
                     }
 
                     VStack(alignment: .leading, spacing: 2) {
-                        Text(block.type.displayTitle)
+                        Text(headerText)
                             .font(.caption.weight(.bold))
+                            .textCase(.uppercase)
                             .foregroundStyle(isExpanded ? accentColor : ManifyTheme.textSecondary)
                             .tracking(0.8)
+                            .lineLimit(2)
+                            .fixedSize(horizontal: false, vertical: true)
 
                         if !isExpanded && block.bullets.count > 0 {
                             Text(block.bullets[0])

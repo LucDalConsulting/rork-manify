@@ -56,6 +56,11 @@ struct PaywallScreen: View {
                     }
                 }
             }
+            .task {
+                // Make sure the live price is loaded before the user sees the CTA.
+                membership.bootstrap()
+                await membership.fetchOfferings()
+            }
         }
     }
 

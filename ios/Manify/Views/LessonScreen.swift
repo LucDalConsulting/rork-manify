@@ -9,7 +9,9 @@ struct LessonScreen: View {
     @State private var hasMarkedRead: Bool = false
     @State private var expandedSections: Set<String> = []
     @State private var readSections: Set<String> = []
-    @State private var speechService = SpeechService()
+    @State private var speech = SpeechService()
+    @State private var isScrubbing: Bool = false
+    @State private var scrubValue: Double = 0
 
     private var sectionProgress: Double {
         guard !lesson.contentBlocks.isEmpty else { return 0 }
@@ -17,39 +19,52 @@ struct LessonScreen: View {
     }
 
     var body: some View {
-        ScrollView {
-            VStack(spacing: 16) {
-                lessonHeader
-                audioButton
-                progressBar
-                sectionControls
+        ScrollViewReader { proxy in
+            ScrollView {
+                VStack(spacing: 16) {
+                    lessonHeader
+                    audioPlayerBar
+                    progressBar
+                    sectionControls
 
-                ForEach(Array(lesson.contentBlocks.enumerated()), id: \.element.id) { index, block in
-                    let blockId = block.id
-                    ContentBlockCard(
-                        block: block,
-                        index: index,
-                        isExpanded: Binding(
-                            get: { expandedSections.contains(blockId) },
-                            set: { newValue in
-                                if newValue {
-                                    expandedSections.insert(blockId)
-                                    readSections.insert(blockId)
-                                } else {
-                                    expandedSections.remove(blockId)
+                    ForEach(Array(lesson.contentBlocks.enumerated()), id: \.element.id) { index, block in
+                        let blockId = block.id
+                        ContentBlockCard(
+                            block: block,
+                            index: index,
+                            isExpanded: Binding(
+                                get: { expandedSections.contains(blockId) },
+                                set: { newValue in
+                                    if newValue {
+                                        expandedSections.insert(blockId)
+                                        readSections.insert(blockId)
+                                    } else {
+                                        expandedSections.remove(blockId)
+                                    }
                                 }
-                            }
-                        ),
-                        isRead: readSections.contains(blockId)
-                    )
-                }
+                            ),
+                            isRead: readSections.contains(blockId)
+                        )
+                        .id(blockId)
+                    }
 
-                actionButtons
+                    actionButtons
+                }
+                .padding(.horizontal, 16)
+                .padding(.bottom, 40)
             }
-            .padding(.horizontal, 16)
-            .padding(.bottom, 40)
+            .background(ManifyTheme.bg.ignoresSafeArea())
+            .onChange(of: speech.currentBlockId) { _, newId in
+                guard let newId else { return }
+                withAnimation(.snappy(duration: 0.3)) {
+                    expandedSections.insert(newId)
+                    readSections.insert(newId)
+                }
+                withAnimation(.easeInOut(duration: 0.4)) {
+                    proxy.scrollTo(newId, anchor: .top)
+                }
+            }
         }
-        .background(ManifyTheme.bg.ignoresSafeArea())
         .navigationTitle(lesson.title)
         .navigationBarTitleDisplayMode(.inline)
         .toolbarColorScheme(.dark, for: .navigationBar)
@@ -80,7 +95,7 @@ struct LessonScreen: View {
             }
         }
         .onDisappear {
-            speechService.stop()
+            speech.stop()
         }
     }
 
@@ -146,62 +161,139 @@ struct LessonScreen: View {
         .clipShape(.rect(cornerRadius: 14))
     }
 
-    private var audioButton: some View {
-        Button {
-            if speechService.isSpeaking {
-                if speechService.isPaused {
-                    speechService.resume()
-                } else {
-                    speechService.pause()
-                }
-            } else {
-                let text = buildLessonText()
-                speechService.speak(text)
-            }
-        } label: {
+    // MARK: - Audio player
+
+    private var audioPlayerBar: some View {
+        VStack(spacing: 12) {
             HStack(spacing: 10) {
-                Image(systemName: speechService.isSpeaking ? (speechService.isPaused ? "play.fill" : "pause.fill") : "speaker.wave.2.fill")
+                Image(systemName: "headphones")
                     .font(.subheadline)
                     .foregroundStyle(ManifyTheme.gold)
 
-                Text(speechService.isSpeaking ? (speechService.isPaused ? "Resume Lesson" : "Pause Lesson") : "Listen to Lesson")
-                    .font(.subheadline.weight(.medium))
+                Text(speech.isSpeaking ? (speech.isPaused ? "Paused" : "Now Reading…") : "Listen to Lesson")
+                    .font(.subheadline.weight(.semibold))
                     .foregroundStyle(ManifyTheme.textPrimary)
 
                 Spacer()
 
-                if speechService.isSpeaking && !speechService.isPaused {
-                    HStack(spacing: 3) {
-                        ForEach(0..<3, id: \.self) { i in
-                            Capsule()
-                                .fill(ManifyTheme.gold)
-                                .frame(width: 3, height: CGFloat.random(in: 6...14))
+                Menu {
+                    ForEach(SpeechService.speedOptions, id: \.self) { opt in
+                        Button {
+                            speech.rate = opt
+                        } label: {
+                            if speech.rate == opt {
+                                Label("\(speedLabel(opt))× speed", systemImage: "checkmark")
+                            } else {
+                                Text("\(speedLabel(opt))× speed")
+                            }
                         }
                     }
-                }
-
-                if speechService.isSpeaking {
-                    Button {
-                        speechService.stop()
-                    } label: {
-                        Image(systemName: "stop.fill")
-                            .font(.caption)
-                            .foregroundStyle(ManifyTheme.textSecondary)
-                            .padding(6)
-                            .background(Color.white.opacity(0.08))
-                            .clipShape(Circle())
-                    }
+                } label: {
+                    Text("\(speedLabel(speech.rate))×")
+                        .font(.caption.weight(.bold))
+                        .foregroundStyle(ManifyTheme.gold)
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 5)
+                        .background(ManifyTheme.gold.opacity(0.12))
+                        .clipShape(Capsule())
                 }
             }
-            .padding(12)
-            .background(ManifyTheme.panel)
-            .overlay(
-                RoundedRectangle(cornerRadius: 12)
-                    .stroke(ManifyTheme.gold.opacity(0.2), lineWidth: 1)
-            )
-            .clipShape(.rect(cornerRadius: 12))
+
+            VStack(spacing: 4) {
+                Slider(
+                    value: Binding(
+                        get: { isScrubbing ? scrubValue : speech.progress },
+                        set: { scrubValue = $0 }
+                    ),
+                    in: 0...1,
+                    onEditingChanged: { editing in
+                        if editing {
+                            isScrubbing = true
+                        } else {
+                            isScrubbing = false
+                            speech.seek(toProgress: scrubValue)
+                        }
+                    }
+                )
+                .tint(ManifyTheme.gold)
+
+                HStack {
+                    Text(formatTime(speech.elapsed))
+                    Spacer()
+                    Text(formatTime(speech.totalDuration))
+                }
+                .font(.caption2.monospacedDigit())
+                .foregroundStyle(ManifyTheme.textSecondary)
+            }
+
+            HStack(spacing: 36) {
+                Button {
+                    speech.skip(by: -10)
+                } label: {
+                    Image(systemName: "gobackward.10")
+                        .font(.title2)
+                }
+
+                Button {
+                    if speech.isSpeaking {
+                        speech.togglePauseResume()
+                    } else {
+                        speech.start(segments: buildSegments())
+                    }
+                } label: {
+                    Image(systemName: playPauseIcon)
+                        .font(.system(size: 46))
+                        .foregroundStyle(ManifyTheme.gold)
+                }
+                .sensoryFeedback(.impact(weight: .medium), trigger: speech.isSpeaking)
+
+                Button {
+                    speech.skip(by: 10)
+                } label: {
+                    Image(systemName: "goforward.10")
+                        .font(.title2)
+                }
+            }
+            .foregroundStyle(ManifyTheme.textPrimary)
+            .padding(.top, 2)
+
+            if speech.isSpeaking {
+                Button {
+                    speech.stop()
+                } label: {
+                    HStack(spacing: 6) {
+                        Image(systemName: "stop.fill")
+                        Text("Stop")
+                    }
+                    .font(.caption.weight(.medium))
+                    .foregroundStyle(ManifyTheme.textSecondary)
+                }
+            }
         }
-        .buttonStyle(.plain)
+        .padding(16)
+        .background(ManifyTheme.panel)
+        .overlay(
+            RoundedRectangle(cornerRadius: 14)
+                .stroke(ManifyTheme.gold.opacity(0.2), lineWidth: 1)
+        )
+        .clipShape(.rect(cornerRadius: 14))
+    }
+
+    private var playPauseIcon: String {
+        if speech.isSpeaking {
+            return speech.isPaused ? "play.circle.fill" : "pause.circle.fill"
+        }
+        return "play.circle.fill"
+    }
+
+    private func speedLabel(_ r: Float) -> String {
+        String(format: "%g", r)
+    }
+
+    private func formatTime(_ t: TimeInterval) -> String {
+        guard t.isFinite, t >= 0 else { return "0:00" }
+        let total = Int(t.rounded())
+        return String(format: "%d:%02d", total / 60, total % 60)
     }
 
     private var progressBar: some View {
@@ -348,55 +440,238 @@ struct LessonScreen: View {
         }
     }
 
-    private func buildLessonText() -> String {
-        var text = lesson.title + ". "
-        if let subtitle = lesson.subtitle {
-            text += subtitle + ". "
+    // Builds the ordered spoken segments for the whole lesson. Each segment is tagged
+    // with the content block it belongs to so the player can open + scroll to that
+    // section as it is read. Bullets/body/callouts are separate segments so ±10s
+    // skipping and scrubbing land on natural boundaries.
+    private func buildSegments() -> [SpeechSegment] {
+        var result: [SpeechSegment] = []
+
+        func add(_ text: String, block: String?) {
+            let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
+            guard !trimmed.isEmpty else { return }
+            result.append(SpeechSegment(text: trimmed, blockId: block, charCount: max(trimmed.count, 1)))
         }
+
+        add(lesson.title, block: nil)
+        if let subtitle = lesson.subtitle { add(subtitle, block: nil) }
+
         for block in lesson.contentBlocks {
-            text += block.type.displayTitle + ". "
-            for bullet in block.bullets {
-                text += bullet + ". "
-            }
-            if let body = block.body {
-                text += body + ". "
-            }
+            let header = block.title.isEmpty ? block.type.displayTitle.capitalized : block.title
+            add(header + ".", block: block.id)
+            for bullet in block.bullets { add(bullet, block: block.id) }
+            if let body = block.body { add(body, block: block.id) }
+            for callout in block.callouts { add(callout, block: block.id) }
         }
-        return text
+
+        return result
     }
+}
+
+// A single spoken chunk of a lesson, mapped back to its content block.
+struct SpeechSegment {
+    let text: String
+    let blockId: String?
+    let charCount: Int
 }
 
 @Observable
 @MainActor
-final class SpeechService {
-    private let synthesizer = AVSpeechSynthesizer()
-    private(set) var isSpeaking: Bool = false
-    private(set) var isPaused: Bool = false
+final class SpeechService: NSObject, AVSpeechSynthesizerDelegate {
+    static let speedOptions: [Float] = [0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0]
 
-    func speak(_ text: String) {
-        stop()
-        let utterance = AVSpeechUtterance(string: text)
-        utterance.voice = AVSpeechSynthesisVoice(language: "en-US")
-        utterance.rate = AVSpeechUtteranceDefaultSpeechRate
-        utterance.pitchMultiplier = 0.95
-        synthesizer.speak(utterance)
+    private let synthesizer = AVSpeechSynthesizer()
+
+    private(set) var isSpeaking = false
+    private(set) var isPaused = false
+    private(set) var currentBlockId: String?
+    private(set) var progress: Double = 0
+    private(set) var elapsed: TimeInterval = 0
+    private(set) var totalDuration: TimeInterval = 0
+
+    // User-facing playback speed multiplier (1.0 = normal).
+    var rate: Float = 1.0 {
+        didSet {
+            recomputeDuration()
+            guard isSpeaking, !isPaused else { return }
+            jump(to: currentIndex)
+        }
+    }
+
+    private var segments: [SpeechSegment] = []
+    private var segmentStart: [Int] = []
+    private var totalChars = 1
+    private var currentIndex = 0
+    private var charsBeforeCurrent = 0
+    private var rangeWithinCurrent = 0
+
+    private let baseCharsPerSecond = 14.0
+
+    override init() {
+        super.init()
+        synthesizer.delegate = self
+    }
+
+    // MARK: - Public controls
+
+    func start(segments newSegments: [SpeechSegment]) {
+        load(newSegments)
+        guard !segments.isEmpty else { return }
+        activateSession()
         isSpeaking = true
         isPaused = false
+        jump(to: 0)
     }
 
-    func pause() {
-        synthesizer.pauseSpeaking(at: .word)
-        isPaused = true
-    }
-
-    func resume() {
-        synthesizer.continueSpeaking()
-        isPaused = false
+    func togglePauseResume() {
+        guard isSpeaking else { return }
+        if isPaused {
+            synthesizer.continueSpeaking()
+            isPaused = false
+        } else {
+            synthesizer.pauseSpeaking(at: .word)
+            isPaused = true
+        }
     }
 
     func stop() {
         synthesizer.stopSpeaking(at: .immediate)
         isSpeaking = false
         isPaused = false
+        currentIndex = 0
+        charsBeforeCurrent = 0
+        rangeWithinCurrent = 0
+        progress = 0
+        elapsed = 0
+        currentBlockId = nil
+        deactivateSession()
+    }
+
+    func skip(by seconds: Double) {
+        guard !segments.isEmpty else { return }
+        let cps = max(baseCharsPerSecond * Double(rate), 1)
+        let spokenChars = charsBeforeCurrent + rangeWithinCurrent
+        seek(toChar: Double(spokenChars) + seconds * cps)
+    }
+
+    func seek(toProgress p: Double) {
+        guard !segments.isEmpty else { return }
+        seek(toChar: p * Double(totalChars))
+    }
+
+    // MARK: - Internal
+
+    private func seek(toChar rawChar: Double) {
+        let clamped = min(max(rawChar, 0), Double(max(totalChars - 1, 0)))
+        let index = segmentIndex(forChar: Int(clamped))
+        if !isSpeaking {
+            activateSession()
+            isSpeaking = true
+        }
+        isPaused = false
+        jump(to: index)
+    }
+
+    private func segmentIndex(forChar c: Int) -> Int {
+        var idx = 0
+        for i in 0..<segments.count {
+            if segmentStart[i] <= c { idx = i } else { break }
+        }
+        return idx
+    }
+
+    private func load(_ newSegments: [SpeechSegment]) {
+        segments = newSegments.filter { !$0.text.isEmpty }
+        segmentStart = []
+        var running = 0
+        for seg in segments {
+            segmentStart.append(running)
+            running += max(seg.charCount, 1)
+        }
+        totalChars = max(running, 1)
+        recomputeDuration()
+    }
+
+    private func recomputeDuration() {
+        let cps = max(baseCharsPerSecond * Double(rate), 1)
+        totalDuration = Double(totalChars) / cps
+    }
+
+    // Cancel whatever is currently speaking and start the given segment fresh.
+    private func jump(to index: Int) {
+        guard index >= 0, index < segments.count else { finishPlayback(); return }
+        synthesizer.stopSpeaking(at: .immediate) // delivers didCancel, which we ignore
+        speakSegment(at: index)
+    }
+
+    // Speak one segment. Called by jump() and by natural advance in didFinish.
+    private func speakSegment(at index: Int) {
+        guard index >= 0, index < segments.count else { finishPlayback(); return }
+        currentIndex = index
+        charsBeforeCurrent = segmentStart[index]
+        rangeWithinCurrent = 0
+        if let bid = segments[index].blockId { currentBlockId = bid }
+
+        let utterance = AVSpeechUtterance(string: segments[index].text)
+        utterance.voice = AVSpeechSynthesisVoice(language: "en-US")
+        let mapped = AVSpeechUtteranceDefaultSpeechRate * rate
+        utterance.rate = min(max(mapped, AVSpeechUtteranceMinimumSpeechRate), AVSpeechUtteranceMaximumSpeechRate)
+        utterance.pitchMultiplier = 0.96
+        utterance.postUtteranceDelay = 0.05
+        synthesizer.speak(utterance)
+        updateProgress()
+    }
+
+    private func finishPlayback() {
+        isSpeaking = false
+        isPaused = false
+        progress = 1
+        elapsed = totalDuration
+        currentIndex = 0
+        deactivateSession()
+    }
+
+    private func updateProgress() {
+        let spoken = min(charsBeforeCurrent + rangeWithinCurrent, totalChars)
+        progress = Double(spoken) / Double(totalChars)
+        elapsed = progress * totalDuration
+    }
+
+    private func activateSession() {
+        // THE fix for "no voice": without an active .playback session, speech is
+        // silenced whenever the hardware mute switch is on. .spokenAudio tunes the
+        // route for narration; .duckOthers lowers any background audio while reading.
+        do {
+            let session = AVAudioSession.sharedInstance()
+            try session.setCategory(.playback, mode: .spokenAudio, options: [.duckOthers])
+            try session.setActive(true)
+        } catch {
+            // If the session can't be configured we still attempt to speak.
+        }
+    }
+
+    private func deactivateSession() {
+        try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
+    }
+
+    // MARK: - AVSpeechSynthesizerDelegate
+
+    nonisolated func speechSynthesizer(_ synthesizer: AVSpeechSynthesizer, didFinish utterance: AVSpeechUtterance) {
+        Task { @MainActor in
+            guard self.isSpeaking, !self.isPaused else { return }
+            let next = self.currentIndex + 1
+            if next < self.segments.count {
+                self.speakSegment(at: next)
+            } else {
+                self.finishPlayback()
+            }
+        }
+    }
+
+    nonisolated func speechSynthesizer(_ synthesizer: AVSpeechSynthesizer, willSpeakRangeOfSpeechString characterRange: NSRange, utterance: AVSpeechUtterance) {
+        Task { @MainActor in
+            self.rangeWithinCurrent = characterRange.location + characterRange.length
+            self.updateProgress()
+        }
     }
 }

@@ -12,6 +12,11 @@ final class LessonStore {
         lessonsByCategory[.cars] = CarsLessons.all
         lessonsByCategory[.grilling] = GrillingLessons.all
         lessonsByCategory[.sharks] = SharksLessons.all
+        lessonsByCategory[.finance] = FinanceLessons.all
+        lessonsByCategory[.fitness] = FitnessLessons.all
+        lessonsByCategory[.firstAid] = FirstAidLessons.all
+        lessonsByCategory[.selfDefense] = SelfDefenseLessons.all
+        lessonsByCategory[.negotiation] = NegotiationLessons.all
     }
 
     func lessons(for category: CategoryID) -> [Lesson] {

@@ -176,11 +176,12 @@ final class ProgressStore {
 
         if tier == 2 {
             return completionRatio >= 0.8 && avgScore >= 80
-        } else if tier == 3 {
-            return completionRatio >= 0.9 && avgScore >= 85
         }
 
-        return false
+        // Tiers 3 and above: must nearly finish the prior tier with strong scores.
+        // Generalized so any number of tiers (4, 5, …) can unlock — earlier this
+        // returned false for every tier above 3, permanently locking deeper tiers.
+        return completionRatio >= 0.9 && avgScore >= 85
     }
 
     func tierProgress(tier: Int, category: CategoryID, allLessons: [Lesson]) -> (completed: Int, total: Int, avgScore: Int) {

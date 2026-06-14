@@ -44,6 +44,19 @@ nonisolated enum ContentBlockType: String, Codable, Sendable {
     case callPro = "call_pro"
     case summary = "summary"
     case history = "history"
+    // Expanded section vocabulary. Each type is a familiar "shape" (icon + color);
+    // the specific wording shown to the reader comes from ContentBlock.title, so the
+    // same shape can carry topic-specific headers (the who/what/where/when/why framing)
+    // while staying visually consistent lesson to lesson.
+    case keyTerms = "key_terms"
+    case stepByStep = "step_by_step"
+    case commonMistakes = "common_mistakes"
+    case proTips = "pro_tips"
+    case principles = "principles"
+    case safety = "safety"
+    case realWorld = "real_world"
+    case gear = "gear"
+    case context = "context"
 
     var icon: String {
         switch self {
@@ -56,9 +69,19 @@ nonisolated enum ContentBlockType: String, Codable, Sendable {
         case .callPro: "phone.fill"
         case .summary: "text.alignleft"
         case .history: "clock.fill"
+        case .keyTerms: "character.book.closed.fill"
+        case .stepByStep: "list.number"
+        case .commonMistakes: "xmark.octagon.fill"
+        case .proTips: "star.fill"
+        case .principles: "flag.checkered"
+        case .safety: "shield.lefthalf.filled"
+        case .realWorld: "globe.americas.fill"
+        case .gear: "wrench.adjustable.fill"
+        case .context: "map.fill"
         }
     }
 
+    // Fallback label used only when a ContentBlock does not supply its own title.
     var displayTitle: String {
         switch self {
         case .whyMatters: "WHY THIS MATTERS"
@@ -70,6 +93,15 @@ nonisolated enum ContentBlockType: String, Codable, Sendable {
         case .callPro: "WHEN TO CALL A PRO"
         case .summary: "SUMMARY"
         case .history: "HISTORY"
+        case .keyTerms: "KEY TERMS"
+        case .stepByStep: "STEP BY STEP"
+        case .commonMistakes: "COMMON MISTAKES"
+        case .proTips: "PRO TIPS"
+        case .principles: "CORE PRINCIPLES"
+        case .safety: "SAFETY"
+        case .realWorld: "IN THE REAL WORLD"
+        case .gear: "GEAR & TOOLS"
+        case .context: "CONTEXT"
         }
     }
 }

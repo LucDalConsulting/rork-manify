@@ -1,0 +1,4 @@
+app_identifier("app.rork.v1a55roljwoddm76u9mkv")
+# Apple authentication is done with an App Store Connect API key (see Fastfile),
+# so no apple_id / password is needed here. The team is supplied via the
+# APPLE_TEAM_ID secret at build time.

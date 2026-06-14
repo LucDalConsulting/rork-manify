@@ -11,25 +11,28 @@ final class MembershipService {
     private(set) var offerings: Offerings?
 
     private let premiumKey = "manify_is_premium"
+    private var didBootstrap = false
 
     private var isConfigured: Bool {
         Purchases.isConfigured
     }
 
     init() {
+        // Only load the cached entitlement here. RevenueCat is configured in
+        // ManifyApp.init(), which runs AFTER this property is created — so any
+        // Purchases.shared work must wait for bootstrap() once configuration is live.
         isPremium = UserDefaults.standard.bool(forKey: premiumKey)
-        Task {
-            guard isConfigured else { return }
-            await listenForUpdates()
-        }
-        Task {
-            guard isConfigured else { return }
-            await fetchOfferings()
-        }
-        Task {
-            guard isConfigured else { return }
-            await checkStatus()
-        }
+    }
+
+    /// Starts the entitlement listener and loads offerings once RevenueCat is
+    /// configured. Safe to call repeatedly (it only runs once). Call this from the
+    /// app's first view so the price string and live status are available.
+    func bootstrap() {
+        guard isConfigured, !didBootstrap else { return }
+        didBootstrap = true
+        Task { await listenForUpdates() }
+        Task { await fetchOfferings() }
+        Task { await checkStatus() }
     }
 
     private func listenForUpdates() async {
