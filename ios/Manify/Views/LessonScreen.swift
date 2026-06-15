@@ -12,6 +12,7 @@ struct LessonScreen: View {
     @State private var speech = SpeechService()
     @State private var isScrubbing: Bool = false
     @State private var scrubValue: Double = 0
+    @State private var showPlayer: Bool = true
 
     private var sectionProgress: Double {
         guard !lesson.contentBlocks.isEmpty else { return 0 }
@@ -54,7 +55,9 @@ struct LessonScreen: View {
             }
             .background(ManifyTheme.bg.ignoresSafeArea())
             .safeAreaInset(edge: .bottom) {
-                bottomPlayerBar
+                if showPlayer {
+                    bottomPlayerBar
+                }
             }
             .onChange(of: speech.currentBlockId) { _, newId in
                 guard let newId else { return }
@@ -71,6 +74,19 @@ struct LessonScreen: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbarColorScheme(.dark, for: .navigationBar)
         .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Button {
+                    withAnimation(.snappy(duration: 0.25)) {
+                        showPlayer.toggle()
+                    }
+                    if !showPlayer {
+                        speech.stop()
+                    }
+                } label: {
+                    Image(systemName: showPlayer ? "speaker.wave.2.fill" : "speaker.slash.fill")
+                        .foregroundStyle(ManifyTheme.gold)
+                }
+            }
             ToolbarItem(placement: .topBarTrailing) {
                 Button {
                     progressStore.toggleBookmark(lesson.id)
