@@ -16,6 +16,10 @@ struct QuizScreen: View {
     @State private var isComplete: Bool = false
     @State private var answers: [Int?] = []
     @State private var showExercisePrompt: Bool = false
+    // Per-question shuffled display orders (re-randomized each attempt). Values are
+    // the ORIGINAL indices, so scoring against correctIndex/correctIndices/pairs is unchanged.
+    @State private var choiceOrders: [[Int]] = []
+    @State private var rightOrders: [[Int]] = []
 
     private var questions: [Question] { lesson.quiz.questions }
     private var currentQuestion: Question? {
@@ -45,6 +49,7 @@ struct QuizScreen: View {
             }
             .onAppear {
                 answers = Array(repeating: nil, count: questions.count)
+                buildShuffles()
             }
             .sheet(isPresented: $showExercisePrompt) {
                 ExercisePromptView()
@@ -110,7 +115,8 @@ struct QuizScreen: View {
 
     private func multipleChoiceView(_ question: Question) -> some View {
         VStack(spacing: 10) {
-            ForEach(Array(question.choices.enumerated()), id: \.offset) { index, choice in
+            ForEach(choiceOrder(for: currentIndex, count: question.choices.count), id: \.self) { index in
+                let choice = question.choices[index]
                 Button {
                     guard !hasAnswered else { return }
                     selectedAnswer = index
@@ -145,7 +151,8 @@ struct QuizScreen: View {
 
     private func multiSelectView(_ question: Question) -> some View {
         VStack(spacing: 10) {
-            ForEach(Array(question.choices.enumerated()), id: \.offset) { index, choice in
+            ForEach(choiceOrder(for: currentIndex, count: question.choices.count), id: \.self) { index in
+                let choice = question.choices[index]
                 Button {
                     guard !hasAnswered else { return }
                     if selectedAnswers.contains(index) {
@@ -251,7 +258,7 @@ struct QuizScreen: View {
 
     private func matchingView(_ question: Question) -> some View {
         let pairs = question.matchingPairs
-        let shuffledRightIndices = Array(0..<pairs.count)
+        let shuffledRightIndices = rightOrder(for: currentIndex, count: pairs.count)
 
         return VStack(spacing: 16) {
             Text("Tap a term, then tap its match")
@@ -592,5 +599,25 @@ struct QuizScreen: View {
         correctCount = 0
         isComplete = false
         answers = Array(repeating: nil, count: questions.count)
+        buildShuffles()
+    }
+
+    private func buildShuffles() {
+        choiceOrders = questions.map { Array(0..<$0.choices.count).shuffled() }
+        rightOrders = questions.map { Array(0..<$0.matchingPairs.count).shuffled() }
+    }
+
+    private func choiceOrder(for qIndex: Int, count: Int) -> [Int] {
+        if qIndex < choiceOrders.count, choiceOrders[qIndex].count == count {
+            return choiceOrders[qIndex]
+        }
+        return Array(0..<count)
+    }
+
+    private func rightOrder(for qIndex: Int, count: Int) -> [Int] {
+        if qIndex < rightOrders.count, rightOrders[qIndex].count == count {
+            return rightOrders[qIndex]
+        }
+        return Array(0..<count)
     }
 }
