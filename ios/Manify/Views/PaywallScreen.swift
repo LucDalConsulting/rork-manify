@@ -66,12 +66,19 @@ struct PaywallScreen: View {
 
     private var heroSection: some View {
         VStack(spacing: 16) {
-            Image(systemName: "shield.checkered")
-                .font(.system(size: 52))
-                .foregroundStyle(ManifyTheme.goldGradient)
+            Image("AppLogo")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 96, height: 96)
+                .clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 22, style: .continuous)
+                        .stroke(ManifyTheme.gold.opacity(0.3), lineWidth: 1)
+                )
+                .shadow(color: ManifyTheme.gold.opacity(0.3), radius: 14, y: 6)
 
             VStack(spacing: 6) {
-                Text("MANLY MEMBERSHIP")
+                Text("MANIFY MEMBERSHIP")
                     .font(.caption.weight(.bold))
                     .foregroundStyle(ManifyTheme.gold)
                     .tracking(3)
@@ -242,11 +249,14 @@ struct PaywallScreen: View {
                 .ignoresSafeArea()
 
             VStack(spacing: 20) {
-                Image(systemName: "shield.checkered")
-                    .font(.system(size: 56))
-                    .foregroundStyle(ManifyTheme.goldGradient)
+                Image("AppLogo")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 100, height: 100)
+                    .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
+                    .shadow(color: ManifyTheme.gold.opacity(0.4), radius: 16, y: 6)
 
-                Text("Manly Membership Unlocked")
+                Text("Manify Membership Unlocked")
                     .font(.title3.weight(.bold))
                     .foregroundStyle(ManifyTheme.textPrimary)
 

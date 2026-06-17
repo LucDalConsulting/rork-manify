@@ -280,7 +280,7 @@ struct CategoryScreen: View {
                     .font(.title2)
                     .foregroundStyle(ManifyTheme.gold.opacity(0.7))
 
-                Text("Manly Membership Required")
+                Text("Manify Membership Required")
                     .font(.subheadline.weight(.semibold))
                     .foregroundStyle(ManifyTheme.textPrimary)
 

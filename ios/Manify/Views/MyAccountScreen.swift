@@ -186,7 +186,7 @@ struct MyAccountScreen: View {
                     .font(.subheadline)
                     .foregroundStyle(ManifyTheme.textPrimary)
                 Spacer()
-                Text(membership.isPremium ? "Manly Membership" : "Free")
+                Text(membership.isPremium ? "Manify Membership" : "Free")
                     .font(.subheadline.weight(.semibold))
                     .foregroundStyle(membership.isPremium ? ManifyTheme.gold : ManifyTheme.textSecondary)
             }
@@ -206,7 +206,7 @@ struct MyAccountScreen: View {
                         .foregroundStyle(ManifyTheme.gold)
 
                     VStack(alignment: .leading, spacing: 2) {
-                        Text("Manly Membership")
+                        Text("Manify Membership")
                             .font(.subheadline.weight(.semibold))
                             .foregroundStyle(ManifyTheme.textPrimary)
                         Text("Active — Lifetime Access")
@@ -225,7 +225,7 @@ struct MyAccountScreen: View {
                             .foregroundStyle(ManifyTheme.gold)
 
                         VStack(alignment: .leading, spacing: 2) {
-                            Text("Upgrade to Manly Membership")
+                            Text("Upgrade to Manify Membership")
                                 .font(.subheadline.weight(.semibold))
                                 .foregroundStyle(ManifyTheme.textPrimary)
                             Text("Unlock full access — $10 one-time")
