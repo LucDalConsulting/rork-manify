@@ -10,13 +10,17 @@ struct ManifyApp: App {
     @State private var authService = AuthService()
 
     init() {
-        let apiKey: String
         #if DEBUG
         Purchases.logLevel = .debug
-        apiKey = Bundle.main.object(forInfoDictionaryKey: "RCTestAPIKey") as? String ?? ""
-        #else
-        apiKey = Bundle.main.object(forInfoDictionaryKey: "RCAPIKey") as? String ?? ""
         #endif
+        // Primary source: the CI-injected constant (see RCConfig.swift). Fall back
+        // to Info.plist keys if present.
+        var apiKey = RCConfig.apiKey
+        if apiKey.isEmpty {
+            apiKey = (Bundle.main.object(forInfoDictionaryKey: "RCAPIKey") as? String)
+                ?? (Bundle.main.object(forInfoDictionaryKey: "RCTestAPIKey") as? String)
+                ?? ""
+        }
         if !apiKey.isEmpty {
             Purchases.configure(withAPIKey: apiKey)
         }
