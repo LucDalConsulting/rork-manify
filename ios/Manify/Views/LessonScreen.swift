@@ -12,7 +12,7 @@ struct LessonScreen: View {
     @State private var speech = SpeechService()
     @State private var isScrubbing: Bool = false
     @State private var scrubValue: Double = 0
-    @State private var showPlayer: Bool = true
+    @State private var showPlayer: Bool = false
 
     private var sectionProgress: Double {
         guard !lesson.contentBlocks.isEmpty else { return 0 }
