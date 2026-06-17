@@ -35,8 +35,15 @@ def shared_xcargs
   [
     "DEVELOPMENT_TEAM=\"#{team}\"",
     "CURRENT_PROJECT_VERSION=#{build}",
-    "EXPO_PUBLIC_REVENUECAT_IOS_API_KEY=\"#{rc}\"",
-    "EXPO_PUBLIC_REVENUECAT_TEST_API_KEY=\"#{rc}\"",
+    # Set the Info.plist keys the app reads DIRECTLY. The pbxproj routes these
+    # through $(EXPO_PUBLIC_REVENUECAT_IOS_API_KEY), but xcodebuild does not resolve
+    # a command-line-set variable inside an INFOPLIST_KEY_* value, so the key came
+    # out empty ("Purchases not configured"). Overriding the INFOPLIST_KEY_* settings
+    # themselves bakes the key straight into the generated Info.plist.
+    "INFOPLIST_KEY_RCAPIKey=#{rc}",
+    "INFOPLIST_KEY_RCTestAPIKey=#{rc}",
+    "EXPO_PUBLIC_REVENUECAT_IOS_API_KEY=#{rc}",
+    "EXPO_PUBLIC_REVENUECAT_TEST_API_KEY=#{rc}",
     "-allowProvisioningUpdates"
   ].join(" ")
 end
