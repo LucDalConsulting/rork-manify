@@ -10,6 +10,7 @@ struct MyAccountScreen: View {
     @Environment(NotificationService.self) private var notifications
     @State private var editedUsername: String = ""
     @State private var showSignOutConfirm: Bool = false
+    @State private var showDeleteConfirm: Bool = false
     @State private var activeSheet: AccountSheetType?
 
     nonisolated enum AccountSheetType: String, Identifiable {
@@ -53,6 +54,14 @@ struct MyAccountScreen: View {
                 Button("Cancel", role: .cancel) {}
             } message: {
                 Text("Your local progress will be preserved.")
+            }
+            .alert("Delete Account", isPresented: $showDeleteConfirm) {
+                Button("Delete Account", role: .destructive) {
+                    auth.deleteAccount()
+                }
+                Button("Cancel", role: .cancel) {}
+            } message: {
+                Text("This permanently deletes your account and all data stored on this device, including your progress. This cannot be undone.")
             }
         }
     }
@@ -334,8 +343,21 @@ struct MyAccountScreen: View {
                     .foregroundStyle(ManifyTheme.danger)
             }
             .listRowBackground(ManifyTheme.panel)
+
+            Button(role: .destructive) {
+                showDeleteConfirm = true
+            } label: {
+                Label("Delete Account", systemImage: "trash")
+                    .font(.subheadline)
+                    .foregroundStyle(ManifyTheme.danger)
+            }
+            .listRowBackground(ManifyTheme.panel)
         } header: {
             Text("Account")
+                .foregroundStyle(ManifyTheme.textSecondary)
+        } footer: {
+            Text("Deleting your account permanently removes all your data from this device.")
+                .font(.caption2)
                 .foregroundStyle(ManifyTheme.textSecondary)
         }
     }

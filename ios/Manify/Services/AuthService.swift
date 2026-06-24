@@ -137,6 +137,23 @@ final class AuthService {
         saveState()
     }
 
+    /// Permanently deletes the user's account and all associated data. The app has
+    /// no backend server, so every piece of account data lives locally on the
+    /// device; deleting the account wipes all locally stored data (sign-in info,
+    /// progress, streaks, bookmarks, preferences) and returns the user to onboarding.
+    func deleteAccount() {
+        if let bundleId = Bundle.main.bundleIdentifier {
+            UserDefaults.standard.removePersistentDomain(forName: bundleId)
+            UserDefaults.standard.synchronize()
+        }
+        isAuthenticated = false
+        isGuest = false
+        username = "Guest"
+        email = nil
+        authProvider = nil
+        hasCompletedOnboarding = false
+    }
+
     private func markOnboardingComplete() {
         UserDefaults.standard.set(true, forKey: onboardingKey)
         hasCompletedOnboarding = true

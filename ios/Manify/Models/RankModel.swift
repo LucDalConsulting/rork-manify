@@ -1,8 +1,8 @@
 import Foundation
 
 nonisolated enum Rank: String, Codable, CaseIterable, Sendable {
-    case beta = "Beta"
-    case alpha = "Alpha"
+    case beta = "Cub"
+    case alpha = "Lion"
     case sigma = "Sigma"
     case chad = "Chad"
     case omega = "Omega"
