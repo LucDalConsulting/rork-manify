@@ -47,6 +47,17 @@ jobs:
           printf 'import Foundation\nenum RCConfig {\n    static let apiKey = "%s"\n}\n' "$REVENUECAT_IOS_API_KEY" > ios/Manify/RCConfig.swift
           echo "RCConfig.swift written (key length ${#REVENUECAT_IOS_API_KEY})"
 
+      - name: Prevent signing-certificate pile-up (best-effort)
+        continue-on-error: true
+        env:
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+          ASC_KEY_P8: ${{ secrets.ASC_KEY_P8 }}
+        run: |
+          python3 -m pip install --quiet --break-system-packages pyjwt requests 2>/dev/null \
+            || python3 -m pip install --quiet pyjwt requests
+          python3 ios/scripts/clean_signing.py
+
       - name: Build & upload (${{ github.event.inputs.lane }})
         working-directory: ios
         env:
