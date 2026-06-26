@@ -11,6 +11,7 @@ final class MembershipService {
     private(set) var offerings: Offerings?
 
     private let premiumKey = "manify_is_premium"
+    private let productID = "manify_lifetime"
     private var didBootstrap = false
 
     private var isConfigured: Bool {
@@ -61,42 +62,44 @@ final class MembershipService {
             purchaseError = "Purchases not configured."
             return
         }
-        guard let package = offerings?.current?.availablePackages.first else {
-            isPurchasing = true
-            purchaseError = nil
-            do {
-                let freshOfferings = try await Purchases.shared.offerings()
-                offerings = freshOfferings
-                guard let pkg = freshOfferings.current?.availablePackages.first else {
-                    purchaseError = "Product unavailable. Try again later."
-                    isPurchasing = false
-                    return
-                }
-                await doPurchase(package: pkg)
-            } catch {
-                purchaseError = "Unable to load product. Try again."
-                isPurchasing = false
-            }
-            return
-        }
-        await doPurchase(package: package)
-    }
-
-    private func doPurchase(package: Package) async {
-        guard isConfigured else {
-            purchaseError = "Purchases not configured."
-            return
-        }
         isPurchasing = true
         purchaseError = nil
 
+        // 1. Use a package from the already-loaded offering if we have one.
+        if let pkg = offerings?.current?.availablePackages.first {
+            await doPurchase(package: pkg)
+            isPurchasing = false
+            return
+        }
+
+        // 2. Offering missing/empty — refetch once and retry.
+        if let fresh = try? await Purchases.shared.offerings() {
+            offerings = fresh
+            if let pkg = fresh.current?.availablePackages.first {
+                await doPurchase(package: pkg)
+                isPurchasing = false
+                return
+            }
+        }
+
+        // 3. Last resort — fetch the product directly by its ID so the App Store
+        //    purchase sheet still appears even if the RevenueCat offering is
+        //    unavailable or empty in this environment.
+        let products = await Purchases.shared.products([productID])
+        if let product = products.first {
+            await doPurchase(product: product)
+            isPurchasing = false
+            return
+        }
+
+        purchaseError = "Couldn't reach the App Store. Check your connection and try again."
+        isPurchasing = false
+    }
+
+    private func doPurchase(package: Package) async {
         do {
             let result = try await Purchases.shared.purchase(package: package)
-            if !result.userCancelled {
-                let active = result.customerInfo.entitlements["premium"]?.isActive == true
-                isPremium = active
-                UserDefaults.standard.set(active, forKey: premiumKey)
-            }
+            applyPurchase(result)
         } catch ErrorCode.purchaseCancelledError {
             // user cancelled
         } catch ErrorCode.paymentPendingError {
@@ -104,8 +107,26 @@ final class MembershipService {
         } catch {
             purchaseError = "Purchase failed. Try again."
         }
+    }
 
-        isPurchasing = false
+    private func doPurchase(product: StoreProduct) async {
+        do {
+            let result = try await Purchases.shared.purchase(product: product)
+            applyPurchase(result)
+        } catch ErrorCode.purchaseCancelledError {
+            // user cancelled
+        } catch ErrorCode.paymentPendingError {
+            purchaseError = "Purchase is pending approval."
+        } catch {
+            purchaseError = "Purchase failed. Try again."
+        }
+    }
+
+    private func applyPurchase(_ result: PurchaseResultData) {
+        guard !result.userCancelled else { return }
+        let active = result.customerInfo.entitlements["premium"]?.isActive == true
+        isPremium = active
+        UserDefaults.standard.set(active, forKey: premiumKey)
     }
 
     func restorePurchases() async {
