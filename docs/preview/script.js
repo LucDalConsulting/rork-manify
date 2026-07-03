@@ -1,30 +1,58 @@
-/* Manify landing — motion + dynamic content */
+/* Manify landing — motion, floating skill orbs, and skill modal */
 (function () {
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const rnd = (seed) => { const x = Math.sin(seed * 99.73) * 10000; return x - Math.floor(x); };
 
-  /* ---- category data (from the app's CategoryModel) ---- */
-  const CATS = [
-    { name: 'Firearms', sub: 'Responsibility & force literacy', ico: '🎯', rgb: '180,80,80', n: 16 },
-    { name: 'Cars', sub: 'Mechanical autonomy', ico: '🔧', rgb: '200,140,60', n: 16 },
-    { name: 'Money', sub: 'Build and keep wealth', ico: '💰', rgb: '60,170,90', n: 16 },
-    { name: 'Grilling', sub: 'Fire, meat, method, confidence', ico: '🔥', rgb: '220,100,50', n: 12 },
-    { name: 'Self-Defense', sub: 'Protect yourself and others', ico: '🥊', rgb: '130,110,190', n: 12 },
-    { name: 'Fitness', sub: 'Strength, conditioning, longevity', ico: '💪', rgb: '210,90,70', n: 16 },
-    { name: 'First Aid', sub: 'Emergency medical readiness', ico: '⛑️', rgb: '210,60,80', n: 16 },
-    { name: 'Negotiation', sub: 'Deals, salary, and influence', ico: '💼', rgb: '60,150,160', n: 12 },
-    { name: 'Home', sub: 'Ownership competence', ico: '🏠', rgb: '80,160,120', n: 16 },
-    { name: 'Constitution', sub: 'Power-structure literacy', ico: '🏛️', rgb: '70,130,200', n: 16 },
-    { name: 'Sharks', sub: 'Apex-predator energy', ico: '🦈', rgb: '60,140,180', n: 12 },
-  ];
-  const cards = document.getElementById('cards');
-  if (cards) {
-    cards.innerHTML = CATS.map((c) => `
-      <article class="card" style="--accent:rgba(${c.rgb},.28);--accent-soft:rgba(${c.rgb},.14)" data-reveal>
-        <div class="card__ico" style="background:rgba(${c.rgb},.14);box-shadow:0 0 24px -6px rgba(${c.rgb},.5)">${c.ico}</div>
-        <h3 class="card__name">${c.name}</h3>
-        <p class="card__sub">${c.sub}</p>
-        <div class="card__meta">${c.n} lessons</div>
-      </article>`).join('');
+  /* ---- floating skill orbs (data from skills-data.js) ---- */
+  const SK = window.SKILLS || [];
+  const orbs = document.getElementById('orbs');
+  if (orbs && SK.length) {
+    orbs.innerHTML = SK.map((s, i) => {
+      const size = 140 + Math.round(rnd(i + 1) * 48);   // 140–188px, varied
+      const dur = (5 + rnd(i + 3) * 4).toFixed(2);       // 5–9s
+      const delay = (-(rnd(i + 5) * 5)).toFixed(2);      // staggered start
+      const amp = -(10 + Math.round(rnd(i + 7) * 13));   // -10..-23px bob
+      return `<button class="orb" data-i="${i}" style="--size:${size}px;--rgb:${s.rgb};--dur:${dur}s;--delay:${delay}s;--amp:${amp}px" aria-label="Explore ${s.name}">
+        <span class="orb__ico">${s.ico}</span>
+        <span class="orb__name">${s.name}</span>
+        <span class="orb__n">${s.n} lessons</span>
+      </button>`;
+    }).join('');
+  }
+
+  /* ---- skill modal ---- */
+  const modal = document.getElementById('skillModal');
+  const modalBody = document.getElementById('modalBody');
+  function openSkill(i) {
+    const s = SK[i]; if (!s || !modal) return;
+    const rgb = s.rgb;
+    const tiers = s.tiers.map((t) =>
+      `<div class="md-tier"><div class="md-tier__label">Tier ${t.tier}</div><ul class="md-list">${t.titles.map((x) => `<li>${x}</li>`).join('')}</ul></div>`
+    ).join('');
+    modalBody.innerHTML =
+      `<div class="md-head">
+        <div class="md-ico" style="background:rgba(${rgb},.16);box-shadow:0 0 30px -6px rgba(${rgb},.6)">${s.ico}</div>
+        <div><div class="md-name" id="modalName">${s.name}</div><div class="md-meta">${s.n} lessons · ${s.tierCount} tiers</div></div>
+      </div>
+      <p class="md-why" style="border-color:rgb(${rgb})">${s.why}</p>
+      <div class="md-sub">What you'll master</div>
+      ${tiers}
+      <a class="btn btn--gold md-cta" href="https://apps.apple.com/app/id6760329399" target="_blank" rel="noopener">Start ${s.name} on the App Store</a>`;
+    modal.classList.add('open');
+    modal.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+    const p = modal.querySelector('.modal__panel'); if (p) p.scrollTop = 0;
+  }
+  function closeSkill() {
+    if (!modal) return;
+    modal.classList.remove('open');
+    modal.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+  }
+  if (orbs) orbs.addEventListener('click', (e) => { const b = e.target.closest('.orb'); if (b) openSkill(+b.dataset.i); });
+  if (modal) {
+    modal.addEventListener('click', (e) => { if (e.target.hasAttribute('data-close')) closeSkill(); });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeSkill(); });
   }
 
   /* ---- gallery from screenshots ---- */
@@ -48,7 +76,7 @@
     reveals.forEach((el) => el.classList.add('in'));
   } else {
     const io = new IntersectionObserver((entries) => {
-      entries.forEach((e, i) => {
+      entries.forEach((e) => {
         if (e.isIntersecting) {
           const el = e.target;
           const sib = [...(el.parentElement ? el.parentElement.children : [])].indexOf(el);

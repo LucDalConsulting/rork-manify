@@ -80,9 +80,9 @@
 <section class="section tracks" id="tracks">
   <div class="section__head">
     <h2 class="h2" data-reveal>Eleven tracks to <span class="grad">real competence</span></h2>
-    <p class="lead" data-reveal>Every track takes you from clueless to capable — structured tiers, quizzes, and flashcards that make it stick.</p>
+    <p class="lead" data-reveal>Tap any skill to see what's inside — the real subtopics you'll master and why it matters.</p>
   </div>
-  <div class="cards" id="cards"></div>
+  <div class="orbs" id="orbs" data-reveal></div>
 </section>
 
 <!-- SHOWCASE -->
@@ -127,8 +127,18 @@
   <p class="footer__legal">© 2026 LucDal Consulting. Manify™. Become a Real Man.</p>
 </footer>
 
+<!-- SKILL MODAL -->
+<div class="modal" id="skillModal" aria-hidden="true">
+  <div class="modal__backdrop" data-close></div>
+  <div class="modal__panel" role="dialog" aria-modal="true" aria-labelledby="modalName">
+    <button class="modal__close" data-close aria-label="Close">✕</button>
+    <div class="modal__body" id="modalBody"></div>
+  </div>
+</div>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="skills-data.js"></script>
 <script src="script.js"></script>
 </body>
 </html>
