@@ -6,18 +6,47 @@
   /* ---- floating skill orbs (data from skills-data.js) ---- */
   const SK = window.SKILLS || [];
   const orbs = document.getElementById('orbs');
+  function layoutOrbs() {
+    if (!orbs) return;
+    const W = orbs.clientWidth, H = orbs.clientHeight;
+    if (!W || !H) return;
+    const mobile = W < 620;
+    const items = [...orbs.children];
+    items.forEach((el, i) => {
+      const size = Math.round((mobile ? 122 : 152) + rnd(i + 1) * (mobile ? 30 : 66));
+      el.dataset.size = size;
+      el.style.setProperty('--size', size + 'px');
+      el.style.setProperty('--dur', (6 + rnd(i + 3) * 4).toFixed(2) + 's');
+      el.style.setProperty('--delay', (-(rnd(i + 5) * 5)).toFixed(2) + 's');
+      el.style.setProperty('--amp', (-(12 + Math.round(rnd(i + 7) * 12))) + 'px');
+    });
+    const placed = [], pad = mobile ? 10 : 20;
+    items.forEach((el) => {
+      const size = +el.dataset.size, r = size / 2;
+      let best = { x: W / 2, y: H / 2 }, bestGap = -1e9;
+      for (let t = 0; t < 600; t++) {
+        const cx = r + 6 + Math.random() * (W - size - 12);
+        const cy = r + 6 + Math.random() * (H - size - 12);
+        let ok = true, minGap = Infinity;
+        for (const p of placed) {
+          const gap = Math.hypot(cx - p.x, cy - p.y) - (r + p.r);
+          if (gap < pad) { ok = false; break; }
+          if (gap < minGap) minGap = gap;
+        }
+        if (ok) { best = { x: cx, y: cy }; break; }
+        if (minGap > bestGap) { bestGap = minGap; best = { x: cx, y: cy }; }
+      }
+      placed.push({ x: best.x, y: best.y, r });
+      el.style.left = (best.x - r) + 'px';
+      el.style.top = (best.y - r) + 'px';
+    });
+  }
   if (orbs && SK.length) {
-    orbs.innerHTML = SK.map((s, i) => {
-      const size = 140 + Math.round(rnd(i + 1) * 48);   // 140–188px, varied
-      const dur = (5 + rnd(i + 3) * 4).toFixed(2);       // 5–9s
-      const delay = (-(rnd(i + 5) * 5)).toFixed(2);      // staggered start
-      const amp = -(10 + Math.round(rnd(i + 7) * 13));   // -10..-23px bob
-      return `<button class="orb" data-i="${i}" style="--size:${size}px;--rgb:${s.rgb};--dur:${dur}s;--delay:${delay}s;--amp:${amp}px" aria-label="Explore ${s.name}">
-        <span class="orb__ico">${s.ico}</span>
-        <span class="orb__name">${s.name}</span>
-        <span class="orb__n">${s.n} lessons</span>
-      </button>`;
-    }).join('');
+    orbs.innerHTML = SK.map((s, i) =>
+      `<button class="orb" data-i="${i}" style="--rgb:${s.rgb}" aria-label="Explore ${s.name}"><span class="orb__ico">${s.ico}</span><span class="orb__name">${s.name}</span><span class="orb__n">${s.n} lessons</span></button>`
+    ).join('');
+    layoutOrbs();
+    let rt; window.addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(layoutOrbs, 160); });
   }
 
   /* ---- skill modal ---- */
