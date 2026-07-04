@@ -10,35 +10,36 @@
     if (!orbs) return;
     const W = orbs.clientWidth, H = orbs.clientHeight;
     if (!W || !H) return;
-    const mobile = W < 620;
+    const mobile = W < 560;
     const items = [...orbs.children];
+    const baseSize = (i) => (mobile ? 96 : 108) + rnd(i + 1) * (mobile ? 30 : 46);
+    // Shrink-to-fit: keep reducing size until every bubble places without overlap.
+    let placedFinal = null;
+    for (let scale = 1; scale > 0.4; scale *= 0.9) {
+      const placed = [], pad = mobile ? 8 : 16;
+      let ok = true;
+      for (let i = 0; i < items.length; i++) {
+        const size = baseSize(i) * scale, r = size / 2;
+        let spot = null;
+        for (let t = 0; t < 900; t++) {
+          const cx = r + 4 + Math.random() * Math.max(1, W - size - 8);
+          const cy = r + 4 + Math.random() * Math.max(1, H - size - 8);
+          if (placed.every((p) => Math.hypot(cx - p.x, cy - p.y) >= r + p.r + pad)) { spot = { x: cx, y: cy, r, size }; break; }
+        }
+        if (!spot) { ok = false; break; }
+        placed.push(spot);
+      }
+      if (ok) { placedFinal = placed; break; }
+    }
+    if (!placedFinal) return;
     items.forEach((el, i) => {
-      const size = Math.round((mobile ? 122 : 152) + rnd(i + 1) * (mobile ? 30 : 66));
-      el.dataset.size = size;
-      el.style.setProperty('--size', size + 'px');
+      const p = placedFinal[i];
+      el.style.setProperty('--size', Math.round(p.size) + 'px');
       el.style.setProperty('--dur', (6 + rnd(i + 3) * 4).toFixed(2) + 's');
       el.style.setProperty('--delay', (-(rnd(i + 5) * 5)).toFixed(2) + 's');
-      el.style.setProperty('--amp', (-(12 + Math.round(rnd(i + 7) * 12))) + 'px');
-    });
-    const placed = [], pad = mobile ? 10 : 20;
-    items.forEach((el) => {
-      const size = +el.dataset.size, r = size / 2;
-      let best = { x: W / 2, y: H / 2 }, bestGap = -1e9;
-      for (let t = 0; t < 600; t++) {
-        const cx = r + 6 + Math.random() * (W - size - 12);
-        const cy = r + 6 + Math.random() * (H - size - 12);
-        let ok = true, minGap = Infinity;
-        for (const p of placed) {
-          const gap = Math.hypot(cx - p.x, cy - p.y) - (r + p.r);
-          if (gap < pad) { ok = false; break; }
-          if (gap < minGap) minGap = gap;
-        }
-        if (ok) { best = { x: cx, y: cy }; break; }
-        if (minGap > bestGap) { bestGap = minGap; best = { x: cx, y: cy }; }
-      }
-      placed.push({ x: best.x, y: best.y, r });
-      el.style.left = (best.x - r) + 'px';
-      el.style.top = (best.y - r) + 'px';
+      el.style.setProperty('--amp', (-(6 + Math.round(rnd(i + 7) * 8))) + 'px');
+      el.style.left = (p.x - p.r) + 'px';
+      el.style.top = (p.y - p.r) + 'px';
     });
   }
   if (orbs && SK.length) {
