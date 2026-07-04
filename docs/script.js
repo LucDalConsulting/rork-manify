@@ -1,53 +1,18 @@
-/* Manify landing — motion, floating skill orbs, and skill modal */
+/* Manify landing — motion, skill grid, and skill modal */
 (function () {
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const rnd = (seed) => { const x = Math.sin(seed * 99.73) * 10000; return x - Math.floor(x); };
 
-  /* ---- floating skill orbs (data from skills-data.js) ---- */
+  /* ---- skill grid (data from skills-data.js) ---- */
   const SK = window.SKILLS || [];
-  const orbs = document.getElementById('orbs');
-  function layoutOrbs() {
-    if (!orbs) return;
-    const W = orbs.clientWidth, H = orbs.clientHeight;
-    if (!W || !H) return;
-    const mobile = W < 560;
-    const items = [...orbs.children];
-    const baseSize = (i) => (mobile ? 96 : 108) + rnd(i + 1) * (mobile ? 30 : 46);
-    // Shrink-to-fit: keep reducing size until every bubble places without overlap.
-    let placedFinal = null;
-    for (let scale = 1; scale > 0.4; scale *= 0.9) {
-      const placed = [], pad = mobile ? 8 : 16;
-      let ok = true;
-      for (let i = 0; i < items.length; i++) {
-        const size = baseSize(i) * scale, r = size / 2;
-        let spot = null;
-        for (let t = 0; t < 900; t++) {
-          const cx = r + 4 + Math.random() * Math.max(1, W - size - 8);
-          const cy = r + 4 + Math.random() * Math.max(1, H - size - 8);
-          if (placed.every((p) => Math.hypot(cx - p.x, cy - p.y) >= r + p.r + pad)) { spot = { x: cx, y: cy, r, size }; break; }
-        }
-        if (!spot) { ok = false; break; }
-        placed.push(spot);
-      }
-      if (ok) { placedFinal = placed; break; }
-    }
-    if (!placedFinal) return;
-    items.forEach((el, i) => {
-      const p = placedFinal[i];
-      el.style.setProperty('--size', Math.round(p.size) + 'px');
-      el.style.setProperty('--dur', (6 + rnd(i + 3) * 4).toFixed(2) + 's');
-      el.style.setProperty('--delay', (-(rnd(i + 5) * 5)).toFixed(2) + 's');
-      el.style.setProperty('--amp', (-(6 + Math.round(rnd(i + 7) * 8))) + 'px');
-      el.style.left = (p.x - p.r) + 'px';
-      el.style.top = (p.y - p.r) + 'px';
-    });
-  }
-  if (orbs && SK.length) {
-    orbs.innerHTML = SK.map((s, i) =>
-      `<button class="orb" data-i="${i}" style="--rgb:${s.rgb}" aria-label="Explore ${s.name}"><span class="orb__ico">${s.ico}</span><span class="orb__name">${s.name}</span><span class="orb__n">${s.n} lessons</span></button>`
+  const grid = document.getElementById('trackGrid');
+  if (grid && SK.length) {
+    grid.innerHTML = SK.map((s, i) =>
+      `<button class="track-card" data-i="${i}" style="--rgb:${s.rgb}" aria-label="Explore ${s.name}">
+         <span class="track-card__ico"><span>${s.ico}</span></span>
+         <span class="track-card__name">${s.name}</span>
+         <span class="track-card__n">${s.n} lessons</span>
+       </button>`
     ).join('');
-    layoutOrbs();
-    let rt; window.addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(layoutOrbs, 160); });
   }
 
   /* ---- skill modal ---- */
@@ -79,7 +44,7 @@
     modal.setAttribute('aria-hidden', 'true');
     document.body.style.overflow = '';
   }
-  if (orbs) orbs.addEventListener('click', (e) => { const b = e.target.closest('.orb'); if (b) openSkill(+b.dataset.i); });
+  if (grid) grid.addEventListener('click', (e) => { const b = e.target.closest('.track-card'); if (b) openSkill(+b.dataset.i); });
   if (modal) {
     modal.addEventListener('click', (e) => { if (e.target.hasAttribute('data-close')) closeSkill(); });
     document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeSkill(); });
