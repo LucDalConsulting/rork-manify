@@ -10,8 +10,17 @@ final class MembershipService {
     var purchaseError: String?
     private(set) var offerings: Offerings?
 
+    /// Product identifier backing the active "premium" entitlement, if any. Lets the
+    /// UI tell a grandfathered lifetime owner apart from a monthly subscriber without
+    /// changing the (generic) entitlement check.
+    private(set) var activeProductID: String?
+
     private let premiumKey = "manify_is_premium"
-    private let productID = "manify_lifetime"
+    // The paywall now sells the monthly subscription. Legacy "manify_lifetime" owners
+    // keep access through the "premium" entitlement — that product stays attached to
+    // the entitlement in RevenueCat, it's just no longer offered for sale.
+    private let productID = "manify_monthly"
+    private let lifetimeProductID = "manify_lifetime"
     private var didBootstrap = false
 
     private var isConfigured: Bool {
@@ -39,9 +48,7 @@ final class MembershipService {
     private func listenForUpdates() async {
         guard isConfigured else { return }
         for await info in Purchases.shared.customerInfoStream {
-            let active = info.entitlements["premium"]?.isActive == true
-            isPremium = active
-            UserDefaults.standard.set(active, forKey: premiumKey)
+            apply(info)
         }
     }
 
@@ -124,9 +131,7 @@ final class MembershipService {
 
     private func applyPurchase(_ result: PurchaseResultData) {
         guard !result.userCancelled else { return }
-        let active = result.customerInfo.entitlements["premium"]?.isActive == true
-        isPremium = active
-        UserDefaults.standard.set(active, forKey: premiumKey)
+        apply(result.customerInfo)
     }
 
     func restorePurchases() async {
@@ -139,11 +144,8 @@ final class MembershipService {
 
         do {
             let info = try await Purchases.shared.restorePurchases()
-            let active = info.entitlements["premium"]?.isActive == true
-            isPremium = active
-            UserDefaults.standard.set(active, forKey: premiumKey)
-
-            if !active {
+            apply(info)
+            if !isPremium {
                 purchaseError = "No previous purchase found."
             }
         } catch {
@@ -161,13 +163,34 @@ final class MembershipService {
         currentPackage?.storeProduct.localizedPriceString
     }
 
+    /// Price with billing period, e.g. "$2.49/month", for the subscription CTA and
+    /// the required auto-renewal disclosure.
+    var monthlyPriceString: String {
+        "\(priceString ?? "$2.49")/month"
+    }
+
+    /// True when the active entitlement is backed by the legacy lifetime purchase, so
+    /// the UI can label grandfathered owners "Lifetime" rather than "Renews Monthly".
+    var isLifetimeMember: Bool {
+        activeProductID == lifetimeProductID
+    }
+
     func checkStatus() async {
         guard isConfigured else { return }
         do {
             let info = try await Purchases.shared.customerInfo()
-            let active = info.entitlements["premium"]?.isActive == true
-            isPremium = active
-            UserDefaults.standard.set(active, forKey: premiumKey)
+            apply(info)
         } catch {}
+    }
+
+    /// Single place that maps RevenueCat customer info to local state. The "premium"
+    /// entitlement is checked generically, so lifetime owners and monthly subscribers
+    /// are both recognized as premium.
+    private func apply(_ info: CustomerInfo) {
+        let entitlement = info.entitlements["premium"]
+        let active = entitlement?.isActive == true
+        isPremium = active
+        activeProductID = active ? entitlement?.productIdentifier : nil
+        UserDefaults.standard.set(active, forKey: premiumKey)
     }
 }

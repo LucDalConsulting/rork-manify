@@ -8,6 +8,7 @@ struct ManifyApp: App {
     @State private var membershipService = MembershipService()
     @State private var notificationService = NotificationService()
     @State private var authService = AuthService()
+    @State private var reviewManager = ReviewManager()
 
     init() {
         #if DEBUG
@@ -40,6 +41,7 @@ struct ManifyApp: App {
             .environment(membershipService)
             .environment(notificationService)
             .environment(authService)
+            .environment(reviewManager)
             .preferredColorScheme(.dark)
             .task {
                 // RevenueCat is configured by now; start the entitlement listener

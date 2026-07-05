@@ -108,7 +108,7 @@ struct PaywallScreen: View {
                     .foregroundStyle(ManifyTheme.gold)
                     .frame(width: 28)
 
-                Text("One-time payment. Lifetime access.")
+                Text("Cancel anytime — full access while you're a member.")
                     .font(.subheadline.weight(.semibold))
                     .foregroundStyle(ManifyTheme.gold)
             }
@@ -198,7 +198,7 @@ struct PaywallScreen: View {
                         ProgressView()
                             .tint(ManifyTheme.bg)
                     } else {
-                        Text("Unlock for \(membership.priceString ?? "$9.99")")
+                        Text("Subscribe — \(membership.monthlyPriceString)")
                             .font(.headline.weight(.bold))
                     }
                 }
@@ -211,10 +211,6 @@ struct PaywallScreen: View {
             .disabled(membership.isPurchasing || membership.isLoading)
             .sensoryFeedback(.impact(weight: .heavy), trigger: membership.isPremium)
 
-            Text("One-time payment. No subscription.")
-                .font(.caption)
-                .foregroundStyle(ManifyTheme.textSecondary)
-
             Button {
                 Task { await membership.restorePurchases() }
             } label: {
@@ -222,6 +218,21 @@ struct PaywallScreen: View {
                     .font(.caption.weight(.medium))
                     .foregroundStyle(ManifyTheme.textSecondary)
             }
+
+            VStack(spacing: 8) {
+                Text("Renews at \(membership.monthlyPriceString) until cancelled. Payment is charged to your Apple ID at purchase; cancel anytime in your App Store account settings at least 24 hours before the period ends.")
+                    .font(.caption2)
+                    .foregroundStyle(ManifyTheme.textSecondary)
+                    .multilineTextAlignment(.center)
+
+                HStack(spacing: 18) {
+                    Link("Terms of Use", destination: URL(string: "https://www.apple.com/legal/internet-services/itunes/dev/stdeula/")!)
+                    Link("Privacy Policy", destination: URL(string: "https://manifyapp.com/privacy.html")!)
+                }
+                .font(.caption2.weight(.medium))
+                .tint(ManifyTheme.textSecondary)
+            }
+            .padding(.top, 4)
 
             if let error = membership.purchaseError {
                 Text(error)

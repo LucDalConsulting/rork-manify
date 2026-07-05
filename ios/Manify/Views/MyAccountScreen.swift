@@ -14,9 +14,13 @@ struct MyAccountScreen: View {
     @State private var activeSheet: AccountSheetType?
 
     nonisolated enum AccountSheetType: String, Identifiable {
-        case paywall, editUsername, createAccount
+        case paywall, editUsername, createAccount, review
         var id: String { rawValue }
     }
+
+    /// App Store listing shared by the "Send to a Friend" button.
+    private static let appStoreURL = URL(string: "https://apps.apple.com/app/id6760329399")!
+    private static let shareMessage = "Check out Manify — daily lessons that teach you the real-world skills every man should know. Download it free:"
 
     var body: some View {
         NavigationStack {
@@ -45,6 +49,8 @@ struct MyAccountScreen: View {
                     editUsernameSheetContent
                 case .createAccount:
                     CreateAccountSheetAccount(auth: auth, onDismiss: { activeSheet = nil })
+                case .review:
+                    ReviewScreen()
                 }
             }
             .alert("Sign Out", isPresented: $showSignOutConfirm) {
@@ -218,7 +224,7 @@ struct MyAccountScreen: View {
                         Text("Manify Membership")
                             .font(.subheadline.weight(.semibold))
                             .foregroundStyle(ManifyTheme.textPrimary)
-                        Text("Active — Lifetime Access")
+                        Text(membership.isLifetimeMember ? "Active — Lifetime Access" : "Active — Renews Monthly")
                             .font(.caption)
                             .foregroundStyle(ManifyTheme.success)
                     }
@@ -237,7 +243,7 @@ struct MyAccountScreen: View {
                             Text("Upgrade to Manify Membership")
                                 .font(.subheadline.weight(.semibold))
                                 .foregroundStyle(ManifyTheme.textPrimary)
-                            Text("Unlock full access — $10 one-time")
+                            Text("Full access — \(membership.monthlyPriceString)")
                                 .font(.caption)
                                 .foregroundStyle(ManifyTheme.textSecondary)
                         }
@@ -310,6 +316,38 @@ struct MyAccountScreen: View {
                 }
                 .listRowBackground(ManifyTheme.panel)
             }
+
+            Button {
+                activeSheet = .review
+            } label: {
+                HStack {
+                    Label("Leave a Review", systemImage: "star.fill")
+                        .font(.subheadline)
+                        .foregroundStyle(ManifyTheme.textPrimary)
+                    Spacer()
+                    Image(systemName: "chevron.right")
+                        .font(.caption)
+                        .foregroundStyle(ManifyTheme.textSecondary)
+                }
+            }
+            .listRowBackground(ManifyTheme.panel)
+
+            ShareLink(
+                item: Self.appStoreURL,
+                subject: Text("Manify"),
+                message: Text(Self.shareMessage)
+            ) {
+                HStack {
+                    Label("Send to a Friend", systemImage: "square.and.arrow.up")
+                        .font(.subheadline)
+                        .foregroundStyle(ManifyTheme.textPrimary)
+                    Spacer()
+                    Image(systemName: "chevron.right")
+                        .font(.caption)
+                        .foregroundStyle(ManifyTheme.textSecondary)
+                }
+            }
+            .listRowBackground(ManifyTheme.panel)
         } header: {
             Text("Preferences")
                 .foregroundStyle(ManifyTheme.textSecondary)

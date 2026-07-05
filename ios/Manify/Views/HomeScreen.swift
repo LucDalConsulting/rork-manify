@@ -178,7 +178,7 @@ struct HomeScreen: View {
                             .font(.subheadline.weight(.semibold))
                             .foregroundStyle(ManifyTheme.textPrimary)
 
-                        Text("Unlock full access — $10 one-time")
+                        Text("Full access — \(membership.monthlyPriceString)")
                             .font(.caption)
                             .foregroundStyle(ManifyTheme.textSecondary)
                     }

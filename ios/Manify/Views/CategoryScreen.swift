@@ -289,7 +289,7 @@ struct CategoryScreen: View {
                     .foregroundStyle(ManifyTheme.textSecondary)
                     .multilineTextAlignment(.center)
 
-                Text("Unlock for $10")
+                Text("Unlock — \(membership.monthlyPriceString)")
                     .font(.caption.weight(.bold))
                     .foregroundStyle(ManifyTheme.bg)
                     .padding(.horizontal, 16)
